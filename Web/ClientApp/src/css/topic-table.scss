@@ -1,0 +1,14 @@
+.topic-table tbody {
+    border: 1px solid $border-gray;
+    .fa.fa-trash {
+        color: #344c97;
+    }
+    td {
+        .fa.fa-trash-o {
+            padding: 0.1rem;
+            &:hover {
+                color: $red;
+            }
+        }
+    }
+}

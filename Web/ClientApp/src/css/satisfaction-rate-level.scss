@@ -1,0 +1,56 @@
+﻿.satisfaction-rate-level-container {
+    position: absolute;
+    bottom: 5px;
+} 
+
+.satisfaction-rate-level {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    font-size: 20px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid;
+    margin-right: 5px;
+
+    &.red {
+        color: $red;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+    }
+
+    &.yellow { 
+        color: #8a6d3b; 
+        background-color: #fcf8e3;
+        border-color: #faebcc;
+    }
+
+    &.green {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+    }
+}
+
+
+
+.crossed:before, .crossed:after {
+    position: absolute;
+    content: '';
+    background: black;
+    display: block;
+    height: 2px;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.crossed:after {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}

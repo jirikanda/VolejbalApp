@@ -1,0 +1,52 @@
+﻿$treebox-item-height: 35px;
+$treebox-item-hover-background: #f0f4fa;
+$treebox-item-active-background: #dde9f9;
+.treebox {
+    display: flex;
+    align-items: flex-start;
+}
+
+.treebox-list {
+    list-style-type: none;
+    flex-basis: 33.33333%;
+    padding: 0;
+    margin-bottom: 0;
+    border: 1px solid $border-gray;
+    position: relative;
+    &:not(:first-child) {
+        margin-left: -1px;
+    }
+    &:nth-child(3) .treebox-list-item:after {
+        display: none;
+    }
+    .treebox-list-item {
+        background: white;
+        font-size: 0.9rem;
+        position: relative;
+        &:hover {
+            background-color: $treebox-item-hover-background;
+        }
+        &.active {
+            background-color: $treebox-item-active-background;
+        }
+        &.leaf:after {
+            font-family: "FontAwesome";
+            content: "\f0da";
+            position: absolute;
+            right: 1rem;
+            top: 0.5rem;
+            color: $primary;
+        }
+        label {
+            margin: 0;
+            max-width: 94%;
+        }
+        input[type=checkbox] {
+            vertical-align: top;
+            margin-top: 0.25rem;
+        }
+    }
+    .treebox-list-item-label {
+        display: inline;
+    }
+}

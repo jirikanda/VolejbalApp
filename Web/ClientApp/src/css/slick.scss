@@ -1,0 +1,46 @@
+.product-matrix-header-slider {
+    max-width: calc(100% - 280px);
+
+    .slick-prev,
+    .slick-next {
+        height: 100%;
+        background-color: gray;
+        width: 25px;
+
+        &:before {
+            color: white;
+            font-family: "FontAwesome";
+            font-size: 1.8rem;
+        }
+
+        &:not(.slick-disabled) {
+            &:before {
+                opacity: 1;
+            }
+        }
+
+        &.slick-disabled {
+            display: none !important;
+        }
+    }
+
+    .slick-prev {
+        left: -25px;
+
+        &:before {
+            content: "\f104";
+        }
+    }
+
+    .slick-next {
+        left: calc(100vw - 352px);
+
+        &:before {
+            content: "\f105";
+        }
+    }
+}
+
+.slick-track {
+    display: flex;
+}

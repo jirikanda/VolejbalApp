@@ -1,0 +1,49 @@
+﻿.product-filter {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    .product-filter-item {
+        @media (min-width: 576px) {
+            flex-basis: 50%;
+        }
+        @media (min-width: 1200px) {
+            flex-basis: 33.33333%;
+        }
+        font-size: 0.9rem;
+        input[type=checkbox] {
+            margin: 0 0.5rem 0 0;
+        }
+        >label {
+            padding: 0.375rem 0.75rem 0.375rem 0;
+            display: inline-block;
+        }
+    }
+    .btn.btn-secondary,
+    .btn.btn-secondary:not([disabled]):not(.disabled):active {
+        font-size: 0.9rem;
+        background-color: transparent;
+        border-color: transparent;
+        color: $body-color;
+        border-radius: 0;
+        padding-left: 0;
+        margin-left: -1px;
+        &.dropdown-toggle {
+            box-shadow: none;
+        }
+        &:hover {
+            border-color: #e7ecf1;
+        }
+    }
+    .dropdown-menu.show {
+        border-radius: 0;
+        border-color: #e7ecf1;
+        .dropdown-item {
+            padding: $input-btn-padding-y $input-btn-padding-x;
+            padding-left: 0;
+            label {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
