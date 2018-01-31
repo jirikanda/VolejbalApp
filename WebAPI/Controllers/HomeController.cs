@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Havit.NewProjectTemplate.WebAPI.Controllers
@@ -18,7 +17,9 @@ namespace Havit.NewProjectTemplate.WebAPI.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return Challenge(OpenIdConnectDefaults.AuthenticationScheme);
+				// TODO: Security scheme
+				throw new NotImplementedException();
+	            //return Challenge(OpenIdConnectDefaults.AuthenticationScheme);
             }
             return this.Redirect("swagger");
         }
