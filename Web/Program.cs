@@ -23,7 +23,7 @@ namespace Havit.NewProjectTemplate.Web
 			    .UseStartup<Startup>()
 #if DEBUG
 			    .UseEnvironment("Development") // pro pohodlnější spuštění z command line
-			    .UseUrls("http://localhost:15800") // pro pohodlnější spuštění z command line
+			    .UseUrls("http://localhost:9900") // pro pohodlnější spuštění z command line
 #endif
 			    .ConfigureAppConfiguration((hostContext, config) =>
 			    {

@@ -6,10 +6,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Havit.NewProjectTemplate.Tests.Entity
 {
 	[TestClass]
-	public class BrokerTrustMetodikyOnlineDbContextTest
+	public class NewProjectTemplateDbContextTests
 	{
 		[TestMethod]
-		public void BrokerTrustMetodikyOnlineDbContext_CheckModelConventions()
+		public void NewProjectTemplateDbContext_CheckModelConventions()
 		{
 			// Arrange
 			NewProjectTemplateDbContext dbContext = new NewProjectTemplateDbContext();

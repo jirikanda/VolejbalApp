@@ -13,7 +13,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("current", new Info { Title = "Broker Trust Metodiky Online" });
+                c.SwaggerDoc("current", new Info { Title = "NewProjectTemplate" });
                 c.CustomSchemaIds(type => type.FullName);
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Havit.NewProjectTemplate.WebAPI.xml"));
                 c.DescribeAllEnumsAsStrings();

@@ -20,7 +20,7 @@ namespace Havit.NewProjectTemplate.WebAPI
 			    .UseStartup<Startup>()
 #if DEBUG
 			    .UseEnvironment("Development") // pro Red-Gate ANTS Performance Profiler
-			    .UseUrls("http://localhost:15801") // pro Red-Gate ANTS Performance Profiler
+			    .UseUrls("http://localhost:9901") // pro Red-Gate ANTS Performance Profiler
 #endif
 			    .ConfigureAppConfiguration((hostContext, config) =>
 			    {
