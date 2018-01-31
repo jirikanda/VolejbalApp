@@ -75,6 +75,5 @@
       <WebToCopy Remove="obj\Release\TfsPublish\Config\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(WebToCopy)" DestinationFiles="@(WebToCopy->'$(PublishDirectory)\WebAPI\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(WebToCopy)" DestinationFiles="@(WebToCopy->'$(PublishDirectory)\WebAPIForLocalDevelopment\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 </Project>
