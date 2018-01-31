@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Havit.NewProjectTemplate.WebAPI.Infrastructure;
 using Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions;
@@ -36,7 +35,6 @@ namespace Havit.NewProjectTemplate.WebAPI
 
             services.AddOptions(); // Adds services required for using options.
             services.AddMemoryCache(); // ie. IClaimsCacheStorage
-			services.AddDataProtection();
 
 	        services.AddCustomizedRequestLocalization();
 			services.AddCustomizedMvc(configuration);
@@ -60,12 +58,8 @@ namespace Havit.NewProjectTemplate.WebAPI
         /// <summary>
         /// Configure middleware.
         /// </summary>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Havit.NewProjectTemplate.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<Havit.NewProjectTemplate.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
         {
-            loggerFactory.AddConsole(configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            loggerFactory.AddEventLog(LogLevel.Error);
-
 			if (env.IsDevelopment())
 	        {
 		        app.UseDeveloperExceptionPage();
