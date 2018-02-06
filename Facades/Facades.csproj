@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Havit, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.1.7.4\lib\net46\Havit.dll</HintPath>
+      <HintPath>..\packages\Havit.1.7.5\lib\net46\Havit.dll</HintPath>
     </Reference>
     <Reference Include="Havit.Data.Patterns, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Havit.Data.Patterns.1.7.0\lib\net46\Havit.Data.Patterns.dll</HintPath>

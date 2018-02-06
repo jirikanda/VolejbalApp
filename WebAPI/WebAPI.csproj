@@ -35,8 +35,8 @@
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" Version="4.1.0" />
     <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.3.0" />
-    <PackageReference Include="Havit" Version="1.7.4" />
-    <PackageReference Include="Havit.AspNetCore.Mvc" Version="1.7.1" />
+    <PackageReference Include="Havit" Version="1.7.5" />
+    <PackageReference Include="Havit.AspNetCore.Mvc" Version="1.7.2" />
     <PackageReference Include="Havit.Data.Patterns" Version="1.7.0" />
     <PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore" Version="1.7.0" />
     <PackageReference Include="Havit.Model" Version="1.7.0" />
