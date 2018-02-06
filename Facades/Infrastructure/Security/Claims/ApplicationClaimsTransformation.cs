@@ -52,8 +52,9 @@ namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
 
 			// zduplikujeme identity a claims tak, že k duplikátům přidáme custom claim
 			// pokud bychom přidávali claims do principal, který je parametrem, může se stát (a stalo se!), že se v identity objeví claims vícekrát
-		    ClaimsIdentity claimsIdentity = ((ClaimsIdentity)principal.Identity);
-		    ClaimsPrincipal claimsPrincipalWithCustomClaims = new ClaimsPrincipal(new ClaimsIdentity(claimsIdentity.Claims.Concat(customClaims), claimsIdentity.AuthenticationType, claimsIdentity.NameClaimType, claimsIdentity.RoleClaimType));
+		    ClaimsIdentity claimsIdentity = ((ClaimsIdentity)principal.Identity).Clone();
+			claimsIdentity.AddClaims(customClaims);
+		    ClaimsPrincipal claimsPrincipalWithCustomClaims = new ClaimsPrincipal(claimsIdentity);
 		    return Task.FromResult(claimsPrincipalWithCustomClaims);
 	    }
     }
