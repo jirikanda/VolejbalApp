@@ -117,7 +117,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DataLayer\Seeds\DataSeedingTest.cs" />
+    <Compile Include="DataLayer\Seeds\DataSeedingTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
