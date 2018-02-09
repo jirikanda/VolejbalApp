@@ -1,24 +1,16 @@
 import { createStore, applyMiddleware, compose, combineReducers, GenericStoreEnhancer, Store } from 'redux';
-import thunk from 'redux-thunk';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import * as StoreModule from './store';
 import { History } from 'history';
-import thunkInjectMiddleware from './middlewares/thunkInjectMiddleware';
-import * as superagent from 'superagent';
-import createOidcMiddleware, { loadUser } from 'redux-oidc';
-import userManager from './oidc/userManager';
-import apiClientMiddleware from './middlewares/apiClientMiddleware';
 
-const configureStore = (history: History, superagentInstance: superagent.SuperAgentStatic, initialState?: StoreModule.ApplicationState) => {
+const configureStore = (history: History, initialState?: StoreModule.ApplicationState) => {
     // Build middleware. These are functions that can process the actions before they reach the store.
     const windowIfDefined = typeof window === 'undefined' ? null : window as {};
     // If devTools is installed, connect to it
     const devToolsExtension = windowIfDefined && windowIfDefined["devToolsExtension"] as () => GenericStoreEnhancer;
     const createStoreWithMiddleware = compose(
         applyMiddleware(
-            routerMiddleware(history),
-            apiClientMiddleware(superagentInstance),
-            thunkInjectMiddleware(superagentInstance)),
+            routerMiddleware(history)),
         devToolsExtension ? devToolsExtension() : f => f
     )(createStore);
 
