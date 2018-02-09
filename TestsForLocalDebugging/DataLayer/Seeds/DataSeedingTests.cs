@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Havit.NewProjectTemplate.TestsForLocalDebugging.DataLayer.Seeds
 {
     [TestClass]
-    public class DataSeedingTest : TestBase
+    public class DataSeedingTests : TestBase
     {        
         //[TestMethod]
         [TestCategory("Explicit")]
