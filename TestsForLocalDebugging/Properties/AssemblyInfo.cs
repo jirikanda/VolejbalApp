@@ -2,4 +2,4 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Havit.BrokerTrustMetodikyOnline.TestsForLocalDebugging")]
+[assembly: AssemblyTitle("Havit.NewProjectTemplate.TestsForLocalDebugging")]

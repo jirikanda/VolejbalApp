@@ -27,4 +27,4 @@ Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, $OriginalProjectNa
 Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbConfiguration.cs')) -newName ($NewProjectName + 'DbConfiguration.cs')
 Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbContext.cs')) -newName ($NewProjectName + 'DbContext.cs')
 Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbContextFactory.cs')) -newName ($NewProjectName + 'DbContextFactory.cs')
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Tests\NewProjectTemplateDbContextTests.cs')) -newName ($NewProjectName + 'DbContextTests.cs')
+Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Tests\Entity\NewProjectTemplateDbContextTests.cs')) -newName ($NewProjectName + 'DbContextTests.cs')
