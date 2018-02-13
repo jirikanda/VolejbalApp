@@ -12,7 +12,7 @@ param (
 
 [string]$SolutionFolder = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path);
 
-Get-ChildItem -recurse $SolutionFolder -include *.cs,*.csproj,*.sln,*.config,*.ps1,*.json | where { $_ -is [System.IO.FileInfo] } | where { !$_.FullName.Contains("\packages\") } | where { !$_.FullName.Contains("\obj\") } | where { !$_.Name.Equals("_SetApplicationName.ps1") } |
+Get-ChildItem -recurse $SolutionFolder -include *.cs,*.csproj,*.sln,*.config,*.ps1,*.json,*.tsx,*.cshtml | where { $_ -is [System.IO.FileInfo] } | where { !$_.FullName.Contains("\packages\") } | where { !$_.FullName.Contains("\obj\") } | where { !$_.Name.Equals("_SetApplicationName.ps1") } |
 Foreach-Object {
     Set-ItemProperty $_.FullName -name IsReadOnly -value $false
     [string]$Content = [IO.File]::ReadAllText($_.FullName)
