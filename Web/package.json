@@ -2,8 +2,8 @@
   "name": "NewProjectTemplate",
   "private": true,
   "engines": {
-    "node": "6.11.2",
-    "npm": "5.6.0"
+    "node": ">=8.x",
+    "npm": ">=5.x"
   },
   "devDependencies": {
     "@types/history": "4.6.2",
@@ -60,7 +60,7 @@
   },
   "scripts": {
     "build": "webpack --config webpack.vendor.config.js && webpack --watch",
-    "preinstall": "node check-env-versions.js",
+    "postinstall": "node check-env-versions.js",
     "lock-dependencies": "npm prune && npm dedupe && npm shrinkwrap"
   }
 }
