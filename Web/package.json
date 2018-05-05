@@ -16,7 +16,7 @@
     "@types/react-router-redux": "5.0.11",
     "@types/redux": "3.6.31",
     "@types/toastr": "2.1.35",
-    "@types/webpack": "3.8.5",
+    "@types/webpack": "4.1.4",
     "@types/webpack-env": "1.13.5",
     "aspnet-webpack": "2.0.3",
     "aspnet-webpack-react": "3.0.0",
@@ -32,11 +32,11 @@
     "sass-loader": "6.0.6",
     "style-loader": "0.20.1",
     "typescript": "2.6.2",
-    "webpack": "3.10.0",
-    "uglifyjs-webpack-plugin": "1.1.8",
+    "webpack": "4.7.0",
+    "uglifyjs-webpack-plugin": "1.2.5",
     "semver": "5.5.0",
     "resolve-url-loader": "2.2.1",
-    "webpack-hot-middleware": "2.21.0"
+    "webpack-hot-middleware": "2.22.1"
   },
   "dependencies": {
     "moment": "2.20.1",
