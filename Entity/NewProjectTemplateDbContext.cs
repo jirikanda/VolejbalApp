@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Data.Entity;
 using Havit.Data.Entity;
 using Havit.NewProjectTemplate.Entity.Migrations;
@@ -8,7 +8,7 @@ namespace Havit.NewProjectTemplate.Entity
 	public class NewProjectTemplateDbContext : Havit.Data.Entity.DbContext
 	{
         /// <summary>
-        /// Nastaví (na úrovni aplikace) pouití Code Migrations strategie.
+        /// NastavÃ­ (na Ãºrovni aplikace) pouÅ¾itÃ­ Code Migrations strategie.
         /// </summary>
 		public static void SetEntityFrameworkMigrations()
 		{
@@ -16,7 +16,7 @@ namespace Havit.NewProjectTemplate.Entity
 		}
 
 	    /// <summary>
-	    /// Spouští se z generátoru kódu pøed vytvoøením instance databázového kontextu.
+	    /// SpouÅ¡tÃ­ se z generÃ¡toru kÃ³du pÅ™ed vytvoÅ™enÃ­m instance databÃ¡zovÃ©ho kontextu.
 	    /// </summary>
 	    public static void ConfigureForCodeGenerator(string connectionString)
 	    {
@@ -24,7 +24,7 @@ namespace Havit.NewProjectTemplate.Entity
 	    }
 
         /// <summary>
-        /// Konstruktor pro unit testy, nemá jiné vyuití.
+        /// Konstruktor pro unit testy, nemÃ¡ jinÃ© vyuÅ¾itÃ­.
         /// </summary>
 	    internal NewProjectTemplateDbContext()
 	    {
