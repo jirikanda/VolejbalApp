@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
-    <AssemblyName>Havit.BrokerTrustMetodikyOnline.WebAPI</AssemblyName>
-    <RootNamespace>Havit.BrokerTrustMetodikyOnline.WebAPI</RootNamespace>
+    <AssemblyName>Havit.NewProjectTemplate.WebAPI</AssemblyName>
+    <RootNamespace>Havit.NewProjectTemplate.WebAPI</RootNamespace>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 

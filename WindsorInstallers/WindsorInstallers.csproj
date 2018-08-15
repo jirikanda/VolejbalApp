@@ -7,8 +7,8 @@
     <ProjectGuid>{0E201C98-C6A0-489E-ADD7-C66AD493FD25}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Havit.BrokerTrustMetodikyOnline.WindsorInstallers</RootNamespace>
-    <AssemblyName>Havit.BrokerTrustMetodikyOnline.WindsorInstallers</AssemblyName>
+    <RootNamespace>Havit.NewProjectTemplate.WindsorInstallers</RootNamespace>
+    <AssemblyName>Havit.NewProjectTemplate.WindsorInstallers</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
