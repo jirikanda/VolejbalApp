@@ -1,14 +1,9 @@
 ﻿const path = require("path");
 const webpack = require("webpack");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
     const isDevBuild = !(env && env.prod);
-    const extractCSS = new ExtractTextPlugin({
-        filename: "site.css",
-        disable: isDevBuild
-    });
 
     const clientBundleOutputDir = "./wwwroot/dist";
     const clientBundleConfig = {
@@ -16,7 +11,9 @@ module.exports = env => {
             "main-client": "./ClientApp/boot-client.tsx"
         },
         stats: { modules: false },
-        resolve: { extensions: [".js", ".jsx", ".ts", ".tsx"] },
+        resolve: { 
+            extensions: [".js", ".jsx", ".ts", ".tsx"]
+         },
         output: {
             filename: "[name].js",
             publicPath: "/dist/", // Webpack dev middleware, if enabled, handles requests for this URL prefix
@@ -45,18 +42,10 @@ module.exports = env => {
                         }
                     ]
                 },
-                {
-                    test: /\.scss$(\?|$)/,
-                    use: extractCSS.extract({
-                        fallback: "style-loader",
-                        use: ["css-loader", "sass-loader"]
-                    })
-                }
             ]
         },
         plugins: [
             // Plugins that apply in development and production builds
-            extractCSS,
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require("./wwwroot/dist/vendor-manifest.json")

@@ -1,5 +1,6 @@
 require('core-js/shim'); // react recommended shims
 require('raf').polyfill(); // react recommended shim for requestAnimationFrame()
+import 'reset-css';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -10,9 +11,6 @@ import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
 import { ApplicationState } from './store';
 import * as moment from 'moment';
-import ReduxToastr from 'react-redux-toastr';
-
-import "./style/css/style.scss";
 
 import * as RoutesModule from './routes';
 let routes = RoutesModule.routes;
@@ -30,15 +28,7 @@ const renderApp = () => {
     ReactDOM.render(
         <AppContainer>
             <Provider store={store}>
-                <>
-                    <ConnectedRouter history={history} children={routes} />
-                    <ReduxToastr
-                        newestOnTop={true}
-                        preventDuplicates
-                        position="top-right"
-                        transitionIn="fadeIn"
-                        transitionOut="fadeOut" />
-                </>
+                <ConnectedRouter history={history} children={routes} />
             </Provider>
         </AppContainer>,
         document.getElementById('app')

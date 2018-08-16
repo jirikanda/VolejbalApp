@@ -2,25 +2,46 @@
 import { connect } from 'react-redux';
 import { ApplicationState } from '../store';
 import * as CounterStore from '../store/Counter';
+import { Dispatch } from 'redux';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+
+const styles = (theme: Theme) => createStyles({
+    root: {
+        ...theme.mixins.gutters(),
+        paddingTop: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2,
+    },
+});
 
 type CounterProps =
     CounterStore.CounterState
-    & typeof CounterStore.actionCreators
+    & ReturnType<typeof CounterStore.actionDispatchers>
+    & WithStyles<typeof styles>
 
 class Counter extends React.Component<CounterProps> {
     render() {
-        return <>
-            <p>Counter</p>
-            <p>This is a simple example of a React component connected to Redux store with notifications for user by Toastr.</p>
-            <p>Current count: <strong>{this.props.count}</strong></p>
-            <button onClick={() => this.props.increment()}>Increment</button>
-            <button onClick={() => this.props.decrement()}>Decrement</button>
-        </>;
+        const { classes } = this.props;
+        return <Paper className={classes.root} elevation={1}>
+            <Typography variant="headline" component="h3">
+                Counter
+            </Typography>
+            <Typography component="p">
+                This is a simple example of a React component connected to Redux store.
+            </Typography>
+            <Typography component="p">
+                Current count: <strong>{this.props.count}</strong>
+            </Typography>
+            <Button color='primary' variant='contained' onClick={() => this.props.incrementAsync()}>Increment</Button>
+            <Button color='secondary' variant='contained' onClick={() => this.props.decrementAsync()}>Decrement</Button>
+        </Paper>
     }
 }
 
 // Wire up the React component to the Redux store
 export default connect(
-    (state: ApplicationState) => state.counter, // Selects which state properties are merged into the component's props
-    CounterStore.actionCreators                 // Selects which action creators are merged into the component's props
-)(Counter);
+    (state: ApplicationState) => state.counter,
+    dispatch => CounterStore.actionDispatchers(dispatch)
+)(withStyles(styles)(Counter));

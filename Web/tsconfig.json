@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "moduleResolution": "node",
-    "target": "es5",
+    "module": "commonjs",
+    "target": "es6",
     "jsx": "react",
     "experimentalDecorators": true,
     "sourceMap": true,
@@ -16,5 +17,13 @@
     "bin",
     "node_modules",
     "wwwroot/dist"
-  ]
+  ],
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true,
+        "enableTsDiagnostics": true
+      }
+    }
+  }
 }

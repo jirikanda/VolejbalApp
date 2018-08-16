@@ -1,6 +1,7 @@
 ﻿import { Action, Reducer } from 'redux';
-import { Toastr } from './commonActionCreators/Toastr';
-
+import { delay } from 'redux-saga'
+import { put, takeEvery, all } from 'redux-saga/effects'
+import { Dispatch } from 'redux'
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
@@ -20,20 +21,25 @@ interface DecrementCountAction { type: 'DECREMENT_COUNT' }
 // declared type strings (and not any other arbitrary string).
 type KnownAction = IncrementCountAction | DecrementCountAction;
 
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
+function* incrementAsync() {
+    yield delay(1000)
+    yield put({ type: 'INCREMENT_COUNT' })
+}
 
-export const actionCreators = {
-    increment: () => {
-        Toastr.success({ message: "Counter incremented." })
-        return <IncrementCountAction>{ type: 'INCREMENT_COUNT' }
-    },
-    decrement: () => {
-        Toastr.success({ message: "Counter decremented." })
-        return <DecrementCountAction>{ type: 'DECREMENT_COUNT' }
-    }
-};
+function* decrementAsync() {
+    yield delay(1000)
+    yield put({ type: 'DECREMENT_COUNT' })
+}
+
+export function* watchCounterAsync() {
+    yield takeEvery('INCREMENT_ASYNC', incrementAsync)
+    yield takeEvery('DECREMENT_ASYNC', decrementAsync)
+}
+
+export const actionDispatchers = (dispatch: Dispatch<KnownAction>) => ({
+    incrementAsync: () => { dispatch({ type: 'INCREMENT_ASYNC' }) },
+    decrementAsync: () => { dispatch({ type: 'DECREMENT_ASYNC' }) }
+})
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.

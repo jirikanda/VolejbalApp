@@ -1,4 +1,3 @@
-import { reducer as toastrReducer } from 'react-redux-toastr'
 import * as Counter from './Counter';
 
 // The top-level state object
@@ -10,12 +9,6 @@ export interface ApplicationState {
 // the reducer with the matching name. It's important that the names match exactly, and that the reducer
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
-    counter: Counter.reducer,
-    toastr: toastrReducer
+    counter: Counter.reducer
 };
 
-// This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
-// correctly typed to match your store.
-export interface AppThunkAction<TAction> {
-    (dispatch: (action: TAction) => void, getState: () => ApplicationState): void;
-}
