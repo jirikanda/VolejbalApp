@@ -1,4 +1,4 @@
-import * as Counter from './Counter';
+import * as Counter from './counter';
 
 // The top-level state object
 export interface ApplicationState {

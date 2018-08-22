@@ -1,19 +1,19 @@
-﻿import * as React from 'react';
-import { connect } from 'react-redux';
-import { ApplicationState } from '../store';
-import * as CounterStore from '../store/Counter';
-import { Dispatch } from 'redux';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+﻿import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import * as React from 'react';
+import { connect } from 'react-redux';
+
+import { ApplicationState } from '../store';
+import * as CounterStore from '../store/counter';
 
 const styles = (theme: Theme) => createStyles({
     root: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing.unit * 2,
-        paddingBottom: theme.spacing.unit * 2,
-    },
+        paddingBottom: theme.spacing.unit * 2
+    }
 });
 
 type CounterProps =
