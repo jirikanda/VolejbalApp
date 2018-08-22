@@ -13,7 +13,7 @@ export interface CounterState {
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 // Use @typeName and isActionType for type detection that works even after serialization/deserialization.
 
-export enum TopicsActionTypes {
+export enum CounterActionTypes {
     IncrementCount = 'INCREMENT_COUNT',
     DecrementCount = 'DECREMENT_COUNT',
     IncrementCountAsync = 'INCREMENT_COUNT_ASYNC',
@@ -21,12 +21,12 @@ export enum TopicsActionTypes {
 }
 
 interface IncrementCountAction {
-    type: TopicsActionTypes.IncrementCount;
+    type: CounterActionTypes.IncrementCount;
     count: number;
 }
 
 interface DecrementCountAction {
-    type: TopicsActionTypes.DecrementCount;
+    type: CounterActionTypes.DecrementCount;
     count: number;
 }
 
@@ -40,7 +40,7 @@ function* incrementAsync() {
     const counter: CounterState = state.counter;
 
     yield delay(1000)
-    yield put({ type: TopicsActionTypes.IncrementCount, count: counter.count + 1 })
+    yield put({ type: CounterActionTypes.IncrementCount, count: counter.count + 1 })
 }
 
 function* decrementAsync() {
@@ -48,17 +48,17 @@ function* decrementAsync() {
     const counter: CounterState = state.counter;
 
     yield delay(1000)
-    yield put({ type: TopicsActionTypes.DecrementCount, count: counter.count - 1 })
+    yield put({ type: CounterActionTypes.DecrementCount, count: counter.count - 1 })
 }
 
 export function* watchCounterAsync() {
-    yield takeEvery(TopicsActionTypes.IncrementCountAsync, incrementAsync)
-    yield takeEvery(TopicsActionTypes.DecrementCountAsync, decrementAsync)
+    yield takeEvery(CounterActionTypes.IncrementCountAsync, incrementAsync)
+    yield takeEvery(CounterActionTypes.DecrementCountAsync, decrementAsync)
 }
 
 export const actionDispatchers = (dispatch: Dispatch<ReducerKnownAction>) => ({
-    incrementAsync: () => { dispatch({ type: TopicsActionTypes.IncrementCountAsync }) },
-    decrementAsync: () => { dispatch({ type: TopicsActionTypes.DecrementCountAsync }) }
+    incrementAsync: () => { dispatch({ type: CounterActionTypes.IncrementCountAsync }) },
+    decrementAsync: () => { dispatch({ type: CounterActionTypes.DecrementCountAsync }) }
 })
 
 // ----------------
@@ -68,12 +68,12 @@ const unloadedState: CounterState = { count: 0 };
 
 export const reducer: Reducer<CounterState> = (state: CounterState, action: ReducerKnownAction) => {
     switch (action.type) {
-        case TopicsActionTypes.IncrementCount:
+        case CounterActionTypes.IncrementCount:
             return {
                 ...state,
                 count: action.count
             };
-        case TopicsActionTypes.DecrementCount:
+        case CounterActionTypes.DecrementCount:
             return {
                 ...state,
                 count: action.count
