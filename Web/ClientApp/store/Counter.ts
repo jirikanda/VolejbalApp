@@ -40,7 +40,7 @@ function* incrementAsync() {
     const counter: CounterState = state.counter;
 
     yield delay(1000)
-    yield put({ type: CounterActionTypes.IncrementCount, count: counter.count + 1 })
+    yield put<ReducerKnownAction>({ type: CounterActionTypes.IncrementCount, count: counter.count + 1 })
 }
 
 function* decrementAsync() {
@@ -48,7 +48,7 @@ function* decrementAsync() {
     const counter: CounterState = state.counter;
 
     yield delay(1000)
-    yield put({ type: CounterActionTypes.DecrementCount, count: counter.count - 1 })
+    yield put<ReducerKnownAction>({ type: CounterActionTypes.DecrementCount, count: counter.count - 1 })
 }
 
 export function* watchCounterAsync() {
