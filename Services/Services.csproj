@@ -19,4 +19,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Entity\Entity.csproj" />
 	</ItemGroup>
-</Project>
+</Project>	  <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
