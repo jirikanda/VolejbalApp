@@ -10,13 +10,13 @@ namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security
 		/// <summary>
 		/// Práva pro čtení.
 		/// </summary>
-        public static OperationAuthorizationRequirement Read = new OperationAuthorizationRequirement { Name = nameof(Read) };
+        public static readonly OperationAuthorizationRequirement Read = new OperationAuthorizationRequirement { Name = nameof(Read) };
 
 		/// <summary>
 		/// Requirement na administraci systému.
 		/// Toto je taková zjednodušená úlitba, spíš bychom měli mít oprávnění na úrovni s větší granularitou (seedovat data, importovat data, ...), 
 		/// ale pro praktické zjednodušení administrativní záležitosti shlukujeme pod administraci systému.
 		/// </summary>
-		public static OperationAuthorizationRequirement SystemAdministration = new OperationAuthorizationRequirement { Name = nameof(SystemAdministration) };
+		public static readonly OperationAuthorizationRequirement SystemAdministration = new OperationAuthorizationRequirement { Name = nameof(SystemAdministration) };
     }
 }

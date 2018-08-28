@@ -14,7 +14,7 @@ using Havit.Data.Patterns.DataSources;
 
 namespace Havit.NewProjectTemplate.DataLayer.DataSources.Security
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public interface ILoginAccountDataSource : IDataSource<Havit.NewProjectTemplate.Model.Security.LoginAccount>
 	{
 	}

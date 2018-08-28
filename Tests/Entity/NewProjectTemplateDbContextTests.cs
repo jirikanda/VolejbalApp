@@ -1,6 +1,6 @@
 using System;
-using System.Data.Entity;
 using Havit.NewProjectTemplate.Entity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Havit.NewProjectTemplate.Tests.Entity
@@ -12,16 +12,14 @@ namespace Havit.NewProjectTemplate.Tests.Entity
 		public void NewProjectTemplateDbContext_CheckModelConventions()
 		{
 			// Arrange
-			NewProjectTemplateDbContext dbContext = new NewProjectTemplateDbContext();
-			Database.SetInitializer(new DropCreateDatabaseAlways<NewProjectTemplateDbContext>());
-			dbContext.Database.Initialize(true);
+			DbContextOptions<NewProjectTemplateDbContext> options = new DbContextOptionsBuilder<NewProjectTemplateDbContext>()
+				.UseInMemoryDatabase(nameof(NewProjectTemplateDbContext))
+				.Options;
+			NewProjectTemplateDbContext dbContext = new NewProjectTemplateDbContext(options);
 
 			// Act
-			Havit.Data.Entity.Validators.ModelValidator modelValidator = new Havit.Data.Entity.Validators.ModelValidator();
+			Havit.Data.EntityFrameworkCore.ModelValidation.ModelValidator modelValidator = new Havit.Data.EntityFrameworkCore.ModelValidation.ModelValidator();
 			string errors = modelValidator.Validate(dbContext);
-
-			// Clean up
-			dbContext.Database.Delete();
 
 			// Assert
 			if (!String.IsNullOrEmpty(errors))

@@ -1,50 +1,35 @@
 ﻿using System;
-using System.Data.Entity;
-using Havit.Data.Entity;
-using Havit.NewProjectTemplate.Entity.Migrations;
+using Havit.Data.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Havit.NewProjectTemplate.Entity
 {
-	public class NewProjectTemplateDbContext : Havit.Data.Entity.DbContext
+	public class NewProjectTemplateDbContext : Havit.Data.EntityFrameworkCore.DbContext
 	{
-        /// <summary>
-        /// Nastaví (na úrovni aplikace) použití Code Migrations strategie.
-        /// </summary>
-		public static void SetEntityFrameworkMigrations()
+		/// <summary>
+		/// Konstruktor.
+		/// Pro použití v unit testech, jiné použití nemá.
+		/// </summary>
+		internal NewProjectTemplateDbContext()
 		{
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<NewProjectTemplateDbContext, Configuration>());
+			// NOOP
 		}
 
-	    /// <summary>
-	    /// Spouští se z generátoru kódu před vytvořením instance databázového kontextu.
-	    /// </summary>
-	    public static void ConfigureForCodeGenerator(string connectionString)
-	    {
-	        DbConfiguration.SetConfiguration(new NewProjectTemplateDbConfiguration(connectionString, String.Empty));
-	    }
-
-        /// <summary>
-        /// Konstruktor pro unit testy, nemá jiné využití.
-        /// </summary>
-	    internal NewProjectTemplateDbContext()
-	    {
-	        // NOOP
-	    }
-
-        /// <summary>
-        /// Konstruktor.
-        /// </summary>
-        public NewProjectTemplateDbContext(string connectionString) : base(connectionString)
-	    {
-	        // NOOP
-	    }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		/// <summary>
+		/// Konstruktor.
+		/// </summary>
+		public NewProjectTemplateDbContext(DbContextOptions options) : base(options)
 		{
-			base.OnModelCreating(modelBuilder);
-			
-			modelBuilder.Configurations.AddFromAssembly(this.GetType().Assembly);
+			// NOOP
+		}
+
+		/// <inheritdoc />
+		protected override void CustomizeModelCreating(ModelBuilder modelBuilder)
+		{
+			base.CustomizeModelCreating(modelBuilder);
+
 			modelBuilder.RegisterModelFromAssembly(typeof(Havit.NewProjectTemplate.Model.Localizations.Language).Assembly);
+			modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
 		}
 	}
 }

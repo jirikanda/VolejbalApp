@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Havit.NewProjectTemplate.Model.Metadata.Security
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public static class LoginAccountMetadata
 	{
 		public const int UsernameMaxLength = 32;

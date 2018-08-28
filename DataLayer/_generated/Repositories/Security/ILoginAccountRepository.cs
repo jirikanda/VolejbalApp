@@ -14,7 +14,7 @@ using Havit.Data.Patterns.Repositories;
 
 namespace Havit.NewProjectTemplate.DataLayer.Repositories.Security
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public partial interface ILoginAccountRepository : IRepository<Havit.NewProjectTemplate.Model.Security.LoginAccount>, IRepositoryAsync<Havit.NewProjectTemplate.Model.Security.LoginAccount>
 	{
 	}

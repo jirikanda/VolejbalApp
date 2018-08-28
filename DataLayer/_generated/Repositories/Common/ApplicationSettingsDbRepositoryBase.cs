@@ -10,25 +10,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Havit.Data.Entity;
-using Havit.Data.Entity.Patterns.Repositories;
-using Havit.Data.Entity.Patterns.SoftDeletes;
+using Havit.Data.EntityFrameworkCore;
+using Havit.Data.EntityFrameworkCore.Patterns.Repositories;
+using Havit.Data.EntityFrameworkCore.Patterns.SoftDeletes;
 using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataLoaders;
+using Havit.Data.Patterns.Infrastructure;
 
 namespace Havit.NewProjectTemplate.DataLayer.Repositories.Common
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public abstract class ApplicationSettingsDbRepositoryBase : DbRepository<Havit.NewProjectTemplate.Model.Common.ApplicationSettings>
 	{
-		protected ApplicationSettingsDbRepositoryBase(IDbContext dbContext, Havit.NewProjectTemplate.DataLayer.DataSources.Common.IApplicationSettingsDataSource dataSource, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager)
-			: base(dbContext, dataSource, dataLoader, dataLoaderAsync, softDeleteManager)
+		protected ApplicationSettingsDbRepositoryBase(IDbContext dbContext, Havit.NewProjectTemplate.DataLayer.DataSources.Common.IApplicationSettingsDataSource dataSource, IEntityKeyAccessor<Havit.NewProjectTemplate.Model.Common.ApplicationSettings, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager)
+			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, dataLoaderAsync, softDeleteManager)
 		{
-		}
-
-		public virtual Havit.NewProjectTemplate.Model.Common.ApplicationSettings GetObject(Havit.NewProjectTemplate.Model.Common.ApplicationSettings.Entry entry)
-		{
-			return GetObject((int)entry);
 		}
 
 	}

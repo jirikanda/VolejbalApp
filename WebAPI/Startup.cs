@@ -72,6 +72,8 @@ namespace Havit.NewProjectTemplate.WebAPI
 	        app.UseRequestLocalization();
             app.UseMvc();
             app.UseCustomizedSwaggerAndUI();
+
+	        app.UpgradeDatabaseSchemaAndData();
         }
 
     }
