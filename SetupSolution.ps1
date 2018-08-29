@@ -23,8 +23,7 @@ Foreach-Object {
     [IO.File]::WriteAllText($_.FullName, $Content)
 }
 
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, $OriginalProjectName + '.sln')) -newName ($NewProjectName + '.sln')
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbConfiguration.cs')) -newName ($NewProjectName + 'DbConfiguration.cs')
+Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, $OriginalSolutionName + '.sln')) -newName ($NewProjectName + '.sln')
 Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbContext.cs')) -newName ($NewProjectName + 'DbContext.cs')
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbContextFactory.cs')) -newName ($NewProjectName + 'DbContextFactory.cs')
+Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDesignTimeDbContextFactory.cs')) -newName ($NewProjectName + 'DesignTimeDbContextFactory.cs')
 Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Tests\Entity\NewProjectTemplateDbContextTests.cs')) -newName ($NewProjectName + 'DbContextTests.cs')
