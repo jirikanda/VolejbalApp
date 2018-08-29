@@ -46,7 +46,7 @@
 
   <ItemGroup>
 	<PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.3.1" />
-	<PackageReference Include="Havit.AspNetCore.Mvc" Version="1.7.3" />
+	<PackageReference Include="Havit.AspNetCore.Mvc" Version="1.8.0" />
     <PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore" Version="1.7.0" />
 	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.4.1" />
 	<PackageReference Include="Microsoft.AspNetCore" Version="2.1.3" />
