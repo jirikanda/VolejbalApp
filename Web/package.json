@@ -54,23 +54,10 @@
     "reset-css": "^4.0.1"
   },
   "scripts": {
-    "build": "webpack --config webpack.vendor.config.js --mode=development && webpack --mode=development",
+		"build:dev": "webpack --config webpack.vendor.config.js --mode=development && webpack --mode=development",
+		"build:prod": "webpack --config webpack.vendor.config.js --mode=production && webpack --mode=production",
     "build:watch": "webpack --config webpack.vendor.config.js --mode=development && webpack --watch --mode=development",
     "postinstall": "node check-env-versions.js",
     "test": "jest"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }
