@@ -22,26 +22,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<Compile Remove="App_Data\**" />
-	<Compile Remove="Controllers\ProductTypes\**" />
-	<Content Remove="App_Data\**" />
-	<Content Remove="Controllers\ProductTypes\**" />
-	<EmbeddedResource Remove="App_Data\**" />
-	<EmbeddedResource Remove="Controllers\ProductTypes\**" />
-	<None Remove="App_Data\**" />
-	<None Remove="Controllers\ProductTypes\**" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
 	<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-	<None Include="web.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,10 +45,12 @@
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
 	<PackageReference Include="TypeLite.Lib" Version="1.8.4" NoWarn="NU1701" />
   </ItemGroup>
+
   <ItemGroup>
 	<ProjectReference Include="..\Facades\Facades.csproj" />
 	<ProjectReference Include="..\WindsorInstallers\WindsorInstallers.csproj" />
   </ItemGroup>
+
   <Target Name="TfsPublish" AfterTargets="AfterPublish" Condition="'$(PublishDirectory)' != ''">
 	<ItemGroup>
 	  <WebToCopy Include="obj\Release\TfsPublish\**\*.*" />
