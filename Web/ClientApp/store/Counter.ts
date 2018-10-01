@@ -67,6 +67,6 @@ export const actionDispatchers = (dispatch: Dispatch<ReducerKnownAction>) => ({
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: CounterState = { count: 0 };
+const initialState: CounterState = { count: 0 };
 
-export const reducer: Reducer<CounterState> = createGenericReducer<CounterState, ReducerKnownAction>(CounterReducerActionTypes, unloadedState);
+export const reducer: Reducer<CounterState> = createGenericReducer<CounterState, ReducerKnownAction>(CounterReducerActionTypes, initialState);

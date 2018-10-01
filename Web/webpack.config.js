@@ -3,10 +3,11 @@ const webpack = require("webpack");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
-    const isDevBuild = !(env && env.prod);
-
+    const isDevBuild = !(env && env.production);
     const clientBundleOutputDir = "./wwwroot/dist";
+    
     const clientBundleConfig = {
+        mode: isDevBuild ? "development" : "production",
         entry: {
             "main-client": "./ClientApp/boot-client.tsx"
         },

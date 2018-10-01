@@ -1,5 +1,5 @@
 {
-  "name": "NewProjectTemplate",
+  "name": "new-project-template",
   "private": true,
   "engines": {
     "node": ">=8.x",
@@ -34,7 +34,8 @@
     "uglifyjs-webpack-plugin": "1.2.5",
     "webpack": "4.7.0",
     "webpack-cli": "^3.1.0",
-    "webpack-hot-middleware": "2.22.1"
+    "webpack-hot-middleware": "2.22.1",
+		"webpack-bundle-analyzer": "2.13.1"
   },
   "dependencies": {
     "@material-ui/core": "^1.5.0",
@@ -54,9 +55,9 @@
     "reset-css": "^4.0.1"
   },
   "scripts": {
-		"build:dev": "webpack --config webpack.vendor.config.js --mode=development && webpack --mode=development",
-		"build:prod": "webpack --config webpack.vendor.config.js --mode=production && webpack --mode=production",
-    "build:watch": "webpack --config webpack.vendor.config.js --mode=development && webpack --watch --mode=development",
+		"build:dev": "webpack --config webpack.vendor.config.js --env.production=false --mode=development && webpack --env.production=false --mode=development",
+		"build:prod": "webpack --config webpack.vendor.config.js --env.production && webpack --env.production",
+		"build:watch": "webpack --config webpack.vendor.config.js --mode=development && webpack --watch --mode=development",
     "postinstall": "node check-env-versions.js",
     "test": "jest"
   }

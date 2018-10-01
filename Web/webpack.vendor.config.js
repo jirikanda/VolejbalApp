@@ -1,12 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const pkg = require('./package.json');
 
 module.exports = (env) => {
-    const isDevBuild = !(env && env.prod);
+    const isDevBuild = !(env && env.production);
 
     const clientBundleConfig = {
+        mode: isDevBuild ? "development" : "production",
         stats: { modules: false },
         resolve: { extensions: ['.js'] },
         module: {
@@ -45,6 +47,7 @@ module.exports = (env) => {
                 path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
                 name: '[name]_[hash]'
             })
+            // new BundleAnalyzerPlugin({analyzerMode: 'static'})      // analyze your bundle for optimization (it will show you vizualized content of bundle)
         ].concat(isDevBuild
             ? [
                 // Plugins that apply in development builds only
