@@ -14,9 +14,8 @@ using Havit.Data.Patterns.Repositories;
 
 namespace Havit.NewProjectTemplate.DataLayer.Repositories.Common
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public partial interface IApplicationSettingsRepository : IRepository<Havit.NewProjectTemplate.Model.Common.ApplicationSettings>, IRepositoryAsync<Havit.NewProjectTemplate.Model.Common.ApplicationSettings>
 	{
-		Havit.NewProjectTemplate.Model.Common.ApplicationSettings GetObject(Havit.NewProjectTemplate.Model.Common.ApplicationSettings.Entry entry);
 	}
 }

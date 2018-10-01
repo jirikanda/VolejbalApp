@@ -1,220 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3DD4B466-7601-45C3-BC59-8C6536838DB4}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Havit.NewProjectTemplate.DataLayer</RootNamespace>
-    <AssemblyName>Havit.NewProjectTemplate.DataLayer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.MappingAPI, Version=6.1.0.9, Culture=neutral, PublicKeyToken=7ee2e825d201459e, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.MappingAPI.6.1.0.9\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.1.7.5\lib\net46\Havit.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit.Data.Entity6, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.Data.Entity6.1.7.2\lib\net46\Havit.Data.Entity6.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit.Data.Entity6.Patterns, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.Data.Entity6.Patterns.1.7.6\lib\net46\Havit.Data.Entity6.Patterns.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit.Data.Patterns, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.Data.Patterns.1.7.0\lib\net46\Havit.Data.Patterns.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.Extensions.DependencyInjection.Abstractions.1.7.2\lib\netstandard2.0\Havit.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit.Model, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.Model.1.7.0\lib\net46\Havit.Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Havit.Services, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Havit.Services.1.7.0\lib\net46\Havit.Services.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Seeds\Core\Common\ApplicationSettingsSeed.cs" />
-    <Compile Include="Seeds\Core\CoreProfile.cs" />
-    <Compile Include="_generated\Repositories\Localizations\ILanguageRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataEntries\Common\IApplicationSettingsEntries.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Common\IApplicationSettingsRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="Repositories\Common\IApplicationSettingsRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="Repositories\Localizations\ILanguageRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataEntries\Common\ApplicationSettingsEntries.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Localizations\ILanguageDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Common\IApplicationSettingsDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Localizations\LanguageDbRepositoryBase.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Common\ApplicationSettingsDbRepositoryBase.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Common\ApplicationSettingsDbDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Localizations\LanguageDbDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Localizations\LanguageDbRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Common\ApplicationSettingsDbRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Localizations\Fakes\FakeLanguageDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Common\Fakes\FakeApplicationSettingsDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="Repositories\Localizations\LanguageDbRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="Repositories\Common\ApplicationSettingsDbRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Security\ILoginAccountDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Security\ILoginAccountRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Security\LoginAccountDbDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="Repositories\Security\ILoginAccountRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\DataSources\Security\Fakes\FakeLoginAccountDataSource.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Security\LoginAccountDbRepositoryBase.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="_generated\Repositories\Security\LoginAccountDbRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-    <Compile Include="Repositories\Security\LoginAccountDbRepository.cs">
-      <SubType>Code</SubType>
-      <HavitEntityCodeGenerator>1</HavitEntityCodeGenerator>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Entity\Entity.csproj">
-      <Project>{fceef308-46ab-49dd-ac13-ba111f5ea73f}</Project>
-      <Name>Entity</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Model\Model.csproj">
-      <Project>{5314128b-cd5d-45e7-8aac-833d3339d9c4}</Project>
-      <Name>Model</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="RunCodeGenerator.ps1" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AssemblyName>Havit.NewProjectTemplate.DataLayer</AssemblyName>
+		<RootNamespace>Havit.NewProjectTemplate.DataLayer</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Havit.Data.EntityFrameworkCore.CodeGenerator" Version="1.8.0" />
+		<PackageReference Include="Havit.Data.EntityFrameworkCore.Patterns" Version="1.8.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Entity\Entity.csproj" />
+		<ProjectReference Include="..\Model\Model.csproj" />
+	</ItemGroup>
+
 </Project>

@@ -14,7 +14,7 @@ using Havit.Data.Patterns.DataEntries;
 
 namespace Havit.NewProjectTemplate.DataLayer.DataEntries.Common
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public interface IApplicationSettingsEntries : IDataEntries
 	{
 		Havit.NewProjectTemplate.Model.Common.ApplicationSettings Current { get; }

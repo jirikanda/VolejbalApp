@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace Havit.NewProjectTemplate.Model.Metadata.Localizations
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Entity.CodeGenerator", "2.0")]
+	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public static class LanguageMetadata
 	{
-		public const int NameMaxLength = 200;
 		public const int CultureMaxLength = 10;
-		public const int UiCultureMaxLength = 10;
+		public const int NameMaxLength = 200;
 		public const int SymbolMaxLength = 50;
+		public const int UiCultureMaxLength = 10;
 	}
 }
