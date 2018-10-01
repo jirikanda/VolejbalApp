@@ -35,9 +35,4 @@
 		<ProjectReference Include="..\Model\Model.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Configurations\" />
-	  <Folder Include="Migrations\" />
-	  <Folder Include="Sql\StoredProcedures\" />
-	</ItemGroup>
 </Project>
