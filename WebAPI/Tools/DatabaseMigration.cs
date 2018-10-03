@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
+namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.Tools
 {
 	public static class DatabaseMigration
 	{

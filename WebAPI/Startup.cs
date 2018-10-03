@@ -14,6 +14,7 @@ using Havit.NewProjectTemplate.WebAPI.Infrastructure;
 using Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
+using Havit.NewProjectTemplate.WebAPI.Infrastructure.Tools;
 
 namespace Havit.NewProjectTemplate.WebAPI
 {
@@ -51,7 +52,6 @@ namespace Havit.NewProjectTemplate.WebAPI
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 			IWindsorContainer windsorContainer = WindsorCastleConfiguration.CreateWindsorContainer(configuration);
-            Tools.DataSeed.Run(windsorContainer);
             return services.AddCustomizedServiceProvider(windsorContainer);
         }
 
