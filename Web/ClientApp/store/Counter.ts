@@ -8,6 +8,8 @@ import { createGenericReducer, Omit } from '../helpers/reducer-helper';
 // declared type strings (and not any other arbitrary string).
 type ReducerKnownAction = IncrementCountAction | DecrementCountAction;
 
+type SagaKnownAction = IncrementCountAsyncAction | DecrementCountAsyncAction;
+
 // State
 type StateUnion = IncrementCountAction & DecrementCountAction;
 export type CounterState = Omit<StateUnion, "type">;
@@ -37,6 +39,14 @@ interface DecrementCountAction {
     count: number;
 }
 
+interface IncrementCountAsyncAction {
+    type: CounterSagaActionTypes.IncrementCountAsync
+}
+
+interface DecrementCountAsyncAction {
+    type: CounterSagaActionTypes.DecrementCountAsync
+}
+
 // Sagas
 function* incrementAsync() {
     const state = yield select();   // just like getState()
@@ -59,7 +69,7 @@ export function* watchCounterAsync() {
     yield takeEvery(CounterSagaActionTypes.DecrementCountAsync, decrementAsync)
 }
 
-export const actionDispatchers = (dispatch: Dispatch<ReducerKnownAction>) => ({
+export const actionDispatchers = (dispatch: Dispatch<SagaKnownAction>) => ({
     incrementAsync: () => { dispatch({ type: CounterSagaActionTypes.IncrementCountAsync }) },
     decrementAsync: () => { dispatch({ type: CounterSagaActionTypes.DecrementCountAsync }) }
 })

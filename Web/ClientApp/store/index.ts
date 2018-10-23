@@ -1,8 +1,10 @@
 import * as Counter from './counter';
+import { RouterState } from 'connected-react-router'
 
 // The top-level state object
 export interface ApplicationState {
     counter: Counter.CounterState;
+    router: RouterState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using

@@ -1,10 +1,11 @@
 ﻿import * as React from 'react'
 import Counter from '../containers/Counter'
 import Configuration from '../configuration'
-import SimpleAppBar from './SimpleAppBar';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, WithStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
+import { compose } from 'redux';
 
 const styles = theme => ({
     root: {
@@ -14,11 +15,10 @@ const styles = theme => ({
     },
 });
 
-const Home = (props) => {
+const Home = (props: RouteComponentProps<{}> & WithStyles<typeof styles>) => {
     const { classes } = props;
 
-    return <>        
-        <SimpleAppBar />
+    return <>
         <Paper className={classes.root} elevation={1}>
             <Counter />        
             <Typography variant="headline" component="h3">
@@ -27,8 +27,11 @@ const Home = (props) => {
             <Typography component="p">
                 {JSON.stringify(Configuration)}
             </Typography>
+            <Typography component="p">
+                <NavLink to='/hello-world'>Hello world</NavLink>
+            </Typography>           
         </Paper>
     </>;
 }
 
-export default withStyles(styles)(Home);
+export default compose(withRouter, withStyles(styles))(Home);

@@ -6,8 +6,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
-import { createBrowserHistory } from 'history';
+import { ConnectedRouter } from 'connected-react-router'
+import { createBrowserHistory } from 'history'
 import configureStore from './configureStore';
 import { ApplicationState } from './store';
 import * as moment from 'moment';
@@ -18,7 +18,7 @@ let routes = RoutesModule.routes;
 moment.locale("cs");
 
 // Create browser history to use in the Redux store
-const history = createBrowserHistory();
+const history = createBrowserHistory()
 
 // Get the application-wide store instance, prepopulating with state from the server where available.
 const initialState = window["initialReduxState"] as ApplicationState;
