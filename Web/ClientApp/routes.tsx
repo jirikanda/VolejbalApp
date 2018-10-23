@@ -4,8 +4,6 @@ import Home from './components/Home';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
 import green from '@material-ui/core/colors/green';
-import { Route, Switch } from 'react-router';
-import HelloWorld from './components/HelloWorld';
 
 const theme = createMuiTheme({
     palette: {
@@ -17,9 +15,6 @@ const theme = createMuiTheme({
 export const routes =
     <MuiThemeProvider theme={theme}>
         <Layout>
-            <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path='/hello-world' component={HelloWorld} />
-            </Switch>
+            <Home />
         </Layout>
     </MuiThemeProvider>
