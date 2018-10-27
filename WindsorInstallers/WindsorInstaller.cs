@@ -20,7 +20,7 @@ using Havit.Services.TimeServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
+using Havit.Services.Caching;
 
 namespace Havit.NewProjectTemplate.WindsorInstallers
 {
@@ -95,6 +95,7 @@ namespace Havit.NewProjectTemplate.WindsorInstallers
 		{
 			// HAVIT .NET Framework Extensions
 			container.Register(Component.For<ITimeService>().ImplementedBy<ApplicationTimeService>().LifestyleSingleton());
+			container.Register(Component.For<ICacheService>().ImplementedBy<MemoryCacheService>().LifestyleSingleton());
 		}
 
 		private static void InstallByServiceAttribute(IWindsorContainer container, InstallConfiguration configuration)

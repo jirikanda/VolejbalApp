@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Havit.Data.EntityFrameworkCore;
+using Havit.Data.EntityFrameworkCore.Patterns.Caching;
 using Havit.Data.EntityFrameworkCore.Patterns.Repositories;
 using Havit.Data.EntityFrameworkCore.Patterns.SoftDeletes;
 using Havit.Data.Patterns.DataEntries;
@@ -22,8 +23,8 @@ namespace Havit.NewProjectTemplate.DataLayer.Repositories.Security
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public abstract class LoginAccountDbRepositoryBase : DbRepository<Havit.NewProjectTemplate.Model.Security.LoginAccount>
 	{
-		protected LoginAccountDbRepositoryBase(IDbContext dbContext, Havit.NewProjectTemplate.DataLayer.DataSources.Security.ILoginAccountDataSource dataSource, IEntityKeyAccessor<Havit.NewProjectTemplate.Model.Security.LoginAccount, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager)
-			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, dataLoaderAsync, softDeleteManager)
+		protected LoginAccountDbRepositoryBase(IDbContext dbContext, Havit.NewProjectTemplate.DataLayer.DataSources.Security.ILoginAccountDataSource dataSource, IEntityKeyAccessor<Havit.NewProjectTemplate.Model.Security.LoginAccount, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
+			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, dataLoaderAsync, softDeleteManager, entityCacheManager)
 		{
 		}
 
