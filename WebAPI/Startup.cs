@@ -35,7 +35,7 @@ namespace Havit.NewProjectTemplate.WebAPI
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddOptions(); // Adds services required for using options.
-            services.AddMemoryCache(); // ie. IClaimsCacheStorage, EntityCacheManager
+            services.AddMemoryCache(); // ie. IClaimsCacheStorage
 
 	        services.AddCustomizedRequestLocalization();
 			services.AddCustomizedMvc(configuration);
