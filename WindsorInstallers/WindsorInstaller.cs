@@ -79,7 +79,6 @@ namespace Havit.NewProjectTemplate.WindsorInstallers
 			InstallHavitServices(container);
 			InstallByServiceAttribute(container, installConfiguration);
 			InstallAuthorizationHandlers(container, installConfiguration);
-			InstallDbContext(container, installConfiguration);
 
 			return container;
 		}
@@ -89,6 +88,7 @@ namespace Havit.NewProjectTemplate.WindsorInstallers
 			container.WithEntityPatternsInstaller(new ComponentRegistrationOptions { GeneralLifestyle = configuration.ScopedLifestyle })
 				.RegisterEntityPatterns()
 				//.RegisterLocalizationServices<Language>()
+				.RegisterDbContext<NewProjectTemplateDbContext>(new DbContextOptionsBuilder<NewProjectTemplateDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
 				.RegisterDataLayer(typeof(ILoginAccountDataSource).Assembly);
 		}
 
@@ -113,20 +113,6 @@ namespace Havit.NewProjectTemplate.WindsorInstallers
 				.WithService.FromInterface(typeof(IAuthorizationHandler))
 					.Configure(configurer => installConfiguration.ScopedLifestyle(configurer.LifeStyle))
 			   );
-		}
-
-		private static void InstallDbContext(IWindsorContainer container, InstallConfiguration configuration)
-		{
-			container.Register(
-				Classes.From(typeof(NewProjectTemplateDbContext))
-					.Pick()
-					.WithService.Select((type, baseTypes) => new[] { typeof(Havit.Data.EntityFrameworkCore.IDbContext), typeof(DbContext) })
-					.Configure(c =>
-					{
-						configuration
-							.ScopedLifestyle(c.LifeStyle)
-							.DependsOn(Dependency.OnValue("options", new DbContextOptionsBuilder<NewProjectTemplateDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options));
-					}));
 		}
 	}
 }
