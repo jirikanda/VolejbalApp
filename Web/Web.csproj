@@ -57,7 +57,7 @@
     <Exec Command="yarn run build:dev" Condition=" '$(Configuration)' == 'Debug' " />
 
     <!-- yarn nepouštíme v Debugu, neboť předpokládáme, že npm balíčky se při vývoji dostanou na disk díky IDE, které zpracovává package.json -->
-    <Exec Command="yarn" Condition=" '$(Configuration)' != 'Debug' " />
+    <Exec Command="yarn install --check-files" Condition=" '$(Configuration)' != 'Debug' " />
     <Exec Command="yarn run build:prod" Condition=" '$(Configuration)' != 'Debug' " />
   </Target>
 
