@@ -1,4 +1,4 @@
-// workaround declarations
+﻿// workaround declarations
 
 // for imports of images
 declare module '*.png'

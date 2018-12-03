@@ -1,4 +1,4 @@
-require('core-js/shim'); // react recommended shims
+﻿require('core-js/shim'); // react recommended shims
 require('raf').polyfill(); // react recommended shim for requestAnimationFrame()
 import 'reset-css';
 

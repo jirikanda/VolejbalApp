@@ -1,4 +1,4 @@
-// TODO: should be npm package
+﻿// TODO: should be npm package
 
 export type Action = {
     type: string;

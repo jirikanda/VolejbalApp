@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, compose, combineReducers, GenericStoreEnhancer, Store } from 'redux';
+﻿import { createStore, applyMiddleware, compose, combineReducers, GenericStoreEnhancer, Store } from 'redux';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import * as StoreModule from './store';
 import { History } from 'history';

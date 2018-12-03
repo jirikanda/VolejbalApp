@@ -1,4 +1,4 @@
-const path = require('path');
+﻿const path = require('path');
 const webpack = require('webpack');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
