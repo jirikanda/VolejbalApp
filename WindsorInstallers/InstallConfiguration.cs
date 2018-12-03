@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Registration.Lifestyle;
 

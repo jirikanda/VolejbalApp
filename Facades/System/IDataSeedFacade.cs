@@ -1,4 +1,4 @@
-namespace Havit.NewProjectTemplate.Facades.System
+﻿namespace Havit.NewProjectTemplate.Facades.System
 {
     public interface IDataSeedFacade
     {

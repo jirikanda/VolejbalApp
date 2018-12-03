@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Havit.NewProjectTemplate.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

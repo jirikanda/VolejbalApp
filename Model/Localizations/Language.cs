@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Havit.Model.Localizations;
 
 namespace Havit.NewProjectTemplate.Model.Localizations
