@@ -5,7 +5,6 @@
 	<RuntimeIdentifier>win7-x86</RuntimeIdentifier>
 	<AssemblyName>Havit.NewProjectTemplate.WebAPI</AssemblyName>
 	<RootNamespace>Havit.NewProjectTemplate.WebAPI</RootNamespace>
-	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,10 +19,6 @@
 	<DocumentationFile>bin\Release\netcoreapp2.0\win7-x86\Havit.NewProjectTemplate.WebAPI.xml</DocumentationFile>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-	<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-  </ItemGroup>
 
   <ItemGroup>
 	<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />

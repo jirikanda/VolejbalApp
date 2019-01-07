@@ -2,14 +2,9 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AssemblyName>Havit.NewProjectTemplate.WindsorInstallers</AssemblyName>
 		<RootNamespace>Havit.NewProjectTemplate.WindsorInstallers</RootNamespace>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Castle.Windsor" Version="4.1.0" />

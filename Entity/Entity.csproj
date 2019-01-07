@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AssemblyName>Havit.NewProjectTemplate.Entity</AssemblyName>
 		<RootNamespace>Havit.NewProjectTemplate.Entity</RootNamespace>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -10,10 +9,6 @@
 
 	<ItemGroup>
 		<None Remove="appsettings.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

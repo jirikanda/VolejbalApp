@@ -3,7 +3,6 @@
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.0</TargetFramework>
 	<RuntimeIdentifier>win7-x86</RuntimeIdentifier>
-	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<AssemblyName>Havit.NewProjectTemplate.ApiModelsGenerator</AssemblyName>
 	<RootNamespace>Havit.NewProjectTemplate.ApiModelsGenerator</RootNamespace>
 	<ApplicationIcon />
@@ -14,10 +13,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	<NoWarn>1701;1702;NU1701</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-	<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-  </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Newtonsoft.Json" Version="11.0.2" />

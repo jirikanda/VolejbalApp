@@ -2,14 +2,9 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AssemblyName>Havit.NewProjectTemplate.Services</AssemblyName>
 		<RootNamespace>Havit.NewProjectTemplate.Services</RootNamespace>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" Version="1.7.3" />
