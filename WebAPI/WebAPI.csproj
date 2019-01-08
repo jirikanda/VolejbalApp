@@ -5,24 +5,9 @@
 	<RuntimeIdentifier>win7-x86</RuntimeIdentifier>
 	<AssemblyName>Havit.NewProjectTemplate.WebAPI</AssemblyName>
 	<RootNamespace>Havit.NewProjectTemplate.WebAPI</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	<DocumentationFile>bin\Debug\netcoreapp2.0\win7-x86\Havit.NewProjectTemplate.WebAPI.xml</DocumentationFile>
-	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	<TreatSpecificWarningsAsErrors />
-	<NoWarn>1701;1702;1705;1591</NoWarn>
-	<PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	<DocumentationFile>bin\Release\netcoreapp2.0\win7-x86\Havit.NewProjectTemplate.WebAPI.xml</DocumentationFile>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-	<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
-  </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.3.1" />
