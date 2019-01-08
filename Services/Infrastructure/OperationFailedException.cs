@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure
+namespace Havit.NewProjectTemplate.Services.Infrastructure
 {
     public class OperationFailedException : ApplicationException
     {

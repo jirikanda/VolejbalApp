@@ -3,9 +3,9 @@ using System.Linq;
 using Havit.Data.Patterns.DataSeeds;
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Havit.NewProjectTemplate.DataLayer.Seeds.Core;
-using Havit.NewProjectTemplate.Facades.Infrastructure;
 using Havit.NewProjectTemplate.Facades.Infrastructure.Security;
 using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Authorization;
+using Havit.NewProjectTemplate.Services.Infrastructure;
 
 namespace Havit.NewProjectTemplate.Facades.System
 {

@@ -6,7 +6,7 @@ using System.Security;
 using System.Threading.Tasks;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using Havit.AspNetCore.Mvc.Filters.ErrorToJson;
-using Havit.NewProjectTemplate.Facades.Infrastructure;
+using Havit.NewProjectTemplate.Services.Infrastructure;
 using Havit.NewProjectTemplate.WebAPI.Infrastructure.ModelValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
