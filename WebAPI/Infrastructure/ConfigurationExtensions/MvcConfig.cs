@@ -28,7 +28,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 		{
 			var mvcBuilder = services
 				.AddMvc(options =>
-				{
+				{					
 					// TODO: Security policy
 					var defaultPolicy = new AuthorizationPolicyBuilder(AuthenticationConfig.GetAuthenticationSchemes(configuration))
 						.RequireAuthenticatedUser()
@@ -43,6 +43,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 					}) { Order = 2 }); // vlastností Order nastavujeme, aby se spustilo před ErrorMonitoringFilter
 					options.Filters.AddService(typeof(ErrorMonitoringFilter), 1); // vlastností Order nastavujeme, aby se spustilo _PO_ ErrorJoJsonFilter				
 				})
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
 				.AddDataAnnotationsLocalization();
 #if DEBUG
 			mvcBuilder.AddJsonOptions(options => options.SerializerSettings.Formatting = Formatting.Indented);

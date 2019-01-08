@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFramework>netcoreapp2.0</TargetFramework>
+	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<RuntimeIdentifier>win7-x86</RuntimeIdentifier>
 	<AssemblyName>Havit.NewProjectTemplate.ApiModelsGenerator</AssemblyName>
 	<RootNamespace>Havit.NewProjectTemplate.ApiModelsGenerator</RootNamespace>
@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+	<PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
 	<PackageReference Include="TypeLite" Version="1.8.4" NoWarn="NU1701" />
   </ItemGroup>
 
