@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
     <AssemblyName>Havit.NewProjectTemplate.Web</AssemblyName>
     <RootNamespace>Havit.NewProjectTemplate.Web</RootNamespace>
 	<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
