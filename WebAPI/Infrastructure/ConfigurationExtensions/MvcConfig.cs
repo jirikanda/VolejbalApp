@@ -35,7 +35,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 						.Build();
 					options.Filters.Add(new AuthorizeFilter(defaultPolicy));
 					options.Filters.Add(new ValidateModelAttribute { ResultSelector = ValidationErrorModel.FromModelState() });
-					options.Filters.Add(new ErrorJoJsonFilter(c =>
+					options.Filters.Add(new ErrorToJsonFilter(c =>
 					{
 						c.Map(e => e is SecurityException, e => StatusCodes.Status403Forbidden, ValidationErrorModel.FromException(StatusCodes.Status403Forbidden), markExceptionAsHandled: e => true);
 						c.Map(e => e is OperationFailedException, e => StatusCodes.Status422UnprocessableEntity, ValidationErrorModel.FromException(StatusCodes.Status422UnprocessableEntity), markExceptionAsHandled: e => true);
