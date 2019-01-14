@@ -15,7 +15,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 	public class ValidationErrorModel
 	{
 		/// <summary>
-		/// Status code. Vždy 422 - Unprocessable Entity.
+		/// Status code.
 		/// </summary>
 		public int StatusCode { get; private set; }
 
