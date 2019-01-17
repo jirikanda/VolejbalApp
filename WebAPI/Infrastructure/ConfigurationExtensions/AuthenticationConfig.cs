@@ -25,7 +25,9 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
             {
                 options.Authority = jwtBearerSettings.Authority;
                 options.Audience = jwtBearerSettings.Audience;
-            });
+				options.RequireHttpsMetadata = false; // pro stage nemáme SSL certifikáty
+
+			});
 
             // Pod IClaimsTransformation je standardně zaregistrováno NoopClaimsTransformation
             // Pokud přidáme naší vlastní službu přes Castle Windsor, je tato až druhá a není tak resolvována (uff),
