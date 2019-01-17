@@ -25,7 +25,7 @@ namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Authorization
             Contract.Requires<ArgumentNullException>(user != null, nameof(user));
             Contract.Requires<ArgumentNullException>(requirement != null, nameof(requirement));
             
-            return authorizationService.AuthorizeAsync(user, resource, requirement).Result.Succeeded;            
+            return authorizationService.AuthorizeAsync(user, resource, requirement).GetAwaiter().GetResult().Succeeded;
         }
 
         public void VerifyAuthorization(ClaimsPrincipal user, IAuthorizationRequirement requirement, object resource = null)
