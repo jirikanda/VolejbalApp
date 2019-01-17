@@ -28,7 +28,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 		{
 			var mvcBuilder = services
 				.AddMvc(options =>
-				{					
+				{
 					// TODO: Security policy
 					var defaultPolicy = new AuthorizationPolicyBuilder(AuthenticationConfig.GetAuthenticationSchemes(configuration))
 						.RequireAuthenticatedUser()
@@ -40,11 +40,18 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 						c.Map(e => e is SecurityException, e => StatusCodes.Status403Forbidden, ValidationErrorModel.FromException(StatusCodes.Status403Forbidden), markExceptionAsHandled: e => true);
 						c.Map(e => e is OperationFailedException, e => StatusCodes.Status422UnprocessableEntity, ValidationErrorModel.FromException(StatusCodes.Status422UnprocessableEntity), markExceptionAsHandled: e => true);
 						c.Map(e => true /* ostatní výjimky */, e => StatusCodes.Status500InternalServerError, ValidationErrorModel.FromException(StatusCodes.Status500InternalServerError), markExceptionAsHandled: e => false);
-					}) { Order = 2 }); // vlastností Order nastavujeme, aby se spustilo před ErrorMonitoringFilter
+					})
+					{ Order = 2 }); // vlastností Order nastavujeme, aby se spustilo před ErrorMonitoringFilter
 					options.Filters.AddService(typeof(ErrorMonitoringFilter), 1); // vlastností Order nastavujeme, aby se spustilo _PO_ ErrorJoJsonFilter				
 				})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-				.AddDataAnnotationsLocalization();
+				.AddDataAnnotationsLocalization()
+				.ConfigureApiBehaviorOptions(options =>
+				{
+					//options.SuppressConsumesConstraintForFormFileParameters = true;
+					//options.SuppressInferBindingSourcesForParameters = true;
+					options.SuppressModelStateInvalidFilter = true; // zajišťujeme pomocí ValidateModelAttribute výše
+				});
 #if DEBUG
 			mvcBuilder.AddJsonOptions(options => options.SerializerSettings.Formatting = Formatting.Indented);
 #endif

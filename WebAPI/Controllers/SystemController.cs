@@ -17,7 +17,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Controllers
     /// <summary>
     /// Controller pro systémové akce.
     /// </summary>
-    public class SystemController : Controller
+    public class SystemController : ControllerBase
     {
         private readonly IDataSeedFacade dataSeedFacade;
 
@@ -31,8 +31,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Controllers
         /// Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
         /// </summary>
         /// <param name="profile">Název profilu k seedování.</param>
-        [HttpPost]
-        [Route("api/system/seed/{profile}")]
+        [HttpPost("api/system/seed/{profile}")]
         public void SeedData(string profile)
         {
             dataSeedFacade.SeedDataProfile(profile);

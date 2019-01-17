@@ -9,10 +9,9 @@ namespace Havit.NewProjectTemplate.WebAPI.Controllers
 {
     [AllowAnonymous]
     [ApiExplorerSettings(IgnoreApi = true)] // schováme ze Swaggeru
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
-        [Route("")]
-        [HttpGet]
+        [HttpGet("")]
         public IActionResult Get()
         {
             if (!User.Identity.IsAuthenticated)

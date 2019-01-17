@@ -15,6 +15,9 @@ using Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
 using Havit.NewProjectTemplate.WebAPI.Infrastructure.Tools;
+using Microsoft.AspNetCore.Mvc;
+
+[assembly: ApiControllerAttribute]
 
 namespace Havit.NewProjectTemplate.WebAPI
 {
