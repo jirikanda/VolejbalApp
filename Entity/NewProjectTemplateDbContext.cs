@@ -1,6 +1,7 @@
 ﻿using System;
 using Havit.Data.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Havit.NewProjectTemplate.Entity
 {
