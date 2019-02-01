@@ -47,6 +47,8 @@ namespace Havit.NewProjectTemplate.WebAPI
 	        services.AddCustomizedMailing(configuration);
 	        
 			services.AddExceptionMonitoring(configuration);
+			services.AddCustomizedErrorToJson();
+
             services.AddCustomizedCors(configuration);
             services.AddCustomizedSwagger();			
 
@@ -73,7 +75,11 @@ namespace Havit.NewProjectTemplate.WebAPI
             app.UseAuthentication();
 
 	        app.UseRequestLocalization();
+
+			app.UseExceptionMonitoring();
+			app.UseErrorToJson();
             app.UseMvc();
+
             app.UseCustomizedSwaggerAndUI();
 
 	        app.UpgradeDatabaseSchemaAndData();
