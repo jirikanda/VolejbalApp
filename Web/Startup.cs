@@ -56,7 +56,8 @@ namespace Havit.NewProjectTemplate.Web
 			}
 
 			app.UseStaticFiles();
-       
+
+			app.UseExceptionMonitoring();
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(
