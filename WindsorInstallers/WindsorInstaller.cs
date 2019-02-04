@@ -59,7 +59,7 @@ namespace Havit.NewProjectTemplate.WindsorInstallers
 			{
 				DatabaseConnectionString = configuration.GetConnectionString("Database"),
 				ServiceProfiles = new[] { ServiceAttribute.DefaultProfile },
-				ScopedLifestyle = lf => lf.PerThread,
+				ScopedLifestyle = lf => lf.Scoped(),
 			};
 
 			return container.ConfigureForAll(installConfiguration);

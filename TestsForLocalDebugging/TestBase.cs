@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.MicroKernel.Lifestyle;
 using Castle.Windsor;
 using Havit.NewProjectTemplate.WindsorInstallers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Havit.NewProjectTemplate.TestsForLocalDebugging
 {
@@ -12,21 +14,27 @@ namespace Havit.NewProjectTemplate.TestsForLocalDebugging
     /// Bázový třída pro testy.
     /// Zpřístupňuje nakonfigurovaný DI container.
     /// </summary>
-    public class TestBase : IDisposable
+    public class TestBase
     {
-        protected IWindsorContainer Container { get; private set; }
+		private IDisposable scope;
 
-        public TestBase()
-        {
-            IWindsorContainer container = new WindsorContainer();
-            container.ConfigureForTests();
+		protected IWindsorContainer Container { get; private set; }
+		
+		[TestInitialize]
+		public virtual void TestInitialize()
+		{
+			IWindsorContainer container = new WindsorContainer();
+			container.ConfigureForTests();
+			scope = container.BeginScope();
 
-            this.Container = container;
-        }
+			this.Container = container;
+		}
 
-        public void Dispose()
-        {
-            this.Container.Dispose();
-        }
+		[TestCleanup]
+		public virtual void TestCleanUp()
+		{
+			this.Container = null;
+			scope.Dispose();
+		}
     }
 }
