@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace Havit.NewProjectTemplate.WebAPI.Controllers
 {
@@ -17,10 +18,13 @@ namespace Havit.NewProjectTemplate.WebAPI.Controllers
             if (!User.Identity.IsAuthenticated)
             {
 				// TODO: Security scheme
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 	            //return Challenge(OpenIdConnectDefaults.AuthenticationScheme);
             }
-            return this.Redirect("swagger");
+
+			Task.Factory.StartNew(() => throw new Exception("Exception from: Task.Factory.StartNew"));
+			GC.Collect();
+			return this.Redirect("swagger");
         }
     }
 }

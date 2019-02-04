@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
 using Havit.NewProjectTemplate.WebAPI.Infrastructure.Tools;
 using Microsoft.AspNetCore.Mvc;
+using Castle.MicroKernel.Registration;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 [assembly: ApiControllerAttribute]
 
@@ -57,7 +60,9 @@ namespace Havit.NewProjectTemplate.WebAPI
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 			IWindsorContainer windsorContainer = WindsorCastleConfiguration.CreateWindsorContainer(configuration);
-            return services.AddCustomizedServiceProvider(windsorContainer);
+			windsorContainer.Register(Component.For<IMyScoped>().ImplementedBy<MyScoped>().LifestyleScoped());
+
+			return services.AddCustomizedServiceProvider(windsorContainer);
         }
 
         /// <summary>
@@ -74,6 +79,7 @@ namespace Havit.NewProjectTemplate.WebAPI
             app.UseStaticFiles();
             app.UseAuthentication();
 
+			app.UseMiddleware<ScopedLifestyleAsPerWebRequestMiddleware>();
 	        app.UseRequestLocalization();
 
 			app.UseExceptionMonitoring();
@@ -85,5 +91,5 @@ namespace Havit.NewProjectTemplate.WebAPI
 	        app.UpgradeDatabaseSchemaAndData();
         }
 
-    }
+	}
 }

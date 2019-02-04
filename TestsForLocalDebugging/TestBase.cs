@@ -12,7 +12,7 @@ namespace Havit.NewProjectTemplate.TestsForLocalDebugging
 {
     /// <summary>
     /// Bázový třída pro testy.
-    /// Zpřístupňuje nakonfigurovaný DI container.
+    /// Zpřístupňuje nakonfigurovaný DI container a transparentně zajišťuje scope.
     /// </summary>
     public class TestBase
     {
@@ -33,6 +33,7 @@ namespace Havit.NewProjectTemplate.TestsForLocalDebugging
 		[TestCleanup]
 		public virtual void TestCleanUp()
 		{
+			this.Container.Dispose();
 			this.Container = null;
 			scope.Dispose();
 		}
