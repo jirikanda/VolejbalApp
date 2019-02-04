@@ -10,16 +10,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Havit.NewProjectTemplate.TestsForLocalDebugging
 {
-    /// <summary>
-    /// Bázový třída pro testy.
-    /// Zpřístupňuje nakonfigurovaný DI container.
-    /// </summary>
-    public class TestBase
-    {
+	/// <summary>
+	/// Bázový třída pro testy.
+	/// Zpřístupňuje nakonfigurovaný DI container a transparentně zajišťuje scope.
+	/// </summary>
+	public class TestBase
+	{
 		private IDisposable scope;
 
 		protected IWindsorContainer Container { get; private set; }
-		
+
 		[TestInitialize]
 		public virtual void TestInitialize()
 		{
@@ -33,8 +33,9 @@ namespace Havit.NewProjectTemplate.TestsForLocalDebugging
 		[TestCleanup]
 		public virtual void TestCleanUp()
 		{
+			this.Container.Dispose();
 			this.Container = null;
 			scope.Dispose();
 		}
-    }
+	}
 }
