@@ -33,9 +33,9 @@ namespace Havit.NewProjectTemplate.TestsForLocalDebugging
 		[TestCleanup]
 		public virtual void TestCleanUp()
 		{
+			scope.Dispose();
 			this.Container.Dispose();
 			this.Container = null;
-			scope.Dispose();
 		}
 	}
 }
