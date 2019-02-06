@@ -29,10 +29,10 @@ namespace Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions
 				.AddMvc(options =>
 				{
 					// TODO: Security policy
-					var defaultPolicy = new AuthorizationPolicyBuilder(AuthenticationConfig.GetAuthenticationSchemes(configuration))
-						.RequireAuthenticatedUser()
-						.Build();
-					options.Filters.Add(new AuthorizeFilter(defaultPolicy));
+					//var defaultPolicy = new AuthorizationPolicyBuilder(AuthenticationConfig.GetAuthenticationSchemes(configuration))
+					//	.RequireAuthenticatedUser()
+					//	.Build();
+					//options.Filters.Add(new AuthorizeFilter(defaultPolicy));
 					options.Filters.Add(new ValidateModelAttribute { ResultSelector = ValidationErrorModel.FromModelState() });
 				})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

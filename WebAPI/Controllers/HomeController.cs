@@ -17,7 +17,7 @@ namespace Havit.VolejbalApp.WebAPI.Controllers
             if (!User.Identity.IsAuthenticated)
             {
 				// TODO: Security scheme
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 	            //return Challenge(OpenIdConnectDefaults.AuthenticationScheme);
             }
             return this.Redirect("swagger");
