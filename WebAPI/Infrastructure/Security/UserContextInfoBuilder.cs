@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims;
+using Havit.VolejbalApp.Facades.Infrastructure.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.Security
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.Security
 {
     public class UserContextInfoBuilder : IUserContextInfoBuilder
 	{

@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyName>Havit.NewProjectTemplate.Facades</AssemblyName>
-		<RootNamespace>Havit.NewProjectTemplate.Facades</RootNamespace>
+		<AssemblyName>Havit.VolejbalApp.Facades</AssemblyName>
+		<RootNamespace>Havit.VolejbalApp.Facades</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TypeLite;
 
-namespace Havit.NewProjectTemplate.Web.Settings
+namespace Havit.VolejbalApp.Web.Settings
 {
     /// <summary>
     /// Konfigurace napojení na WebAPI.

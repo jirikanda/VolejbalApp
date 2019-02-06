@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.Security
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.Security
 {
 	public class OpenIdConnectSettings
 	{

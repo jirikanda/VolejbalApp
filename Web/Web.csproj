@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AssemblyName>Havit.NewProjectTemplate.Web</AssemblyName>
-    <RootNamespace>Havit.NewProjectTemplate.Web</RootNamespace>
+    <AssemblyName>Havit.VolejbalApp.Web</AssemblyName>
+    <RootNamespace>Havit.VolejbalApp.Web</RootNamespace>
 	<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 	<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 	<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>

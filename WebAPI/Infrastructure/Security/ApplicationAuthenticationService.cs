@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Havit.Diagnostics.Contracts;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Authentication;
-using Havit.NewProjectTemplate.Model.Security;
+using Havit.VolejbalApp.Facades.Infrastructure.Security.Authentication;
+using Havit.VolejbalApp.Model.Security;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Havit.NewProjectTemplate.DataLayer.Repositories.Security;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims;
+using Havit.VolejbalApp.DataLayer.Repositories.Security;
+using Havit.VolejbalApp.Facades.Infrastructure.Security.Claims;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.Security
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.Security
 {
     /// <summary>
     /// Poskytuje uživatele z HttpContextu.

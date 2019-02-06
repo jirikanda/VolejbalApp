@@ -10,12 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Castle.MicroKernel.Registration;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Authentication;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure.Security;
-using Havit.NewProjectTemplate.WindsorInstallers;
+using Havit.VolejbalApp.Facades.Infrastructure.Security.Authentication;
+using Havit.VolejbalApp.Facades.Infrastructure.Security.Claims;
+using Havit.VolejbalApp.WebAPI.Infrastructure.Security;
+using Havit.VolejbalApp.WindsorInstallers;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure
+namespace Havit.VolejbalApp.WebAPI.Infrastructure
 {
     public static class WindsorCastleConfiguration
     {

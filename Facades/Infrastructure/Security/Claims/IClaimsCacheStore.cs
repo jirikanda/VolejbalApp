@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
+namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Claims
 {
     public interface IClaimsCacheStore
     {

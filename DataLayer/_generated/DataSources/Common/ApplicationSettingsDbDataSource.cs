@@ -14,10 +14,10 @@ using Havit.Data.EntityFrameworkCore;
 using Havit.Data.EntityFrameworkCore.Patterns.DataSources;
 using Havit.Data.EntityFrameworkCore.Patterns.SoftDeletes;
 
-namespace Havit.NewProjectTemplate.DataLayer.DataSources.Common
+namespace Havit.VolejbalApp.DataLayer.DataSources.Common
 {
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public class ApplicationSettingsDbDataSource : DbDataSource<Havit.NewProjectTemplate.Model.Common.ApplicationSettings>, IApplicationSettingsDataSource
+	public class ApplicationSettingsDbDataSource : DbDataSource<Havit.VolejbalApp.Model.Common.ApplicationSettings>, IApplicationSettingsDataSource
 	{
 		public ApplicationSettingsDbDataSource(IDbContext dbContext, ISoftDeleteManager softDeleteManager)
 			: base(dbContext, softDeleteManager)

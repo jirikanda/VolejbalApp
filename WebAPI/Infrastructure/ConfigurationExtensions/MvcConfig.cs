@@ -5,8 +5,8 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
-using Havit.NewProjectTemplate.Services.Infrastructure;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure.ModelValidation;
+using Havit.VolejbalApp.Services.Infrastructure;
+using Havit.VolejbalApp.WebAPI.Infrastructure.ModelValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions
 {
 	public static class MvcConfig
 	{

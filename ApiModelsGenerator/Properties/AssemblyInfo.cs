@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Havit.NewProjectTemplate.ApiModelsGenerator.Properties
+namespace Havit.VolejbalApp.ApiModelsGenerator.Properties
 {
     public class AssemblyInfo
     {

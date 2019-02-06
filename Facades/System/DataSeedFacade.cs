@@ -2,12 +2,12 @@
 using System.Linq;
 using Havit.Data.Patterns.DataSeeds;
 using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.NewProjectTemplate.DataLayer.Seeds.Core;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security;
-using Havit.NewProjectTemplate.Facades.Infrastructure.Security.Authorization;
-using Havit.NewProjectTemplate.Services.Infrastructure;
+using Havit.VolejbalApp.DataLayer.Seeds.Core;
+using Havit.VolejbalApp.Facades.Infrastructure.Security;
+using Havit.VolejbalApp.Facades.Infrastructure.Security.Authorization;
+using Havit.VolejbalApp.Services.Infrastructure;
 
-namespace Havit.NewProjectTemplate.Facades.System
+namespace Havit.VolejbalApp.Facades.System
 {
     /// <summary>
     /// Fasáda k seedování dat.

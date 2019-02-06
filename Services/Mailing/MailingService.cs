@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Havit.NewProjectTemplate.Services.Mailing
+namespace Havit.VolejbalApp.Services.Mailing
 {
 	[Service]
 	public class MailingService : IMailingService

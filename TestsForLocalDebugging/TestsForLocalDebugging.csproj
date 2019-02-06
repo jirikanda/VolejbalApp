@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.2</TargetFramework>
-		<AssemblyName>Havit.NewProjectTemplate.TestsForLocalDebugging</AssemblyName>
-		<RootNamespace>Havit.NewProjectTemplate.TestsForLocalDebugging</RootNamespace>
+		<AssemblyName>Havit.VolejbalApp.TestsForLocalDebugging</AssemblyName>
+		<RootNamespace>Havit.VolejbalApp.TestsForLocalDebugging</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -18,12 +18,12 @@ using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataLoaders;
 using Havit.Data.Patterns.Infrastructure;
 
-namespace Havit.NewProjectTemplate.DataLayer.Repositories.Security
+namespace Havit.VolejbalApp.DataLayer.Repositories.Security
 {
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public abstract class LoginAccountDbRepositoryBase : DbRepository<Havit.NewProjectTemplate.Model.Security.LoginAccount>
+	public abstract class LoginAccountDbRepositoryBase : DbRepository<Havit.VolejbalApp.Model.Security.LoginAccount>
 	{
-		protected LoginAccountDbRepositoryBase(IDbContext dbContext, Havit.NewProjectTemplate.DataLayer.DataSources.Security.ILoginAccountDataSource dataSource, IEntityKeyAccessor<Havit.NewProjectTemplate.Model.Security.LoginAccount, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
+		protected LoginAccountDbRepositoryBase(IDbContext dbContext, Havit.VolejbalApp.DataLayer.DataSources.Security.ILoginAccountDataSource dataSource, IEntityKeyAccessor<Havit.VolejbalApp.Model.Security.LoginAccount, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
 			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, dataLoaderAsync, softDeleteManager, entityCacheManager)
 		{
 		}

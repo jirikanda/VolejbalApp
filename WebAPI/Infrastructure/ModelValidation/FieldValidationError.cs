@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ModelValidation
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.ModelValidation
 {
 	public class FieldValidationError
 	{

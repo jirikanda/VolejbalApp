@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Havit.NewProjectTemplate.Tests")]
+[assembly: InternalsVisibleTo("Havit.VolejbalApp.Tests")]
 
-namespace Havit.NewProjectTemplate.Facades.Properties
+namespace Havit.VolejbalApp.Facades.Properties
 {
     public class AssemblyInfo
     {

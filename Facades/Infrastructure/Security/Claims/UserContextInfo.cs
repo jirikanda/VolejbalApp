@@ -1,7 +1,7 @@
 ﻿using System;
 using Havit.Diagnostics.Contracts;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
+namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Claims
 {
     public class UserContextInfo
     {

@@ -5,10 +5,10 @@ using System.Security;
 using System.Security.Claims;
 using Havit.Diagnostics.Contracts;
 using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.NewProjectTemplate.Services.Infrastructure;
+using Havit.VolejbalApp.Services.Infrastructure;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
+namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Claims
 {
     [Service(Profile = ServiceProfiles.WebAPI)]
     public class CustomClaimsBuilder : ICustomClaimsBuilder

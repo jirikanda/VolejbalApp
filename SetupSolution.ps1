@@ -1,10 +1,10 @@
 ﻿param (
-    [string]$NewSolutionName = "NewProjectTemplate",
+    [string]$NewSolutionName = "VolejbalApp",
 	[string]$NewSolutionCode = "999.XXX",
 	[string]$NewWebProjectPort = "9900",
 	[string]$NewWebAPIProjectCode = "9901",
 
-    [string]$OriginalSolutionName = "NewProjectTemplate",
+    [string]$OriginalSolutionName = "VolejbalApp",
     [string]$OriginalSolutionCode = "999.XXX",
 	[string]$OriginalWebProjectPort = "9900",
 	[string]$OriginalWebAPIProjectCode = "9901"
@@ -24,6 +24,6 @@ Foreach-Object {
 }
 
 Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, $OriginalSolutionName + '.sln')) -newName ($NewSolutionName + '.sln')
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDbContext.cs')) -newName ($NewSolutionName + 'DbContext.cs')
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\NewProjectTemplateDesignTimeDbContextFactory.cs')) -newName ($NewSolutionName + 'DesignTimeDbContextFactory.cs')
-Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Tests\Entity\NewProjectTemplateDbContextTests.cs')) -newName ($NewSolutionName + 'DbContextTests.cs')
+Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\VolejbalAppDbContext.cs')) -newName ($NewSolutionName + 'DbContext.cs')
+Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Entity\VolejbalAppDesignTimeDbContextFactory.cs')) -newName ($NewSolutionName + 'DesignTimeDbContextFactory.cs')
+Rename-Item -path ([System.IO.Path]::Combine($SolutionFolder, 'Tests\Entity\VolejbalAppDbContextTests.cs')) -newName ($NewSolutionName + 'DbContextTests.cs')

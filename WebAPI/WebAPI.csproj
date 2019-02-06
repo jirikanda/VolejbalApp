@@ -2,8 +2,8 @@
 
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
-	<AssemblyName>Havit.NewProjectTemplate.WebAPI</AssemblyName>
-	<RootNamespace>Havit.NewProjectTemplate.WebAPI</RootNamespace>
+	<AssemblyName>Havit.VolejbalApp.WebAPI</AssemblyName>
+	<RootNamespace>Havit.VolejbalApp.WebAPI</RootNamespace>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	<NoWarn>1701;1702;1705;1591</NoWarn>

@@ -1,4 +1,4 @@
-﻿namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.Security
+﻿namespace Havit.VolejbalApp.WebAPI.Infrastructure.Security
 {
     public class JwtBearerSettings
     {

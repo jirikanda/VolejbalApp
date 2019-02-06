@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Havit.Data.Patterns.Repositories;
-using Havit.NewProjectTemplate.Model.Common;
+using Havit.VolejbalApp.Model.Common;
 
-namespace Havit.NewProjectTemplate.DataLayer.Repositories.Common
+namespace Havit.VolejbalApp.DataLayer.Repositories.Common
 {
 	public partial interface IApplicationSettingsRepository
 	{

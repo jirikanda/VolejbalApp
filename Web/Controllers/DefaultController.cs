@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Havit.NewProjectTemplate.Web.Controllers.ViewModels;
+using Havit.VolejbalApp.Web.Controllers.ViewModels;
 using Microsoft.Extensions.Options;
-using Havit.NewProjectTemplate.Web.Settings;
+using Havit.VolejbalApp.Web.Settings;
 
-namespace Havit.NewProjectTemplate.Web.Controllers
+namespace Havit.VolejbalApp.Web.Controllers
 {
     public class DefaultController : Controller
     {

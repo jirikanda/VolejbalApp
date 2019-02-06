@@ -12,10 +12,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Havit.Data.Patterns.Repositories;
 
-namespace Havit.NewProjectTemplate.DataLayer.Repositories.Common
+namespace Havit.VolejbalApp.DataLayer.Repositories.Common
 {
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public partial interface IApplicationSettingsRepository : IRepository<Havit.NewProjectTemplate.Model.Common.ApplicationSettings>, IRepositoryAsync<Havit.NewProjectTemplate.Model.Common.ApplicationSettings>
+	public partial interface IApplicationSettingsRepository : IRepository<Havit.VolejbalApp.Model.Common.ApplicationSettings>, IRepositoryAsync<Havit.VolejbalApp.Model.Common.ApplicationSettings>
 	{
 	}
 }

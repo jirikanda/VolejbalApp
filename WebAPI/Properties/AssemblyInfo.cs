@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Havit.NewProjectTemplate.WebAPI.Properties
+namespace Havit.VolejbalApp.WebAPI.Properties
 {
 	public class AssemblyInfo
 	{

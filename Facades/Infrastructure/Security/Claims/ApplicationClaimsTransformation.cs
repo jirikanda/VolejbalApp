@@ -4,10 +4,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Havit.Diagnostics.Contracts;
 using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.NewProjectTemplate.Services.Infrastructure;
+using Havit.VolejbalApp.Services.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
+namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Claims
 {
     /// <summary>
     /// Přidá do claims z JWT další claims.    

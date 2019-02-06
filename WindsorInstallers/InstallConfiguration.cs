@@ -2,7 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Registration.Lifestyle;
 
-namespace Havit.NewProjectTemplate.WindsorInstallers
+namespace Havit.VolejbalApp.WindsorInstallers
 {
 	internal class InstallConfiguration
 	{

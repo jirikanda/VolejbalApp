@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TypeLite;
 
-namespace Havit.NewProjectTemplate.Web.Controllers.ViewModels
+namespace Havit.VolejbalApp.Web.Controllers.ViewModels
 {
     /// <summary>
     /// ViewModel pro klientskou aplikaci.

@@ -14,18 +14,18 @@ using Havit.Data.EntityFrameworkCore.Patterns.DataSources.Fakes;
 using Havit.Data.EntityFrameworkCore.Patterns.SoftDeletes;
 using Havit.Data.Patterns.Attributes;
 
-namespace Havit.NewProjectTemplate.DataLayer.DataSources.Security.Fakes
+namespace Havit.VolejbalApp.DataLayer.DataSources.Security.Fakes
 {
 	[Fake]
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public class FakeLoginAccountDataSource : FakeDataSource<Havit.NewProjectTemplate.Model.Security.LoginAccount>, Havit.NewProjectTemplate.DataLayer.DataSources.Security.ILoginAccountDataSource
+	public class FakeLoginAccountDataSource : FakeDataSource<Havit.VolejbalApp.Model.Security.LoginAccount>, Havit.VolejbalApp.DataLayer.DataSources.Security.ILoginAccountDataSource
 	{
-		public FakeLoginAccountDataSource(params Havit.NewProjectTemplate.Model.Security.LoginAccount[] data)
-			: this((IEnumerable<Havit.NewProjectTemplate.Model.Security.LoginAccount>)data)
+		public FakeLoginAccountDataSource(params Havit.VolejbalApp.Model.Security.LoginAccount[] data)
+			: this((IEnumerable<Havit.VolejbalApp.Model.Security.LoginAccount>)data)
 		{			
 		}
 
-		public FakeLoginAccountDataSource(IEnumerable<Havit.NewProjectTemplate.Model.Security.LoginAccount> data, ISoftDeleteManager softDeleteManager = null)
+		public FakeLoginAccountDataSource(IEnumerable<Havit.VolejbalApp.Model.Security.LoginAccount> data, ISoftDeleteManager softDeleteManager = null)
 			: base(data, softDeleteManager)
 		{
 		}

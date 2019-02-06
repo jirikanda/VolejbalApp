@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.NewProjectTemplate.Services.Infrastructure;
+using Havit.VolejbalApp.Services.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
+namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Claims
 {
     /// <summary>
     /// (In-memory) cache claimů. 

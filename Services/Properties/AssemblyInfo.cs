@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: InternalsVisibleTo("Havit.NewProjectTemplate.Tests")]
+[assembly: InternalsVisibleTo("Havit.VolejbalApp.Tests")]
 
-namespace Havit.NewProjectTemplate.Services.Properties
+namespace Havit.VolejbalApp.Services.Properties
 {
     public class AssemblyInfo
     {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.Swagger
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.Swagger
 {
     public class FileUploadOperation : IOperationFilter
     {

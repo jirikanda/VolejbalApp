@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure.ModelValidation;
+using Havit.VolejbalApp.WebAPI.Infrastructure.ModelValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using TypeLite;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions
 {
 	/// <summary>
 	/// Třída popisuje validační chybu WebAPI.

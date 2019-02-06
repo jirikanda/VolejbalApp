@@ -18,12 +18,12 @@ using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataLoaders;
 using Havit.Data.Patterns.Infrastructure;
 
-namespace Havit.NewProjectTemplate.DataLayer.Repositories.Localizations
+namespace Havit.VolejbalApp.DataLayer.Repositories.Localizations
 {
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public partial class LanguageDbRepository : LanguageDbRepositoryBase, ILanguageRepository
 	{
-		public LanguageDbRepository(IDbContext dbContext, Havit.NewProjectTemplate.DataLayer.DataSources.Localizations.ILanguageDataSource dataSource, IEntityKeyAccessor<Havit.NewProjectTemplate.Model.Localizations.Language, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
+		public LanguageDbRepository(IDbContext dbContext, Havit.VolejbalApp.DataLayer.DataSources.Localizations.ILanguageDataSource dataSource, IEntityKeyAccessor<Havit.VolejbalApp.Model.Localizations.Language, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
 			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, dataLoaderAsync, softDeleteManager, entityCacheManager)
 		{
 		}

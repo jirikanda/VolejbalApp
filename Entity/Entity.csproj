@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyName>Havit.NewProjectTemplate.Entity</AssemblyName>
-		<RootNamespace>Havit.NewProjectTemplate.Entity</RootNamespace>
+		<AssemblyName>Havit.VolejbalApp.Entity</AssemblyName>
+		<RootNamespace>Havit.VolejbalApp.Entity</RootNamespace>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 

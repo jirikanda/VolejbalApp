@@ -14,10 +14,10 @@ using Havit.Data.EntityFrameworkCore;
 using Havit.Data.EntityFrameworkCore.Patterns.DataSources;
 using Havit.Data.EntityFrameworkCore.Patterns.SoftDeletes;
 
-namespace Havit.NewProjectTemplate.DataLayer.DataSources.Localizations
+namespace Havit.VolejbalApp.DataLayer.DataSources.Localizations
 {
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public class LanguageDbDataSource : DbDataSource<Havit.NewProjectTemplate.Model.Localizations.Language>, ILanguageDataSource
+	public class LanguageDbDataSource : DbDataSource<Havit.VolejbalApp.Model.Localizations.Language>, ILanguageDataSource
 	{
 		public LanguageDbDataSource(IDbContext dbContext, ISoftDeleteManager softDeleteManager)
 			: base(dbContext, softDeleteManager)

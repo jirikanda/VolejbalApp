@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Authentication
+namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Authentication
 {
     /// <summary>
     /// Vrací aktuálně přihlášeného uživatele jako ClaimsPrincipal nebo LoginAccount.

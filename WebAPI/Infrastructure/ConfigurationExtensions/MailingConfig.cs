@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Havit.NewProjectTemplate.Services.Mailing;
+using Havit.VolejbalApp.Services.Mailing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions
 {
     public static class MailingConfig
     {

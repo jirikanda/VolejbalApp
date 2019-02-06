@@ -1,4 +1,4 @@
-﻿namespace Havit.NewProjectTemplate.Facades.Infrastructure.Security.Claims
+﻿namespace Havit.VolejbalApp.Facades.Infrastructure.Security.Claims
 {
     public static class ClaimConstants
     {
@@ -10,7 +10,7 @@
 	    /// <summary>
         /// Název vystavitele claimů, vystavených aplikací.
         /// </summary>
-        public const string ApplicationIssuer = "NewProjectTemplate";
+        public const string ApplicationIssuer = "VolejbalApp";
 
     }
 

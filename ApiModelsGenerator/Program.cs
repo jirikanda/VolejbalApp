@@ -10,7 +10,7 @@ using TypeLite;
 using TypeLite.Net4;
 using TypeLite.TsModels;
 
-namespace Havit.NewProjectTemplate.ApiModelsGenerator
+namespace Havit.VolejbalApp.ApiModelsGenerator
 {
     public static class Program
     {

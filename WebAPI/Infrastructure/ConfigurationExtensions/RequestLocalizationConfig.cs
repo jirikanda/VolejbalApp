@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions
 {
 	public static class RequestLocalizationConfig
 	{

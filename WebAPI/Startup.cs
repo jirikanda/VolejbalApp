@@ -10,16 +10,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions;
+using Havit.VolejbalApp.WebAPI.Infrastructure;
+using Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure.Tools;
+using Havit.VolejbalApp.WebAPI.Infrastructure.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 [assembly: ApiControllerAttribute]
 
-namespace Havit.NewProjectTemplate.WebAPI
+namespace Havit.VolejbalApp.WebAPI
 {
     public class Startup
     {
@@ -63,7 +63,7 @@ namespace Havit.NewProjectTemplate.WebAPI
         /// <summary>
         /// Configure middleware.
         /// </summary>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<Havit.NewProjectTemplate.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<Havit.VolejbalApp.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
         {
 			if (env.IsDevelopment())
 	        {

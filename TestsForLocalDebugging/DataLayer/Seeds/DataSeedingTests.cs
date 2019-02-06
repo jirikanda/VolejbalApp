@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using Havit.Data.Patterns.DataSeeds;
-using Havit.NewProjectTemplate.DataLayer.Seeds.Core;
-using Havit.NewProjectTemplate.Model.Common;
+using Havit.VolejbalApp.DataLayer.Seeds.Core;
+using Havit.VolejbalApp.Model.Common;
 using Havit.Data.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Havit.NewProjectTemplate.TestsForLocalDebugging.DataLayer.Seeds
+namespace Havit.VolejbalApp.TestsForLocalDebugging.DataLayer.Seeds
 {
 	[TestClass]
 	public class DataSeedingTests : TestBase

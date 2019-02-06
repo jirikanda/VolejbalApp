@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Havit.NewProjectTemplate.WebAPI.Infrastructure.Security;
+using Havit.VolejbalApp.WebAPI.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
@@ -10,15 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
+namespace Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions
 {
     public static class AuthenticationConfig
     {
         public static void AddCustomizedAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<Havit.NewProjectTemplate.WebAPI.Infrastructure.Security.JwtBearerSettings>(configuration.GetSection("AppSettings:JwtBearer"));
-            JwtBearerSettings jwtBearerSettings = configuration.GetSection("AppSettings:JwtBearer").Get<Havit.NewProjectTemplate.WebAPI.Infrastructure.Security.JwtBearerSettings>();
-			//OpenIdConnectSettings openIdConnectSettings = configuration.GetSection("AppSettings:OpenIdConnect").Get<Havit.NewProjectTemplate.WebAPI.Infrastructure.Security.OpenIdConnectSettings>();
+            services.Configure<Havit.VolejbalApp.WebAPI.Infrastructure.Security.JwtBearerSettings>(configuration.GetSection("AppSettings:JwtBearer"));
+            JwtBearerSettings jwtBearerSettings = configuration.GetSection("AppSettings:JwtBearer").Get<Havit.VolejbalApp.WebAPI.Infrastructure.Security.JwtBearerSettings>();
+			//OpenIdConnectSettings openIdConnectSettings = configuration.GetSection("AppSettings:OpenIdConnect").Get<Havit.VolejbalApp.WebAPI.Infrastructure.Security.OpenIdConnectSettings>();
 
 			var authenticationBuilder = services.AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme);
 
@@ -83,7 +83,7 @@ namespace Havit.NewProjectTemplate.WebAPI.Infrastructure.ConfigurationExtensions
 
 			return new string[] { JwtBearerDefaults.AuthenticationScheme };
 
-			//OpenIdConnectSettings openIdConnectSettings = configuration.GetSection("AppSettings:OpenIdConnect").Get<Havit.NewProjectTemplate.WebAPI.Infrastructure.Security.OpenIdConnectSettings>();
+			//OpenIdConnectSettings openIdConnectSettings = configuration.GetSection("AppSettings:OpenIdConnect").Get<Havit.VolejbalApp.WebAPI.Infrastructure.Security.OpenIdConnectSettings>();
 
 			//return String.IsNullOrEmpty(openIdConnectSettings.Authority)
 			//	? new string[] { JwtBearerDefaults.AuthenticationScheme }

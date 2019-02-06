@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Havit.Data.Patterns.DataSeeds;
-using Havit.NewProjectTemplate.Facades.System;
+using Havit.VolejbalApp.Facades.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Havit.NewProjectTemplate.WebAPI.Controllers
+namespace Havit.VolejbalApp.WebAPI.Controllers
 {
     /// <summary>
     /// Controller pro systémové akce.

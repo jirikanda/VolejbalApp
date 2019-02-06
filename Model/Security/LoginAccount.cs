@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.NewProjectTemplate.Model.Security
+namespace Havit.VolejbalApp.Model.Security
 {
 	public class LoginAccount
 	{

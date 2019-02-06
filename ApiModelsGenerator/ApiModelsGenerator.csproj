@@ -3,11 +3,11 @@
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<RuntimeIdentifier>win7-x86</RuntimeIdentifier>
-	<AssemblyName>Havit.NewProjectTemplate.ApiModelsGenerator</AssemblyName>
-	<RootNamespace>Havit.NewProjectTemplate.ApiModelsGenerator</RootNamespace>
+	<AssemblyName>Havit.VolejbalApp.ApiModelsGenerator</AssemblyName>
+	<RootNamespace>Havit.VolejbalApp.ApiModelsGenerator</RootNamespace>
 	<ApplicationIcon />
 	<OutputType>Exe</OutputType>
-	<StartupObject>Havit.NewProjectTemplate.ApiModelsGenerator.Program</StartupObject>
+	<StartupObject>Havit.VolejbalApp.ApiModelsGenerator.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

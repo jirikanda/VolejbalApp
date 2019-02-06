@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Havit.NewProjectTemplate.WebAPI.Controllers
+namespace Havit.VolejbalApp.WebAPI.Controllers
 {
     [AllowAnonymous]
     [ApiExplorerSettings(IgnoreApi = true)] // schováme ze Swaggeru

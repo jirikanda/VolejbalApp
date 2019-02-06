@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Lifestyle;
 using Castle.Windsor;
-using Havit.NewProjectTemplate.WindsorInstallers;
+using Havit.VolejbalApp.WindsorInstallers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Havit.NewProjectTemplate.TestsForLocalDebugging
+namespace Havit.VolejbalApp.TestsForLocalDebugging
 {
 	/// <summary>
 	/// Bázový třída pro testy.

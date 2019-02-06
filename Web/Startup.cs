@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Havit.NewProjectTemplate.Web.Settings;
+using Havit.VolejbalApp.Web.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Havit.NewProjectTemplate.Web
+namespace Havit.VolejbalApp.Web
 {
     public class Startup
     {
