@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyName>Havit.VolejbalApp.DataLayer</AssemblyName>
-		<RootNamespace>Havit.VolejbalApp.DataLayer</RootNamespace>
+		<AssemblyName>KandaEu.Volejbal.DataLayer</AssemblyName>
+		<RootNamespace>KandaEu.Volejbal.DataLayer</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
