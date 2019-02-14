@@ -5,11 +5,6 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
-using Havit.VolejbalApp.DataLayer.DataSources.Security;
-using Havit.VolejbalApp.DataLayer.Seeds.Core.Common;
-using Havit.VolejbalApp.Entity;
-using Havit.VolejbalApp.Services.Infrastructure;
-using Havit.VolejbalApp.Services.Infrastructure.TimeService;
 using Havit.Data.EntityFrameworkCore.Patterns.Windsor;
 using Havit.Data.EntityFrameworkCore.Patterns.Windsor.Installers;
 using Havit.Extensions.DependencyInjection.Abstractions;
@@ -22,8 +17,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Havit.Services.Caching;
 using System.Runtime.Caching;
+using KandaEu.Volejbal.Services.Infrastructure;
 
-namespace Havit.VolejbalApp.WindsorInstallers
+namespace KandaEu.Volejbal.WindsorInstallers
 {
 	public static class WindsorInstaller
 	{
@@ -88,7 +84,7 @@ namespace Havit.VolejbalApp.WindsorInstallers
 			container.WithEntityPatternsInstaller(new ComponentRegistrationOptions { GeneralLifestyle = configuration.ScopedLifestyle })
 				.RegisterEntityPatterns()
 				//.RegisterLocalizationServices<Language>()
-				.RegisterDbContext<VolejbalAppDbContext>(new DbContextOptionsBuilder<VolejbalAppDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
+				.RegisterDbContext<VolejbalDbContext>(new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
 				.RegisterDataLayer(typeof(ILoginAccountDataSource).Assembly);
 		}
 

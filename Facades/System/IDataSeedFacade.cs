@@ -1,4 +1,4 @@
-﻿namespace Havit.VolejbalApp.Facades.System
+﻿namespace KandaEu.Volejbal.Facades.System
 {
     public interface IDataSeedFacade
     {

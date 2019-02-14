@@ -2,12 +2,10 @@
 using System.Linq;
 using Havit.Data.Patterns.DataSeeds;
 using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.VolejbalApp.DataLayer.Seeds.Core;
-using Havit.VolejbalApp.Facades.Infrastructure.Security;
-using Havit.VolejbalApp.Facades.Infrastructure.Security.Authorization;
-using Havit.VolejbalApp.Services.Infrastructure;
+using KandaEu.Volejbal.DataLayer.Seeds.Core;
+using KandaEu.Volejbal.Services.Infrastructure;
 
-namespace Havit.VolejbalApp.Facades.System
+namespace KandaEu.Volejbal.Facades.System
 {
     /// <summary>
     /// Fasáda k seedování dat.
@@ -16,12 +14,10 @@ namespace Havit.VolejbalApp.Facades.System
     public class DataSeedFacade : IDataSeedFacade
     {
         private readonly IDataSeedRunner dataSeedRunner;
-        private readonly IApplicationAuthorizationService applicationAuthorizationService;
 
-        public DataSeedFacade(IDataSeedRunner dataSeedRunner, IApplicationAuthorizationService applicationAuthorizationService)
+        public DataSeedFacade(IDataSeedRunner dataSeedRunner)
         {
             this.dataSeedRunner = dataSeedRunner;
-            this.applicationAuthorizationService = applicationAuthorizationService;
         }
 
         /// <summary>
@@ -30,8 +26,6 @@ namespace Havit.VolejbalApp.Facades.System
         /// </summary>        
         public void SeedDataProfile(string profileName)
         {
-			applicationAuthorizationService.VerifyCurrentUserAuthorization(Operations.SystemAdministration);
-
 			string typeName = profileName + "Profile";
 			Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
 

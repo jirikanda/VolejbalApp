@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyName>Havit.VolejbalApp.Services</AssemblyName>
-		<RootNamespace>Havit.VolejbalApp.Services</RootNamespace>
+		<AssemblyName>KandaEu.Volejbal.Services</AssemblyName>
+		<RootNamespace>KandaEu.Volejbal.Services</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

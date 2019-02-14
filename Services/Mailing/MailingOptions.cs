@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Havit.VolejbalApp.Services.Mailing
+namespace KandaEu.Volejbal.Services.Mailing
 {
 	public class MailingOptions
 	{

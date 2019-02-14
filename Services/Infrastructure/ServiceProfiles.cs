@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.VolejbalApp.Services.Infrastructure
+namespace KandaEu.Volejbal.Services.Infrastructure
 {
     public static class ServiceProfiles
     {

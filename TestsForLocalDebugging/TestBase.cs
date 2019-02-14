@@ -8,7 +8,7 @@ using Castle.Windsor;
 using Havit.VolejbalApp.WindsorInstallers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Havit.VolejbalApp.TestsForLocalDebugging
+namespace KandaEu.Volejbal.TestsForLocalDebugging
 {
 	/// <summary>
 	/// Bázový třída pro testy.

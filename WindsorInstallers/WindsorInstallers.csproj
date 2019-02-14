@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyName>Havit.VolejbalApp.WindsorInstallers</AssemblyName>
-		<RootNamespace>Havit.VolejbalApp.WindsorInstallers</RootNamespace>
+		<AssemblyName>KandaEu.Volejbal.WindsorInstallers</AssemblyName>
+		<RootNamespace>KandaEu.Volejbal.WindsorInstallers</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

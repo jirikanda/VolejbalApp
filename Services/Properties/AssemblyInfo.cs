@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Havit.VolejbalApp.Tests")]
 
-namespace Havit.VolejbalApp.Services.Properties
+namespace KandaEu.Volejbal.Services.Properties
 {
     public class AssemblyInfo
     {

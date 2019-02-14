@@ -5,7 +5,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.VolejbalApp.Services.Mailing
+namespace KandaEu.Volejbal.Services.Mailing
 {
 	public interface IMailingService
 	{

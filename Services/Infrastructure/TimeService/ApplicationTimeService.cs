@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Havit.Services.TimeServices;
 
-namespace Havit.VolejbalApp.Services.Infrastructure.TimeService
+namespace KandaEu.Volejbal.Services.Infrastructure.TimeService
 {
     /// <summary>
     /// Poskytuje aktuální čas v časové zóně "Central Europe Standard Time".
