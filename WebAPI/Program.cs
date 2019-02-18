@@ -4,7 +4,7 @@ using Microsoft.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Havit.VolejbalApp.WebAPI
+namespace KandaEu.Volejbal.WebAPI
 {
     public static class Program
     {

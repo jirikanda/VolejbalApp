@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Havit.VolejbalApp.WebAPI.Controllers
+namespace KandaEu.Volejbal.WebAPI.Controllers
 {
     [AllowAnonymous]
     [ApiExplorerSettings(IgnoreApi = true)] // schováme ze Swaggeru
@@ -14,12 +14,6 @@ namespace Havit.VolejbalApp.WebAPI.Controllers
         [HttpGet("")]
         public IActionResult Get()
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-				// TODO: Security scheme
-				//throw new NotImplementedException();
-	            //return Challenge(OpenIdConnectDefaults.AuthenticationScheme);
-            }
             return this.Redirect("swagger");
         }
     }

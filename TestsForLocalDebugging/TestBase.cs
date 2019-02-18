@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Lifestyle;
 using Castle.Windsor;
-using Havit.VolejbalApp.WindsorInstallers;
+using KandaEu.Volejbal.WindsorInstallers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KandaEu.Volejbal.TestsForLocalDebugging

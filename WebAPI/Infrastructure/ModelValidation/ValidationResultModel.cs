@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 
-namespace Havit.VolejbalApp.WebAPI.Infrastructure.ModelValidation
+namespace KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation
 {
 	public class ValidationResultModel
 	{

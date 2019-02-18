@@ -10,12 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Castle.MicroKernel.Registration;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore;
-using Havit.VolejbalApp.Facades.Infrastructure.Security.Authentication;
-using Havit.VolejbalApp.Facades.Infrastructure.Security.Claims;
-using Havit.VolejbalApp.WebAPI.Infrastructure.Security;
-using Havit.VolejbalApp.WindsorInstallers;
+using KandaEu.Volejbal.WindsorInstallers;
 
-namespace Havit.VolejbalApp.WebAPI.Infrastructure
+namespace KandaEu.Volejbal.WebAPI.Infrastructure
 {
     public static class WindsorCastleConfiguration
     {
@@ -27,8 +24,6 @@ namespace Havit.VolejbalApp.WebAPI.Infrastructure
             IWindsorContainer container = new WindsorContainer();
             container.ConfigureForWebAPI(configuration);
             container.Register(Component.For<ErrorMonitoringFilter>().LifestylePerAspNetCoreRequest());
-            container.Register(Component.For<IApplicationAuthenticationService>().ImplementedBy<ApplicationAuthenticationService>().LifestylePerAspNetCoreRequest());
-            container.Register(Component.For<IUserContextInfoBuilder>().ImplementedBy<Infrastructure.Security.UserContextInfoBuilder>().LifestylePerAspNetCoreRequest());
             return container;
         }
 

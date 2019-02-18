@@ -2,11 +2,12 @@
 
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
-	<AssemblyName>Havit.VolejbalApp.WebAPI</AssemblyName>
-	<RootNamespace>Havit.VolejbalApp.WebAPI</RootNamespace>
+	<AssemblyName>KandaEu.Volejbal.WebAPI</AssemblyName>
+	<RootNamespace>KandaEu.Volejbal.WebAPI</RootNamespace>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
+	<TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>

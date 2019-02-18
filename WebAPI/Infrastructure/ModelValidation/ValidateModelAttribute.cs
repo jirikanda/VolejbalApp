@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 
-namespace Havit.VolejbalApp.WebAPI.Infrastructure.ModelValidation
+namespace KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation
 {
 	/// <summary>
 	/// Pokud není ModelState validní, vrací odpověď (ValidationResultModel) bez dalšího zpracování action.

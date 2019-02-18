@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Havit.Data.Patterns.DataSeeds;
-using Havit.VolejbalApp.Facades.System;
+using KandaEu.Volejbal.Facades.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;

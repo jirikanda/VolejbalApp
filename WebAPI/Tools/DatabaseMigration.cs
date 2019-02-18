@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Havit.Data.EntityFrameworkCore;
 using Havit.Data.Patterns.DataSeeds;
-using Havit.VolejbalApp.DataLayer.Seeds.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Havit.VolejbalApp.WebAPI.Infrastructure.Tools
+namespace KandaEu.Volejbal.WebAPI.Infrastructure.Tools
 {
 	public static class DatabaseMigration
 	{

@@ -18,6 +18,8 @@ using Microsoft.Extensions.Configuration;
 using Havit.Services.Caching;
 using System.Runtime.Caching;
 using KandaEu.Volejbal.Services.Infrastructure;
+using KandaEu.Volejbal.Entity;
+using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 
 namespace KandaEu.Volejbal.WindsorInstallers
 {
@@ -85,7 +87,7 @@ namespace KandaEu.Volejbal.WindsorInstallers
 				.RegisterEntityPatterns()
 				//.RegisterLocalizationServices<Language>()
 				.RegisterDbContext<VolejbalDbContext>(new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
-				.RegisterDataLayer(typeof(ILoginAccountDataSource).Assembly);
+				;// .RegisterDataLayer(typeof(ILoginAccountDataSource).Assembly); TODO
 		}
 
 		private static void InstallHavitServices(IWindsorContainer container)
@@ -97,14 +99,14 @@ namespace KandaEu.Volejbal.WindsorInstallers
 
 		private static void InstallByServiceAttribute(IWindsorContainer container, InstallConfiguration configuration)
 		{
-			container.InstallByServiceAttibute(typeof(Havit.VolejbalApp.DataLayer.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
-			container.InstallByServiceAttibute(typeof(Havit.VolejbalApp.Services.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
-			container.InstallByServiceAttibute(typeof(Havit.VolejbalApp.Facades.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
+			container.InstallByServiceAttibute(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
+			container.InstallByServiceAttibute(typeof(KandaEu.Volejbal.Services.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
+			container.InstallByServiceAttibute(typeof(KandaEu.Volejbal.Facades.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
 		}
 
 		private static void InstallAuthorizationHandlers(IWindsorContainer container, InstallConfiguration installConfiguration)
 		{
-			container.Register(Classes.FromAssembly(typeof(Havit.VolejbalApp.Services.Properties.AssemblyInfo).Assembly)
+			container.Register(Classes.FromAssembly(typeof(KandaEu.Volejbal.Services.Properties.AssemblyInfo).Assembly)
 				.BasedOn<IAuthorizationHandler>()
 				.WithService.FromInterface(typeof(IAuthorizationHandler))
 					.Configure(configurer => installConfiguration.ScopedLifestyle(configurer.LifeStyle))

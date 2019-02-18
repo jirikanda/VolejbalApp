@@ -10,16 +10,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
-using Havit.VolejbalApp.WebAPI.Infrastructure;
-using Havit.VolejbalApp.WebAPI.Infrastructure.ConfigurationExtensions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
-using Havit.VolejbalApp.WebAPI.Infrastructure.Tools;
 using Microsoft.AspNetCore.Mvc;
+using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
+using KandaEu.Volejbal.WebAPI.Infrastructure;
+using KandaEu.Volejbal.WebAPI.Infrastructure.Tools;
 
 [assembly: ApiControllerAttribute]
 
-namespace Havit.VolejbalApp.WebAPI
+namespace KandaEu.Volejbal.WebAPI
 {
     public class Startup
     {
@@ -43,7 +43,6 @@ namespace Havit.VolejbalApp.WebAPI
 	        services.AddCustomizedRequestLocalization();
 			services.AddCustomizedMvc(configuration);
             services.AddAuthorization();
-            services.AddCustomizedAuthentication(configuration); // musí být voláno až po AddMvc, jinak nejsou volány IClaimsTransformation.
 	        services.AddCustomizedMailing(configuration);
 	        
 			services.AddExceptionMonitoring(configuration);
@@ -63,7 +62,7 @@ namespace Havit.VolejbalApp.WebAPI
         /// <summary>
         /// Configure middleware.
         /// </summary>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<Havit.VolejbalApp.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
         {
 			if (env.IsDevelopment())
 	        {
