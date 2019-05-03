@@ -7,8 +7,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" Version="1.7.3" />
-		<PackageReference Include="Havit.Services" Version="1.8.4" />
+		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.1" />
+		<PackageReference Include="Havit.Services" Version="2.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

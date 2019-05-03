@@ -14,7 +14,7 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
             {
                 c.SwaggerDoc("current", new Info { Title = "VolejbalApp", Version = System.Diagnostics.FileVersionInfo.GetVersionInfo(typeof(KandaEu.Volejbal.WebAPI.Properties.AssemblyInfo).Assembly.Location).ProductVersion });
                 c.CustomSchemaIds(type => type.FullName);
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Havit.VolejbalApp.WebAPI.xml"));
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "KandaEu.Volejbal.WebAPI.xml"));
                 c.DescribeAllEnumsAsStrings();
             });
 

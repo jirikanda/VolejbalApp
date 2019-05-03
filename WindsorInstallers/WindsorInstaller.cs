@@ -20,6 +20,7 @@ using System.Runtime.Caching;
 using KandaEu.Volejbal.Services.Infrastructure;
 using KandaEu.Volejbal.Entity;
 using KandaEu.Volejbal.Services.Infrastructure.TimeService;
+using KandaEu.Volejbal.DataLayer.DataSources;
 
 namespace KandaEu.Volejbal.WindsorInstallers
 {
@@ -87,7 +88,7 @@ namespace KandaEu.Volejbal.WindsorInstallers
 				.RegisterEntityPatterns()
 				//.RegisterLocalizationServices<Language>()
 				.RegisterDbContext<VolejbalDbContext>(new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
-				;// .RegisterDataLayer(typeof(ILoginAccountDataSource).Assembly); TODO
+				.RegisterDataLayer(typeof(ITerminDataSource).Assembly);
 		}
 
 		private static void InstallHavitServices(IWindsorContainer container)

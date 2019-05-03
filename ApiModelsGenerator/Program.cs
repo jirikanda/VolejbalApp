@@ -16,9 +16,9 @@ namespace Havit.VolejbalApp.ApiModelsGenerator
     {
         public static void Main(string[] args)
         {
-			GenerateTypescriptModels("..\\..\\..\\..\\..\\Web\\ClientApp\\apimodels", typeof(Facades.Properties.AssemblyInfo).Assembly.GetTypes());
+			GenerateTypescriptModels("..\\..\\..\\..\\..\\Web\\ClientApp\\apimodels", typeof(KandaEu.Volejbal.Facades.Properties.AssemblyInfo).Assembly.GetTypes());
 			GenerateTypescriptModels("..\\..\\..\\..\\..\\Web\\ClientApp\\configuration", new Type[] { typeof(Web.Controllers.ViewModels.IndexViewModel.AspPrerenderData) });
-			GenerateTypescriptModels("..\\..\\..\\..\\..\\Web\\ClientApp\\apimodels", new Type[] { typeof(WebAPI.Infrastructure.ConfigurationExtensions.ValidationErrorModel) }, "ValidationErrors");
+			GenerateTypescriptModels("..\\..\\..\\..\\..\\Web\\ClientApp\\apimodels", new Type[] { typeof(KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions.ValidationErrorModel) }, "ValidationErrors");
 
 			Console.WriteLine($"Completed.");
         }
