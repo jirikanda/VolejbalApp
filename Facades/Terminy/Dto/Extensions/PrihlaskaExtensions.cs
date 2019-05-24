@@ -1,4 +1,5 @@
-﻿using KandaEu.Volejbal.Model;
+﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
+using KandaEu.Volejbal.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;

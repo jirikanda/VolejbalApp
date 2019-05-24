@@ -1,4 +1,4 @@
-﻿namespace KandaEu.Volejbal.Facades.Terminy.Dto
+﻿namespace KandaEu.Volejbal.Contracts.Terminy.Dto
 {
 	public class OsobaDto
 	{

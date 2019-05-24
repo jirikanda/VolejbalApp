@@ -23,7 +23,9 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
             string[] allowedOrigins = corsOptions.Value.AllowedOrigins.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(item => item.Trim()).ToArray();
             app.UseCors(policy =>
             {
-                policy.WithOrigins(allowedOrigins)
+                //policy.WithOrigins(allowedOrigins)
+				policy
+					.AllowAnyOrigin()
                     .WithHeaders("Accept", "Content-Type", "Origin", "Authorization")
                     .AllowCredentials()
                     .AllowAnyMethod()

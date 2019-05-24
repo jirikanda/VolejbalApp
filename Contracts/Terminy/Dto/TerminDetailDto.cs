@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KandaEu.Volejbal.Facades.Terminy.Dto
+namespace KandaEu.Volejbal.Contracts.Terminy.Dto
 {
 	public class TerminDetailDto
 	{
