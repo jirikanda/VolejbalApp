@@ -1,0 +1,60 @@
+﻿@inject HttpClient Http
+
+@using KandaEu.Volejbal.Contracts.Terminy.Dto
+
+<h2>Termíny</h2>
+
+@if (terminList == null)
+{
+	@if (!loadFailed)
+	{
+		<p><em>Načítám termíny...</em></p>
+	}
+	else
+	{
+		<p><em>Načtení termínů se nezdařilo.</em></p>
+		@exceptionMessage
+	}
+}
+else
+{
+	<div>
+		@foreach (var termin in terminList.Terminy)
+		{
+			<button type="button" class="btn btn-default" onclick="@(e => SetCurrentTermin(termin.Id))">@termin.Datum.ToString("d. MMMM")</button>
+		}
+	
+		@if (terminList.Terminy.Count == 0)
+		{
+			<span>Žádné termíny nejsou k dispozici.</span>
+		}
+	</div>
+}
+
+@functions
+{
+	private bool loadFailed = false;
+	private TerminListDto terminList;
+	private string exceptionMessage;
+
+	protected override async Task OnInitAsync()
+	{
+		try
+		{
+			terminList = await Http.GetJsonAsync<TerminListDto>("http://localhost:9901/api/terminy");
+		}
+		catch (Exception exception)
+		{
+			exceptionMessage = exception.Message;
+			loadFailed = true;
+		}
+	}
+
+	void SetCurrentTermin(int terminId)
+	{
+		OnTerminChanged.InvokeAsync(terminId);
+	}
+
+	[Parameter]
+	private EventCallback<int> OnTerminChanged { get; set; }
+}

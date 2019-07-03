@@ -1,0 +1,18 @@
+﻿@inject HttpClient Http
+
+<h2>Prihlaseni</h2>
+
+<div>
+	Prihlaseni: @i
+</div>
+
+@functions {
+
+	public int i = 1;
+
+	public void SetNewTermin(int terminId)
+	{
+		i = terminId;
+		StateHasChanged();
+	}
+}
