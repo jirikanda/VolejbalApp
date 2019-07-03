@@ -1,22 +1,7 @@
 ﻿@page "/"
 @inject HttpClient Http
 
-<Terminy OnTerminChanged="TerminChanged" />
-<Prihlaseni @ref="prihlaseni" />
+<Terminy />
+<Prihlaseni />
 @*<Neprihlaseni />*@
 
-@functions
-{
-	private Prihlaseni prihlaseni;
-
-	protected override void OnInit()
-	{
-		base.OnInit();
-	}
-
-	private void TerminChanged(int terminId)
-	{
-		prihlaseni.SetNewTermin(terminId);
-	}
-
-}

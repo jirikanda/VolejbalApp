@@ -1,18 +1,15 @@
-﻿@inject HttpClient Http
+﻿@inject IState<AktualniTerminState> AktualniTerminState
 
 <h2>Prihlaseni</h2>
 
 <div>
-	Prihlaseni: @i
+	TerminId: @AktualniTerminState.Value.AktualniTerminId
 </div>
 
 @functions {
-
-	public int i = 1;
-
-	public void SetNewTermin(int terminId)
+	protected override void OnInit()
 	{
-		i = terminId;
-		StateHasChanged();
+		base.OnInit();
+		AktualniTerminState.Subscribe(this);
 	}
 }

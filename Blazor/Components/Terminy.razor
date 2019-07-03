@@ -23,7 +23,7 @@ else
 		{
 			<button type="button" class="btn btn-default" onclick="@(e => SetCurrentTermin(termin.Id))">@termin.Datum.ToString("d. MMMM")</button>
 		}
-	
+
 		@if (terminList.Terminy.Count == 0)
 		{
 			<span>Žádné termíny nejsou k dispozici.</span>
@@ -52,9 +52,7 @@ else
 
 	void SetCurrentTermin(int terminId)
 	{
-		OnTerminChanged.InvokeAsync(terminId);
+		Dispatcher.Dispatch(new SetAktualniTerminAction(terminId));
 	}
 
-	[Parameter]
-	private EventCallback<int> OnTerminChanged { get; set; }
 }
