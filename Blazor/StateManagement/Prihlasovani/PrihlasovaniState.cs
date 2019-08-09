@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace Blazor.StateManagement.Prihlasovani
 {
-	public class TerminyState
+	public class PrihlasovaniState
 	{
+		public int? AktualniTerminId { get; set; }
 		public bool IsLoading { get; set; }
 		public bool LoadingFailed { get; set; }
-		public List<TerminDto> Terminy { get; set; }
+
+		public List<OsobaDto> Prihlaseni { get; set; }
+		public List<OsobaDto> Neprihlaseni { get; set; }
+
 	}
 }

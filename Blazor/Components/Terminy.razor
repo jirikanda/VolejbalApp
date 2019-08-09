@@ -1,27 +1,29 @@
-﻿@inject IState<TerminyState> TerminyState
+﻿@inject EventAggregator.Blazor.IEventAggregator eventAggregator
+@inject HttpClient httpClient
+
 @using KandaEu.Volejbal.Contracts.Terminy.Dto
 
 <h2>Termíny</h2>
 
-@if (TerminyState.Value.IsLoading)
+@if (State.IsLoading)
 {
 	<p><em>Načítám termíny...</em></p>
 }
 
-@if (TerminyState.Value.LoadingFailed)
+@if (State.LoadingFailed)
 {
 	<p><em>Načtení termínů se nezdařilo.</em></p>
 }
 
-@if (TerminyState.Value.Terminy != null)
+@if (State.Terminy != null)
 {
 	<div>
-		@foreach (var termin in TerminyState.Value.Terminy)
+		@foreach (var termin in State.Terminy)
 		{
 			<button type="button" class="btn btn-default" onclick="@(e => SetCurrentTermin(termin.Id))">@termin.Datum.ToString("d. MMMM")</button>
 		}
 
-		@if (TerminyState.Value.Terminy.Count == 0)
+		@if (State.Terminy.Count == 0)
 		{
 			<span>Žádné termíny nejsou k dispozici.</span>
 		}
@@ -30,17 +32,39 @@
 
 @functions
 {
+	protected TerminyState State { get; } = new TerminyState();
+
 	protected override async Task OnInitAsync()
 	{
 		await base.OnInitAsync();
 
-		TerminyState.Subscribe(this);
-		Dispatcher.Dispatch(new LoadTerminyAction());
+		State.IsLoading = true;
+
+		try
+		{
+
+			var terminList = await httpClient.GetJsonAsync<TerminListDto>("http://localhost:9901/api/terminy");
+			System.Threading.Thread.Sleep(1000);
+			State.Terminy = terminList.Terminy;
+			if (State.Terminy.Count > 0)
+			{
+				SetCurrentTermin(State.Terminy[0].Id);
+			}
+		}
+		catch
+		{
+			State.LoadingFailed = true;
+		}
+		finally
+		{
+			State.IsLoading = false;
+		}
+
 	}
 
 	void SetCurrentTermin(int terminId)
 	{
-		Dispatcher.Dispatch(new SetAktualniTerminAction(terminId));
+		eventAggregator.PublishAsync(new Blazor.Events.CurrentTerminChanged(terminId));
 	}
 
 }

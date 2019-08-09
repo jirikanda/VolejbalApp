@@ -1,4 +1,3 @@
-using Blazor.Fluxor;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
@@ -9,9 +8,7 @@ namespace Blazor
 	{
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddFluxor(options => options
-					.UseDependencyInjection(typeof(Startup).Assembly)
-				);
+			services.AddSingleton<EventAggregator.Blazor.IEventAggregator, EventAggregator.Blazor.EventAggregator>();
 
 			//services.Configure<RequestLocalizationOptions>(options =>
 			//{
