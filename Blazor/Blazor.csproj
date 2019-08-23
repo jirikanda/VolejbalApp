@@ -2,19 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RestoreAdditionalProjectSources>
-      https://dotnet.myget.org/F/aspnetcore-dev/api/v3/index.json;
-      https://dotnet.myget.org/F/blazor-dev/api/v3/index.json;
-    </RestoreAdditionalProjectSources>
+    <OutputType>Exe</OutputType>
     <LangVersion>7.3</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
+    <AssemblyName>KandaEu.Blazor</AssemblyName>
+    <RootNamespace>KandaEu.Blazor</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EventAggregator.Blazor" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview7.19365.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview7.19365.7" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.DevServer" Version="3.0.0-preview7.19365.7" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview8.19405.7" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.DevServer" Version="3.0.0-preview8.19405.7" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="StateManagement\Nastenka\" />
+    <Reference Include="EventAggregator.Blazor">
+      <HintPath>..\..\Blazor.EventAggregator\src\obj\Debug\netstandard2.0\EventAggregator.Blazor.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

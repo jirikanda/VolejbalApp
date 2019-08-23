@@ -1,4 +1,4 @@
-﻿namespace Blazor.Events
+﻿namespace KandaEu.Blazor.Events
 {
 	public class CurrentTerminChanged
 	{
