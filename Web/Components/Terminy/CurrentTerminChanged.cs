@@ -1,4 +1,4 @@
-﻿namespace KandaEu.Web.Components.Terminy
+﻿namespace KandaEu.Volejbal.Web.Components.Terminy
 {
 	public class CurrentTerminChanged
 	{

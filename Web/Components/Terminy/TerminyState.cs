@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Web.Components.Terminy
+namespace KandaEu.Volejbal.Web.Components.Terminy
 {
 	public class TerminyState
 	{

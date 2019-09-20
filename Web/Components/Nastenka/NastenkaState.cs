@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Web.Components.Nastenka
+namespace KandaEu.Volejbal.Web.Components.Nastenka
 {
 	public class NastenkaState
 	{

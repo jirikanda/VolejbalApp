@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Web.Components.Prihlasovani
+namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 {
 	public class PrihlasovaniState
 	{

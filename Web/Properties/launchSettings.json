@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "KandaEu.Web": {
+    "KandaEu.Volejbal.Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
