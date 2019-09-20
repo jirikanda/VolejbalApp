@@ -1,11 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="sidebar">
-	<NavMenu />
-</div>
+<MatAppBarContainer>
+	<MatAppBar Fixed="true">
+		<MatAppBarRow>
+			<MatAppBarSection>
+				<MatAppBarTitle>Volejbal</MatAppBarTitle>
+			</MatAppBarSection>
+			<MatAppBarSection Align="@MatAppBarSectionAlign.End">
+				<NavLink class="text-white nav-link" href="" Match="NavLinkMatch.All">
+					Přihlašování
+				</NavLink>
+				<NavLink class="text-white nav-link" href="nastenka">
+					Nástěnka
+				</NavLink>
+				<NavLink class="text-white nav-link" href="spravaosob" >
+					Správa osob
+				</NavLink>
 
-<div class="main">
-	<div class="content px-4">
-		@Body
-	</div>
-</div>
+			</MatAppBarSection>
+		</MatAppBarRow>
+	</MatAppBar>
+	<MatAppBarContent>
+		<div class="container">
+			@Body
+		</div>
+	</MatAppBarContent>
+</MatAppBarContainer>

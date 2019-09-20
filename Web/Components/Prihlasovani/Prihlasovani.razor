@@ -6,47 +6,53 @@
 }
 else
 {
-    if (State.IsLoading)
-    {
+	if (State.IsLoading)
+	{
 		<p><em>Načítám detaily termínu...</em></p>
-    }
+		<MatProgressBar Indeterminate="true"></MatProgressBar>
+	}
 
-    if (State.LoadingFailed)
-    {
+	if (State.LoadingFailed)
+	{
 		<p><em>Načtení detailu termínu se nezdařilo.</em></p>
-    }
+	}
 }
 
 @if (State.Prihlaseni != null)
 {
-	<h2>Přihlášení</h2>
-	<div>
+	<MatH4>Přihlášení</MatH4>
+	<MatList TwoLine="true">
 
 		@foreach (var prihlaseny in State.Prihlaseni)
-{
-			<p>@prihlaseny.PrijmeniJmeno</p>
-}
+		{
+			<MatListItem TwoLine="true">				
+				<MatListItemText>
+					<MatListItemPrimaryText>@prihlaseny.PrijmeniJmeno</MatListItemPrimaryText>
+					<MatListItemSecondaryText>Karma: 55%</MatListItemSecondaryText>
+				</MatListItemText>
+				<MatButton>odhlásit</MatButton>
+			</MatListItem>
+		}
 
 		@if (State.Prihlaseni.Count == 0)
-{
+		{
 			<span>Na termín není dosud nikdo přihlášen.</span>
-}
-	</div>
+		}
+	</MatList>
 }
 
 @if (State.Neprihlaseni != null)
 {
-	<h2>Nepřihlášení</h2>
-	<div>
+	<MatH4>Nepřihlášení</MatH4>
+	<MatList>
 		@foreach (var neprihlaseny in State.Neprihlaseni)
-{
-			<p>@neprihlaseny.PrijmeniJmeno</p>
-}
-	</div>
+		{
+			<MatListItem>
+				@neprihlaseny.PrijmeniJmeno
+				<MatButton>přihlásit</MatButton>
+			</MatListItem>
+		}
+	</MatList>
 }
 
-DEBUG
-	<div>
-		TerminId: @State.AktualniTerminId
-	</div>
 

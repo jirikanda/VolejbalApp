@@ -46,6 +46,8 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 
 			if (State.Terminy.Count > 0)
 			{
+				// TODO: Refactor (Extract)
+				State.CurrentTerminId = State.Terminy[0].Id;
 				await EventAggregator.PublishAsync(new CurrentTerminChanged(State.Terminy[0].Id));
 			}
 		}
@@ -54,6 +56,8 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 		{
 			return async (MouseEventArgs e) =>
 			{
+				// TODO: Refactor (Extract)
+				State.CurrentTerminId = terminId;
 				await EventAggregator.PublishAsync(new CurrentTerminChanged(terminId));
 			};
 		}
