@@ -1,4 +1,6 @@
 ﻿@inject IHttpClientFactory httpClientFactory
+@inject EventAggregator.Blazor.IEventAggregator eventAggregator;
+@implements EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
 
 <h2>Prihlaseni</h2>
 
@@ -54,35 +56,46 @@ else
 	</div>
 
 	@functions {
-        protected PrihlasovaniState State { get; } = new PrihlasovaniState();
+		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
-        public async Task SetCurrentTermin(int terminId)
-        {
-            State.AktualniTerminId = terminId;
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			eventAggregator.Subscribe(this);
+		}
 
-            try
-            {
-                State.IsLoading = true;
-                State.Prihlaseni = null;
-                State.Neprihlaseni = null;
+		public async Task SetCurrentTermin(int terminId)
+		{
+			State.AktualniTerminId = terminId;
 
-                System.Threading.Thread.Sleep(1000);
+			try
+			{
+				State.IsLoading = true;
+				State.Prihlaseni = null;
+				State.Neprihlaseni = null;
 
-                var terminDetail = await httpClientFactory.CreateClient().GetJsonAsync<KandaEu.Volejbal.Contracts.Terminy.Dto.TerminDetailDto>($"http://localhost:9901/api/terminy/{terminId}");
+				System.Threading.Thread.Sleep(1000);
 
-                State.Prihlaseni = terminDetail.Prihlaseni;
-                State.Neprihlaseni = terminDetail.Neprihlaseni;
-            }
-            catch
-            {
-                State.LoadingFailed = true;
-            }
-            finally
-            {
-                State.IsLoading = false;
-            }
+				var terminDetail = await httpClientFactory.CreateClient().GetJsonAsync<KandaEu.Volejbal.Contracts.Terminy.Dto.TerminDetailDto>($"http://localhost:9901/api/terminy/{terminId}");
+
+				State.Prihlaseni = terminDetail.Prihlaseni;
+				State.Neprihlaseni = terminDetail.Neprihlaseni;
+			}
+			catch
+			{
+				State.LoadingFailed = true;
+			}
+			finally
+			{
+				State.IsLoading = false;
+			}
 
 			StateHasChanged();
 
-        }
+		}
+
+		async Task EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>.HandleAsync(CurrentTerminChanged message)
+		{
+			await SetCurrentTermin(message.TerminId);
+		}
 }

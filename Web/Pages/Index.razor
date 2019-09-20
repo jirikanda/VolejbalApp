@@ -1,18 +1,6 @@
 ﻿@page "/"
 
-<Terminy OnCurrentTerminChanged="CurrentTerminChangedAsync"  />
-
-<Prihlaseni @ref="prihlaseniComponent"  />
+<Terminy />
+<Prihlaseni  />
 @*<Neprihlaseni />  *@
-
-
-@functions
-	{
-		private Prihlaseni prihlaseniComponent;
-
-		async Task CurrentTerminChangedAsync(int terminId)
-		{
-			await prihlaseniComponent.SetCurrentTermin(terminId);
-		}
-	}
 

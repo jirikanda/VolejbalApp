@@ -1,4 +1,5 @@
 ﻿@inject IHttpClientFactory httpClientFactory
+@inject EventAggregator.Blazor.IEventAggregator eventAggregator
 
 @using KandaEu.Volejbal.Contracts.Terminy.Dto
 
@@ -33,9 +34,6 @@
 {
 	protected TerminyState State { get; } = new TerminyState();
 
-	[Parameter]
-	public EventCallback<int> OnCurrentTerminChanged { get; set; }
-
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
@@ -61,27 +59,15 @@
 		State.Terminy = terminList.Terminy;
 		if (State.Terminy.Count > 0)
 		{
-			await OnCurrentTerminChanged.InvokeAsync(State.Terminy[0].Id);
+			await eventAggregator.PublishAsync(new CurrentTerminChanged(State.Terminy[0].Id));
 		}
-	}
-
-	private async Task XButtonClick(MouseEventArgs e)
-	{
-		int terminId = 3006;
-		await OnCurrentTerminChanged.InvokeAsync(terminId);
 	}
 
 	private Func<MouseEventArgs, Task> XButtonClick(int terminId)
 	{
 		return async (MouseEventArgs e) =>
 		{
-			await OnCurrentTerminChanged.InvokeAsync(terminId);
+			await eventAggregator.PublishAsync(new CurrentTerminChanged(terminId));
 		};
 	}
-
-	//protected async Task<EventCallback> XButtonClick(int terminId)
-	//{
-	//	await OnCurrentTerminChanged.InvokeAsync(State.Terminy[0].Id);
-	//	return EventCallback.Empty;
-	//}
 }
