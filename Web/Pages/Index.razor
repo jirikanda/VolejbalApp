@@ -1,5 +1,18 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<Terminy OnCurrentTerminChanged="CurrentTerminChangedAsync"  />
 
-Welcome to your new app.
+<Prihlaseni @ref="prihlaseniComponent"  />
+@*<Neprihlaseni />  *@
+
+
+@functions
+	{
+		private Prihlaseni prihlaseniComponent;
+
+		async Task CurrentTerminChangedAsync(int terminId)
+		{
+			await prihlaseniComponent.SetCurrentTermin(terminId);
+		}
+	}
+

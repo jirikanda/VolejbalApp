@@ -1,0 +1,87 @@
+﻿@inject IHttpClientFactory httpClientFactory
+
+@using KandaEu.Volejbal.Contracts.Terminy.Dto
+
+<h2>Termíny</h2>
+
+@if (State.IsLoading)
+{
+	<p><em>Načítám termíny...</em></p>
+}
+
+@if (State.LoadingFailed)
+{
+	<p><em>Načtení termínů se nezdařilo.</em></p>
+}
+
+@if (State.Terminy != null)
+{
+	<div>
+		@foreach (var termin in State.Terminy)
+		{
+			<div type="button" class="btn btn-default" onclick="@XButtonClick(termin.Id)">@termin.Datum.ToString("d. MMMM")</div>
+		}
+
+		@if (State.Terminy.Count == 0)
+		{
+			<span>Žádné termíny nejsou k dispozici.</span>
+		}
+	</div>
+}
+
+@functions
+{
+	protected KandaEu.Web.StateManagement.Prihlasovani.TerminyState State { get; } = new KandaEu.Web.StateManagement.Prihlasovani.TerminyState();
+
+	[Parameter]
+	public EventCallback<int> OnCurrentTerminChanged { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		State.IsLoading = true;
+
+		TerminListDto terminList;
+		try
+		{
+
+			terminList = await httpClientFactory.CreateClient().GetJsonAsync<TerminListDto>("http://localhost:9901/api/terminy");
+			await Task.Delay(1000);
+		}
+		catch
+		{
+			State.LoadingFailed = true;
+			throw; // ???
+		}
+		finally
+		{
+			State.IsLoading = false;
+		}
+		State.Terminy = terminList.Terminy;
+		if (State.Terminy.Count > 0)
+		{
+			await OnCurrentTerminChanged.InvokeAsync(State.Terminy[0].Id);
+		}
+	}
+
+	private async Task XButtonClick(MouseEventArgs e)
+	{
+		int terminId = 3006;
+		await OnCurrentTerminChanged.InvokeAsync(terminId);
+	}
+
+	private Func<MouseEventArgs, Task> XButtonClick(int terminId)
+	{
+		return async (MouseEventArgs e) =>
+		{
+			await OnCurrentTerminChanged.InvokeAsync(terminId);
+		};
+	}
+
+	//protected async Task<EventCallback> XButtonClick(int terminId)
+	//{
+	//	await OnCurrentTerminChanged.InvokeAsync(State.Terminy[0].Id);
+	//	return EventCallback.Empty;
+	//}
+}

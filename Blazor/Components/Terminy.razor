@@ -1,5 +1,4 @@
-﻿@inject EventAggregator.Blazor.IEventAggregator eventAggregator
-@inject HttpClient httpClient
+﻿@inject HttpClient httpClient
 
 @using KandaEu.Volejbal.Contracts.Terminy.Dto
 
@@ -45,7 +44,7 @@
                 {
 
                     terminList = await httpClient.GetJsonAsync<TerminListDto>("http://localhost:9901/api/terminy");
-                    System.Threading.Thread.Sleep(1000);
+            //        System.Threading.Thread.Sleep(1000);
                 }
                 catch
                 {
@@ -66,7 +65,7 @@
 
             async Task SetCurrentTerminAsync(int terminId)
             {
-                await eventAggregator.PublishAsync(new Blazor.Events.CurrentTerminChanged(terminId));
+                //await eventAggregator.PublishAsync(new Blazor.Events.CurrentTerminChanged(terminId));
             }
 
         }

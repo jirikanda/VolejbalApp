@@ -8,7 +8,7 @@ namespace KandaEu.Blazor
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<EventAggregator.Blazor.IEventAggregator, EventAggregator.Blazor.EventAggregator>();
+            //services.AddSingleton<EventAggregator.Blazor.IEventAggregator, EventAggregator.Blazor.EventAggregator>();
         }   
 
         public void Configure(IComponentsApplicationBuilder app)

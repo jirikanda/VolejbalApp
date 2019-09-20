@@ -1,6 +1,4 @@
 ﻿@inject HttpClient httpClient
-@inject EventAggregator.Blazor.IEventAggregator eventAggregator
-@implements EventAggregator.Blazor.IHandle<Blazor.Events.CurrentTerminChanged>
 
 <h2>Prihlaseni</h2>
 
@@ -56,39 +54,33 @@ else
 	</div>
 
 	@functions {
-        protected PrihlasovaniState State { get; } = new PrihlasovaniState();
+		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            eventAggregator.Subscribe(this);
-        }
+		//public async Task HandleAsync(KandaEu.Blazor.Events.CurrentTerminChanged message)
+		//{
+		//    State.AktualniTerminId = message.TerminId;
 
-        public async Task HandleAsync(KandaEu.Blazor.Events.CurrentTerminChanged message)
-        {
-            State.AktualniTerminId = message.TerminId;
+		//    try
+		//    {
+		//        State.IsLoading = true;
+		//        State.Prihlaseni = null;
+		//        State.Neprihlaseni = null;
 
-            try
-            {
-                State.IsLoading = true;
-                State.Prihlaseni = null;
-                State.Neprihlaseni = null;
+		//        System.Threading.Thread.Sleep(1000);
 
-                System.Threading.Thread.Sleep(1000);
+		//        var terminDetail = await httpClient.GetJsonAsync<KandaEu.Volejbal.Contracts.Terminy.Dto.TerminDetailDto>($"http://localhost:9901/api/terminy/{message.TerminId}");
 
-                var terminDetail = await httpClient.GetJsonAsync<KandaEu.Volejbal.Contracts.Terminy.Dto.TerminDetailDto>($"http://localhost:9901/api/terminy/{message.TerminId}");
+		//        State.Prihlaseni = terminDetail.Prihlaseni;
+		//        State.Neprihlaseni = terminDetail.Neprihlaseni;
+		//    }
+		//    catch
+		//    {
+		//        State.LoadingFailed = true;
+		//    }
+		//    finally
+		//    {
+		//        State.IsLoading = false;
+		//    }
 
-                State.Prihlaseni = terminDetail.Prihlaseni;
-                State.Neprihlaseni = terminDetail.Neprihlaseni;
-            }
-            catch
-            {
-                State.LoadingFailed = true;
-            }
-            finally
-            {
-                State.IsLoading = false;
-            }
-
-        }
+	}
 }
