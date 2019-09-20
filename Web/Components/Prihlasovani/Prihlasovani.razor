@@ -1,0 +1,54 @@
+﻿@inherits PrihlasovaniBase
+
+<h2>Prihlaseni</h2>
+
+@if (State.AktualniTerminId == null)
+{
+	<p><em>Termín není zvolen.</em></p>
+}
+else
+{
+    if (State.IsLoading)
+    {
+		<p><em>Načítám detaily termínu...</em></p>
+    }
+
+    if (State.LoadingFailed)
+    {
+		<p><em>Načtení detailu termínu se nezdařilo.</em></p>
+    }
+}
+
+@if (State.Prihlaseni != null)
+{
+	<h2>Přihlášení</h2>
+	<div>
+
+		@foreach (var prihlaseny in State.Prihlaseni)
+{
+			<p>@prihlaseny.PrijmeniJmeno</p>
+}
+
+		@if (State.Prihlaseni.Count == 0)
+{
+			<span>Na termín není dosud nikdo přihlášen.</span>
+}
+	</div>
+}
+
+@if (State.Neprihlaseni != null)
+{
+	<h2>Nepřihlášení</h2>
+	<div>
+		@foreach (var neprihlaseny in State.Neprihlaseni)
+{
+			<p>@neprihlaseny.PrijmeniJmeno</p>
+}
+	</div>
+}
+
+DEBUG
+	<div>
+		TerminId: @State.AktualniTerminId
+	</div>
+
