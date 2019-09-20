@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 using KandaEu.Volejbal.WebAPI.Infrastructure;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Tools;
+using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 
 [assembly: ApiControllerAttribute]
 
@@ -67,7 +68,8 @@ namespace KandaEu.Volejbal.WebAPI
 			if (env.IsDevelopment())
 	        {
 		        app.UseDeveloperExceptionPage();
-	        }
+				app.UseMiddleware<DelayRequestMiddleware>();
+			}
 
 			app.UseCustomizedCors(corsOptions);
             app.UseStaticFiles();

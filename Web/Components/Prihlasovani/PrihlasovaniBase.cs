@@ -31,8 +31,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			State.IsLoading = true;
 			State.Prihlaseni = null;
 			State.Neprihlaseni = null;
-
-			System.Threading.Thread.Sleep(1000);
+			StateHasChanged();
 
 			try
 			{

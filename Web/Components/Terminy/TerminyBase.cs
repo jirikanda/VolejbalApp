@@ -29,9 +29,7 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 			TerminListDto terminList;
 			try
 			{
-
 				terminList = await HttpClientFactory.CreateClient().GetJsonAsync<TerminListDto>("http://localhost:9901/api/terminy");
-				await Task.Delay(1000);
 			}
 			catch
 			{
@@ -43,6 +41,9 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 				State.IsLoading = false;
 			}
 			State.Terminy = terminList.Terminy;
+			
+			StateHasChanged();
+
 			if (State.Terminy.Count > 0)
 			{
 				await EventAggregator.PublishAsync(new CurrentTerminChanged(State.Terminy[0].Id));
