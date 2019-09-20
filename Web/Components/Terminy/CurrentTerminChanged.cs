@@ -1,4 +1,4 @@
-﻿namespace KandaEu.Web.Events
+﻿namespace KandaEu.Web.Components.Terminy
 {
 	public class CurrentTerminChanged
 	{

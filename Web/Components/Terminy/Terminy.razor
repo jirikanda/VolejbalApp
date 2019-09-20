@@ -31,7 +31,7 @@
 
 @functions
 {
-	protected KandaEu.Web.StateManagement.Prihlasovani.TerminyState State { get; } = new KandaEu.Web.StateManagement.Prihlasovani.TerminyState();
+	protected TerminyState State { get; } = new TerminyState();
 
 	[Parameter]
 	public EventCallback<int> OnCurrentTerminChanged { get; set; }
