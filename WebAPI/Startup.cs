@@ -50,7 +50,7 @@ namespace KandaEu.Volejbal.WebAPI
 			services.AddCustomizedErrorToJson();
 
             services.AddCustomizedCors(configuration);
-            services.AddCustomizedSwagger();			
+            services.AddCustomizedOpenApi();			
 
 	        services.AddApplicationInsightsTelemetry(configuration);
 
@@ -81,7 +81,7 @@ namespace KandaEu.Volejbal.WebAPI
 			app.UseErrorToJson();
             app.UseMvc();
 
-            app.UseCustomizedSwaggerAndUI();
+            app.UseCustomizedOpenApiSwaggerUI();
 
 	        app.UpgradeDatabaseSchemaAndData();
         }
