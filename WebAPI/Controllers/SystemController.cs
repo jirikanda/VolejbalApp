@@ -7,7 +7,6 @@ using Havit.Data.Patterns.DataSeeds;
 using KandaEu.Volejbal.Facades.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
