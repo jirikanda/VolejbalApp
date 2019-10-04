@@ -1,5 +1,5 @@
 ﻿using EventAggregator.Blazor;
-using KandaEu.Volejbal.Contracts.Terminy.Dto;
+using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -13,7 +13,7 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 	public class TerminyBase : ComponentBase
 	{
 		[Inject]
-		public IHttpClientFactory HttpClientFactory { get; set; }
+		public ITerminWebApiClient TerminWebApiClient { get; set; }
 		
 		[Inject]
 		public IEventAggregator EventAggregator { get; set; }
@@ -26,10 +26,10 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 
 			State.IsLoading = true;
 
-			TerminListDto terminList;
+			KandaEu.Volejbal.Web.WebApiClients.TerminListDto terminList;
 			try
 			{
-				terminList = await HttpClientFactory.CreateClient().GetJsonAsync<TerminListDto>("http://localhost:9901/api/terminy");
+				terminList = await TerminWebApiClient.GetTerminyAsync();
 			}
 			catch
 			{
@@ -40,7 +40,7 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 			{
 				State.IsLoading = false;
 			}
-			State.Terminy = terminList.Terminy;
+			State.Terminy = terminList.Terminy.ToList();
 			
 			StateHasChanged();
 

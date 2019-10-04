@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using EmbeddedBlazorContent;
+using KandaEu.Volejbal.Web.WebApiClients;
 
 namespace KandaEu.Volejbal.Web
 {
@@ -31,6 +32,9 @@ namespace KandaEu.Volejbal.Web
 			services.AddRazorPages();
             services.AddServerSideBlazor();
 			services.AddHttpClient();
+
+			services.AddHttpClient<ISystemWebApiClient, SystemWebApiClient>().ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:9901/"));
+			services.AddHttpClient<ITerminWebApiClient, TerminWebApiClient>().ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:9901/"));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

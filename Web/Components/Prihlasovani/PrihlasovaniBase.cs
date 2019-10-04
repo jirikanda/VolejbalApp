@@ -1,4 +1,5 @@
 ﻿using KandaEu.Volejbal.Web.Components.Terminy;
+using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 	public class PrihlasovaniBase : ComponentBase, EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
 	{
 		[Inject]
-		public IHttpClientFactory HttpClientFactory { get; set; }
+		public ITerminWebApiClient TerminWebApiClient { get; set; }
 
 		[Inject]
 		public EventAggregator.Blazor.IEventAggregator EventAggregator { get; set; }
@@ -35,10 +36,10 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 
 			try
 			{
-				var terminDetail = await HttpClientFactory.CreateClient().GetJsonAsync<KandaEu.Volejbal.Contracts.Terminy.Dto.TerminDetailDto>($"http://localhost:9901/api/terminy/{terminId}");
+				var terminDetail = await TerminWebApiClient.GetDetailTerminuAsync(terminId);
 
-				State.Prihlaseni = terminDetail.Prihlaseni;
-				State.Neprihlaseni = terminDetail.Neprihlaseni;
+				State.Prihlaseni = terminDetail.Prihlaseni.ToList();
+				State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
 			}
 			catch
 			{

@@ -8,6 +8,7 @@
 	<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
 	<TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
+	  <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,9 +20,14 @@
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.2.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
 	<PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+	<PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="3.0.0">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.2.0" />
 	<PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
 	<PackageReference Include="NSwag.AspNetCore" Version="13.1.2" />
