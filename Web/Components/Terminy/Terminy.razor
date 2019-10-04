@@ -1,11 +1,10 @@
 ﻿@inherits TerminyBase
 
-<MatH2>Termín</MatH2>
+<h2>Termín</h2>
 
 @if (State.IsLoading)
 {
 	<p><em>Načítám termíny...</em></p>
-	<MatProgressBar Indeterminate="true"></MatProgressBar>
 
 }
 
@@ -19,7 +18,7 @@
 	<div>
 		@foreach (var termin in State.Terminy)
 		{
-			<MatButton Outlined="@(termin.Id == State.CurrentTerminId)" OnClick="@XButtonClick(termin.Id)">@termin.Datum.ToString("d. MMMM")</MatButton>
+			<button OnClick="@XButtonClick(termin.Id)">@termin.Datum.ToString("d. MMMM")</button>
 		}
 
 		@if (State.Terminy.Count == 0)

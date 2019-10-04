@@ -9,7 +9,6 @@ else
 	if (State.IsLoading)
 	{
 		<p><em>Načítám detaily termínu...</em></p>
-		<MatProgressBar Indeterminate="true"></MatProgressBar>
 	}
 
 	if (State.LoadingFailed)
@@ -20,39 +19,32 @@ else
 
 @if (State.Prihlaseni != null)
 {
-	<MatH4>Přihlášení</MatH4>
-	<MatList TwoLine="true">
+	<h4>Přihlášení</h4>
+	<ul>
 
 		@foreach (var prihlaseny in State.Prihlaseni)
 		{
-			<MatListItem TwoLine="true">				
-				<MatListItemText>
-					<MatListItemPrimaryText>@prihlaseny.PrijmeniJmeno</MatListItemPrimaryText>
-					<MatListItemSecondaryText>Karma: 55%</MatListItemSecondaryText>
-				</MatListItemText>
-				<MatButton>odhlásit</MatButton>
-			</MatListItem>
+			<li>@prihlaseny.PrijmeniJmeno</li>
 		}
 
 		@if (State.Prihlaseni.Count == 0)
 		{
 			<span>Na termín není dosud nikdo přihlášen.</span>
 		}
-	</MatList>
+	</ul>
 }
 
 @if (State.Neprihlaseni != null)
 {
-	<MatH4>Nepřihlášení</MatH4>
-	<MatList>
+	<h4>Nepřihlášení</h4>
+	<ul>
 		@foreach (var neprihlaseny in State.Neprihlaseni)
 		{
-			<MatListItem>
+			<li>
 				@neprihlaseny.PrijmeniJmeno
-				<MatButton>přihlásit</MatButton>
-			</MatListItem>
+			</li>
 		}
-	</MatList>
+	</ul>
 }
 
 

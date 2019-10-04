@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Globalization;
-using EmbeddedBlazorContent;
 using KandaEu.Volejbal.Web.WebApiClients;
 using KandaEu.Volejbal.Web.App_Start;
 
@@ -54,7 +53,6 @@ namespace KandaEu.Volejbal.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-			app.UseEmbeddedBlazorContent(typeof(MatBlazor.BaseMatComponent).Assembly);
 
 			app.UseRouting();
 
