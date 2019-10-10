@@ -18,6 +18,7 @@ using KandaEu.Volejbal.WebAPI.Infrastructure;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Tools;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 using Microsoft.Extensions.Hosting;
+using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 
 [assembly: ApiControllerAttribute]
 
@@ -56,7 +57,8 @@ namespace KandaEu.Volejbal.WebAPI
 	        services.AddApplicationInsightsTelemetry(configuration);
 
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        }
+			services.AddTransient<ErrorMonitoringFilter>();
+		}
 
         /// <summary>
         /// Configure middleware.
