@@ -17,6 +17,7 @@ using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 using KandaEu.Volejbal.WebAPI.Infrastructure;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Tools;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
+using Microsoft.Extensions.Hosting;
 
 [assembly: ApiControllerAttribute]
 
@@ -34,7 +35,7 @@ namespace KandaEu.Volejbal.WebAPI
         /// <summary>
         /// Configure services.
         /// </summary>
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -55,15 +56,12 @@ namespace KandaEu.Volejbal.WebAPI
 	        services.AddApplicationInsightsTelemetry(configuration);
 
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-			IWindsorContainer windsorContainer = WindsorCastleConfiguration.CreateWindsorContainer(configuration);
-            return services.AddCustomizedServiceProvider(windsorContainer);
         }
 
         /// <summary>
         /// Configure middleware.
         /// </summary>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
         {
 			if (env.IsDevelopment())
 	        {
@@ -79,7 +77,8 @@ namespace KandaEu.Volejbal.WebAPI
 
 			app.UseExceptionMonitoring();
 			app.UseErrorToJson();
-            app.UseMvc();
+            app.UseRouting();
+			app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             app.UseCustomizedOpenApiSwaggerUI();
 

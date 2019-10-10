@@ -25,7 +25,7 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 		public static void AddCustomizedMvc(this IServiceCollection services, IConfiguration configuration)
 		{
 			var mvcBuilder = services
-				.AddMvc(options =>
+				.AddControllers(options =>
 				{
 					// TODO: Security policy
 					//var defaultPolicy = new AuthorizationPolicyBuilder(AuthenticationConfig.GetAuthenticationSchemes(configuration))
@@ -34,16 +34,18 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 					//options.Filters.Add(new AuthorizeFilter(defaultPolicy));
 					options.Filters.Add(new ValidateModelAttribute { ResultSelector = ValidationErrorModel.FromModelState() });
 				})
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+				.SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
 				.AddDataAnnotationsLocalization()
 				.ConfigureApiBehaviorOptions(options =>
 				{
 					//options.SuppressConsumesConstraintForFormFileParameters = true;
 					//options.SuppressInferBindingSourcesForParameters = true;
 					options.SuppressModelStateInvalidFilter = true; // zajišťujeme pomocí ValidateModelAttribute výše
-				});
+				})
 #if DEBUG
-			mvcBuilder.AddJsonOptions(options => options.SerializerSettings.Formatting = Formatting.Indented);
+				.AddNewtonsoftJson(options => options.SerializerSettings.Formatting = Formatting.Indented);
+#else
+				.AddNewtonsoftJson();
 #endif
 		}
 	}
