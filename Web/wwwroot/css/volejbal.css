@@ -1,0 +1,64 @@
+﻿@media screen and (min-width: 1024px)
+{
+    .page
+    {
+        width: 980px;
+        margin: auto;            
+        background-color: white;
+        height: auto;
+    }
+
+    body
+    {
+        height: 100%;
+
+    }
+        
+    html
+    {
+        background-color: #eff4ff;
+        height: 100%;
+    }
+
+}
+
+.page
+{
+    padding-right: 80px;
+}
+
+.icon-user
+{
+   font-size: 200%;
+}
+
+.icon-user-index
+{
+    font-family: 'Segoe UI Semilight', 'Open Sans', Verdana, Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+    font-size: 32pt;
+    left: 0px;
+    font-weight: bold;
+    width: 58px !important;
+    text-align: right !important;
+    position: absolute;
+}
+
+ul.listview li
+{
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-bottom: 2px;
+    width: 250px;
+}
+
+button, .button
+{
+    min-width: 110px;
+}
+
+h4.strong
+{
+    font-weight: bold;
+    color: black;
+}

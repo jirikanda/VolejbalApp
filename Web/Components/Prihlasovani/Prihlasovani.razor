@@ -19,32 +19,49 @@ else
 
 @if (State.Prihlaseni != null)
 {
-	<h4>Přihlášení</h4>
-	<ul>
-
+	<h2>Přihlášení</h2>
+	<ul class="listview fluid">
 		@foreach (var prihlaseny in State.Prihlaseni)
 		{
-			<li>@prihlaseny.PrijmeniJmeno</li>
-		}
-
-		@if (State.Prihlaseni.Count == 0)
-		{
-			<span>Na termín není dosud nikdo přihlášen.</span>
+			<li class="outline-color-blueDark">
+				<div class="icon">
+					<span class="icon-user-index fg-color-blueLight">1</span>
+				</div>
+				<div class="data">
+					@*<h4 class="<%# Item.OsobaId == WebHelper.PrefferedOsobaId ? " strong" : "" %>"><%# Item.Osoba.PrijmeniJmeno %></h4>*@
+					<h4>@prihlaseny.PrijmeniJmeno</h4>
+					<a>odhlásit z termínu</a>
+				</div>
+			</li>
 		}
 	</ul>
+
+	@if (State.Prihlaseni.Count == 0)
+	{
+		<p>Na tento termín není nikdo přihlášen.</p>
+	}
 }
 
 @if (State.Neprihlaseni != null)
 {
-	<h4>Nepřihlášení</h4>
-	<ul>
+	<h2>Nepřihlášení</h2>
+	<ul class="listview fluid">
 		@foreach (var neprihlaseny in State.Neprihlaseni)
 		{
-			<li>
-				@neprihlaseny.PrijmeniJmeno
+
+			<li class="outline-color-orangeDark">
+				<div class="icon" style="margin-top: 0.5em;">
+					<i class="icon-user fg-color-orange"></i>
+				</div>
+				<div class="data">
+					@*<h4 class="<%# Item.Id == WebHelper.PrefferedOsobaId ? " strong" : "" %>"><%# Item.PrijmeniJmeno %></h4>*@
+					<h4>@neprihlaseny.PrijmeniJmeno</h4>
+					<a CommandName="Prihlasit" CommandArgument="<%# Item.Id %>" CssClass="fg-color-orange " runat="server">přihlásit na termín</a>
+				</div>
 			</li>
 		}
 	</ul>
 }
+
 
 

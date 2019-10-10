@@ -15,15 +15,19 @@
 
 @if (State.Terminy != null)
 {
-	<div>
+
+	<div class="button-set" data-role="button-set">
+
 		@foreach (var termin in State.Terminy)
 		{
-			<button OnClick="@XButtonClick(termin.Id)">@termin.Datum.ToString("d. MMMM")</button>
+			<a class="button @(termin.Id == this.State.CurrentTerminId) ? 'bg-color-blue fg-color-white' : 'bg-color-blueDark fg-color-white')"><span class="box"><span>@termin.Datum.ToString("d. MMMM")</span></span></a>
 		}
 
 		@if (State.Terminy.Count == 0)
 		{
 			<span>Žádné termíny nejsou k dispozici.</span>
 		}
+
 	</div>
 }
+
