@@ -1,6 +1,5 @@
 ﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Prihlasky;
-using KandaEu.Volejbal.Facades.Prihlasky.Dto;
 using KandaEu.Volejbal.Facades.Terminy;
 using KandaEu.Volejbal.Facades.Terminy.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -35,16 +34,16 @@ namespace Havit.VolejbalApp.WebAPI.Controllers
 			return terminFacade.GetDetailTerminu(terminId);
 		}
 
-		[HttpPost("/api/terminy/{terminId}/prihlasit")]
-		public void Prihlasit(int terminId, PrihlaskaOdhlaskaDto prihlaskaDto)
+		[HttpPost("/api/terminy/{terminId}/osoby/{osobaId}/prihlasit")]
+		public void Prihlasit(int terminId, int osobaId)
 		{
-			prihlaskaFacade.Prihlasit(terminId, prihlaskaDto);
+			prihlaskaFacade.Prihlasit(terminId, osobaId);
 		}
 
-		[HttpPost("/api/terminy/{terminId}/odhlasit")]
-		public void Odhlasit(int terminId, PrihlaskaOdhlaskaDto odhlaskaDto)
+		[HttpPost("/api/terminy/{terminId}/osoby/{osobaId}/odhlasit")]
+		public void Odhlasit(int terminId, int osobaId)
 		{
-			prihlaskaFacade.Prihlasit(terminId, odhlaskaDto);
+			prihlaskaFacade.Odhlasit(terminId, osobaId);
 		}
 	}
 }

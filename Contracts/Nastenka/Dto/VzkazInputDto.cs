@@ -4,10 +4,9 @@ using System.Text;
 
 namespace KandaEu.Volejbal.Contracts.Nastenka.Dto
 {
-	public class VzkazDto
+	public class VzkazInputDto
 	{
-		public string Author { get; set; }
+		public int AutorId { get; set; }
 		public string Zprava { get; set; }
-		public DateTime DatumVlozeni { get; set; }
 	}
 }

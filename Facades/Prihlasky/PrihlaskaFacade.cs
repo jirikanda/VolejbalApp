@@ -2,7 +2,6 @@
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Havit.Services.TimeServices;
 using KandaEu.Volejbal.DataLayer.DataSources;
-using KandaEu.Volejbal.Facades.Prihlasky.Dto;
 using KandaEu.Volejbal.Model;
 using System;
 using System.Collections.Generic;
@@ -25,12 +24,12 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 			this.prihlaskaDataSource = prihlaskaDataSource;
 		}
 
-		public void Prihlasit(int terminId, PrihlaskaOdhlaskaDto prihlaskaDto)
+		public void Prihlasit(int terminId, int osobaId)
 		{
 			Prihlaska prihlaska = new Prihlaska
 			{
 				TerminId = terminId,
-				OsobaId = prihlaskaDto.OsobaId,
+				OsobaId = osobaId,
 				DatumPrihlaseni = timeService.GetCurrentTime(),
 			};
 
@@ -38,9 +37,9 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 			unitOfWork.Commit();
 		}
 
-		public void Odhlasit(int terminId, PrihlaskaOdhlaskaDto odhlaskaDto)
+		public void Odhlasit(int terminId, int osobaId)
 		{
-			var prihlaska = prihlaskaDataSource.Data.Where(item => (item.TerminId == terminId) && (item.OsobaId == odhlaskaDto.OsobaId)).Single();
+			var prihlaska = prihlaskaDataSource.Data.Where(item => (item.TerminId == terminId) && (item.OsobaId == osobaId)).Single();
 
 			unitOfWork.AddForDelete(prihlaska);
 			unitOfWork.Commit();

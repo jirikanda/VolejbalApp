@@ -1,10 +1,8 @@
-﻿using KandaEu.Volejbal.Facades.Prihlasky.Dto;
-
-namespace KandaEu.Volejbal.Facades.Prihlasky
+﻿namespace KandaEu.Volejbal.Facades.Prihlasky
 {
 	public interface IPrihlaskaFacade
 	{
-		void Prihlasit(int terminId, PrihlaskaOdhlaskaDto prihlaskaDto);
-		void Odhlasit(int terminId, PrihlaskaOdhlaskaDto odhlaskaDto);
+		void Prihlasit(int terminId, int osobaId);
+		void Odhlasit(int terminId, int osobaId);
 	}
 }

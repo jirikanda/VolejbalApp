@@ -63,7 +63,7 @@ namespace KandaEu.Volejbal.Facades.Terminy
 				}
 
 				DateTime datum = posledniDatum.AddDays(1);
-				while (datum.DayOfWeek != DayOfWeek.Tuesday)
+				while (datum.DayOfWeek != DayOfWeek.Tuesday) // TODO: Parametrizovat?
 				{
 					datum = datum.AddDays(1);
 				}

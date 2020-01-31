@@ -30,5 +30,21 @@ namespace KandaEu.Volejbal.Model
 			}
 		}
 
-    }
+		public void ThrowIfDeleted()
+		{
+			if (this.Deleted != null)
+			{
+				throw new InvalidOperationException("Osoba je smazaná.");
+			}
+		}
+
+		public void ThrowIfAktivni()
+		{
+			// TODO: přidat
+			//if (this.Aktivni)
+			//{
+			//	throw new InvalidOperationException("Osoba je aktivní.");
+			//}
+		}
+	}
 }
