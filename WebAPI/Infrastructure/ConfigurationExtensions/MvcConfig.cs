@@ -27,7 +27,6 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 			var mvcBuilder = services
 				.AddControllers(options =>
 				{
-					// TODO: Security policy
 					//var defaultPolicy = new AuthorizationPolicyBuilder(AuthenticationConfig.GetAuthenticationSchemes(configuration))
 					//	.RequireAuthenticatedUser()
 					//	.Build();

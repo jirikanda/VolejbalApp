@@ -13,7 +13,6 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 	{
 		public static void AddCustomizedRequestLocalization(this IServiceCollection services)
 		{
-			// TODO: Jaká culture?
 			CultureInfo czechCulture = new CultureInfo("cs-CZ");
 			services.Configure<RequestLocalizationOptions>(options =>
 			{
