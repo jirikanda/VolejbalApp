@@ -4,7 +4,6 @@ using System.Text;
 
 namespace KandaEu.Volejbal.Contracts.Terminy.Dto
 {
-	//[TsClass]
 	public class TerminDto
 	{
 		public int Id { get; set; }
