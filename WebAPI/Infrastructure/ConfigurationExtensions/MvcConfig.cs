@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -42,9 +41,9 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 					options.SuppressModelStateInvalidFilter = true; // zajišťujeme pomocí ValidateModelAttribute výše
 				})
 #if DEBUG
-				.AddNewtonsoftJson(options => options.SerializerSettings.Formatting = Formatting.Indented);
+				;// TODO .AddNewtonsoftJson(options => options.SerializerSettings.Formatting = Formatting.Indented);
 #else
-				.AddNewtonsoftJson();
+				;// TODO.AddNewtonsoftJson();
 #endif
 		}
 	}
