@@ -7,10 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Castle.Windsor" Version="5.0.0" />
-		<PackageReference Include="Havit.Data.EntityFrameworkCore.Patterns.Windsor" Version="2.0.4" />
-		<PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor" Version="2.0.2" />
-		<PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore" Version="2.0.1" />
+		<PackageReference Include="Castle.Windsor" Version="5.0.1" />
+		<PackageReference Include="Havit.Data.EntityFrameworkCore.Patterns.Windsor" Version="2.1.1" />
+		<PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor" Version="2.0.6" />
+		<PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore" Version="2.0.6" />
 	</ItemGroup>
 
 	<ItemGroup>

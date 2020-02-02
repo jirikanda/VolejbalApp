@@ -13,6 +13,7 @@ namespace KandaEu.Volejbal.Model
 		public DateTime DatumVlozeni { get; set; }
 
 		[Required]
+		[MaxLength]
 		public string Zprava { get; set; }
 
 		public DateTime? Deleted { get; set; }

@@ -84,11 +84,11 @@ namespace KandaEu.Volejbal.WindsorInstallers
 
 		private static void InstallHavitEntityFramework(IWindsorContainer container, InstallConfiguration configuration)
 		{
-			container.WithEntityPatternsInstaller(new ComponentRegistrationOptions { GeneralLifestyle = configuration.ScopedLifestyle })
-				.RegisterEntityPatterns()
+			container.WithEntityPatternsInstaller(c => c.GeneralLifestyle = configuration.ScopedLifestyle)
+				.AddEntityPatterns()
 				//.RegisterLocalizationServices<Language>()
-				.RegisterDbContext<VolejbalDbContext>(new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
-				.RegisterDataLayer(typeof(ITerminDataSource).Assembly);
+				.AddDbContext<VolejbalDbContext>(new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString).Options)
+				.AddDataLayer(typeof(ITerminDataSource).Assembly);
 		}
 
 		private static void InstallHavitServices(IWindsorContainer container)
@@ -100,9 +100,9 @@ namespace KandaEu.Volejbal.WindsorInstallers
 
 		private static void InstallByServiceAttribute(IWindsorContainer container, InstallConfiguration configuration)
 		{
-			container.InstallByServiceAttibute(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
-			container.InstallByServiceAttibute(typeof(KandaEu.Volejbal.Services.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
-			container.InstallByServiceAttibute(typeof(KandaEu.Volejbal.Facades.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
+			container.InstallByServiceAttribute(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
+			container.InstallByServiceAttribute(typeof(KandaEu.Volejbal.Services.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
+			container.InstallByServiceAttribute(typeof(KandaEu.Volejbal.Facades.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles, configuration.ScopedLifestyle);
 		}
 
 		private static void InstallAuthorizationHandlers(IWindsorContainer container, InstallConfiguration installConfiguration)
