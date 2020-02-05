@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security;
-using Castle.Windsor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +18,7 @@ using KandaEu.Volejbal.WebAPI.Infrastructure.Tools;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 using Microsoft.Extensions.Hosting;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
+using KandaEu.Volejbal.DependencyInjection;
 
 [assembly: ApiControllerAttribute]
 
@@ -58,6 +58,8 @@ namespace KandaEu.Volejbal.WebAPI
 
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 			services.AddTransient<ErrorMonitoringFilter>();
+
+            services.ConfigureForWebAPI(configuration);
 		}
 
         /// <summary>

@@ -4,8 +4,7 @@ using Microsoft.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
-using Castle.Windsor.MsDependencyInjection;
-using KandaEu.Volejbal.WindsorInstallers;
+using KandaEu.Volejbal.DependencyInjection;
 
 namespace KandaEu.Volejbal.WebAPI
 {
@@ -28,7 +27,6 @@ namespace KandaEu.Volejbal.WebAPI
 						.UseUrls("http://localhost:9901"); // pro Red-Gate ANTS Performance Profiler
 #endif
 				})
-				.UseServiceProviderFactory(ctx => new WebApiServiceProviderFactory(ctx.Configuration))
 				.ConfigureAppConfiguration((hostContext, config) =>
 				{
 					// delete all default configuration providers

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Castle.MicroKernel.Lifestyle;
-using Castle.Windsor;
-using KandaEu.Volejbal.WindsorInstallers;
+using Havit.Data.EntityFrameworkCore;
+using Havit.Data.Patterns.DataSeeds;
+using KandaEu.Volejbal.DataLayer.Seeds.Core;
+using KandaEu.Volejbal.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KandaEu.Volejbal.TestsForLocalDebugging
@@ -18,24 +21,57 @@ namespace KandaEu.Volejbal.TestsForLocalDebugging
 	{
 		private IDisposable scope;
 
-		protected IWindsorContainer Container { get; private set; }
+		protected IServiceProvider ServiceProvider { get; private set; }
+
+		protected virtual bool UseLocalDb => false;
+		protected virtual bool DeleteDbData => true;
+
+		protected virtual bool SeedData => true;
 
 		[TestInitialize]
 		public virtual void TestInitialize()
 		{
-			IWindsorContainer container = new WindsorContainer();
-			container.ConfigureForTests();
-			scope = container.BeginScope();
+			IServiceCollection services = CreateServiceCollection();
+			IServiceProvider serviceProvider = services.BuildServiceProvider();
 
-			this.Container = container;
+			scope = serviceProvider.CreateScope();
+
+			var dbContext = serviceProvider.GetRequiredService<IDbContext>();
+			if (DeleteDbData)
+			{
+				dbContext.Database.EnsureDeleted();
+			}
+			if (this.UseLocalDb)
+			{
+				dbContext.Database.Migrate();
+			}
+
+			if (this.SeedData)
+			{
+				var dataSeedRunner = serviceProvider.GetRequiredService<IDataSeedRunner>();
+				dataSeedRunner.SeedData<CoreProfile>();
+			}
+
+			this.ServiceProvider = serviceProvider;
 		}
 
 		[TestCleanup]
-		public virtual void TestCleanUp()
+		public virtual void TestCleanup()
 		{
 			scope.Dispose();
-			this.Container.Dispose();
-			this.Container = null;
+			if (this.ServiceProvider is IDisposable)
+			{
+				((IDisposable)this.ServiceProvider).Dispose();
+			}
+			this.ServiceProvider = null;
+		}
+
+		protected virtual IServiceCollection CreateServiceCollection()
+		{
+			IServiceCollection services = new ServiceCollection();
+			services.ConfigureForTests(useInMemoryDb: !UseLocalDb);
+
+			return services;
 		}
 	}
 }

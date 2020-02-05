@@ -11,17 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.3.1" />
 	<PackageReference Include="Havit.AspNetCore.Mvc" Version="2.0.1" />
-    <PackageReference Include="Havit.Extensions.DependencyInjection.CastleWindsor.AspNetCore" Version="2.0.6" />
 	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.1" />
 	<PackageReference Include="NSwag.AspNetCore" Version="13.2.2" />
 	<PackageReference Include="TypeLite.Lib" Version="1.8.4" NoWarn="NU1701" />
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
 	<ProjectReference Include="..\Facades\Facades.csproj" />
-	<ProjectReference Include="..\WindsorInstallers\WindsorInstallers.csproj" />
   </ItemGroup>
 
   <Target Name="TfsPublish" AfterTargets="AfterPublish" Condition="'$(PublishDirectory)' != ''">
