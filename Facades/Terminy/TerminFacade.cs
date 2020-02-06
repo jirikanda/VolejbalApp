@@ -52,6 +52,8 @@ namespace KandaEu.Volejbal.Facades.Terminy
 
 		private void EnsureTerminy()
 		{
+			// TODO: Deaktivace osob
+
 			int budouciTerminyPocet = terminDataSource.Data.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate()).Count();
 
 			if (budouciTerminyPocet < 3)
@@ -92,6 +94,7 @@ namespace KandaEu.Volejbal.Facades.Terminy
 				.ToList();
 
 			List<Osoba> neprihlaseni = osobaDataSource.Data
+				.Where(osoba => osoba.Aktivni)
 				.ToList()
 				.Except(prihlaseni /* in memory */)
 				.OrderBy(item => item.PrijmeniJmeno)

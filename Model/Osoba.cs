@@ -22,6 +22,8 @@ namespace KandaEu.Volejbal.Model
 
 		public DateTime? Deleted { get; set; }
 
+		public bool Aktivni { get; set; } = true;
+
 		public string PrijmeniJmeno
 		{
 			get
@@ -40,11 +42,10 @@ namespace KandaEu.Volejbal.Model
 
 		public void ThrowIfAktivni()
 		{
-			// TODO: přidat
-			//if (this.Aktivni)
-			//{
-			//	throw new InvalidOperationException("Osoba je aktivní.");
-			//}
+			if (this.Aktivni)
+			{
+				throw new InvalidOperationException("Osoba je aktivní.");
+			}
 		}
 	}
 }

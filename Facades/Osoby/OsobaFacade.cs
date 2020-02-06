@@ -43,8 +43,8 @@ namespace KandaEu.Volejbal.Facades.Osoby
 			Osoba osoba = osobaRepository.GetObject(osobaId);
 
 			CheckNeaktivniNesmazana(osoba);
-			// osoba.Aktivni = true; // TODO Aktivni: přidat
-			osoba.Deleted = null; // TODO Aktivni: zrušit
+			
+			osoba.Aktivni = true;
 
 			unitOfWork.AddForUpdate(osoba);
 			unitOfWork.Commit();
@@ -68,8 +68,7 @@ namespace KandaEu.Volejbal.Facades.Osoby
 		{
 			var result = new OsobaListDto
 			{
-				// TODO Aktivni: odkomentovat
-				Osoby = osobaDataSource.Data/*.Where(osoba => osoba.Aktivni)*/
+				Osoby = osobaDataSource.Data.Where(osoba => !osoba.Aktivni)
 				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)
 				.Select(item => new OsobaDto
 				{
