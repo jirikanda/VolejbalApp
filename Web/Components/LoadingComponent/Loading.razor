@@ -1,0 +1,28 @@
+﻿
+@if (State.LoadingInProgress)
+{
+	@LoadingInProgress
+}
+else if (State.LoadingFailed)
+{
+	@LoadingFailed
+}
+else 
+{
+	@Loaded
+}
+
+@code
+{
+	[Parameter]
+	public LoadingState State { get; set; }
+
+	[Parameter]
+	public RenderFragment LoadingInProgress { get; set; }
+	
+	[Parameter]
+	public RenderFragment LoadingFailed { get; set; }
+	
+	[Parameter]
+	public RenderFragment Loaded { get; set; }
+}
