@@ -23,6 +23,12 @@ namespace KandaEu.Volejbal.WebAPI.Controllers
 			osobaFacade.VlozOsobu(osobaInputDto);
 		}
 
+		[HttpGet("api/osoby/aktivni")]
+		public OsobaListDto GetAktivniOsoby()
+		{
+			return osobaFacade.GetAktivniOsoby();
+		}
+
 		[HttpGet("api/osoby/neaktivni")]
 		public OsobaListDto GetNeaktivniOsoby()
 		{
@@ -35,7 +41,7 @@ namespace KandaEu.Volejbal.WebAPI.Controllers
 			osobaFacade.SmazNeaktivniOsobu(osobaId);
 		}
 
-		[HttpPost("api/osoby/neaktivni/{osobaId}/aktivuj")]
+		[HttpPost("api/osoby/neaktivni/{osobaId}/aktivovat")]
 		public void AktivujNeaktivniOsobu(int osobaId)
 		{
 			osobaFacade.AktivujNeaktivniOsobu(osobaId);

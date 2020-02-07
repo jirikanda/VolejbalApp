@@ -11,5 +11,6 @@ namespace KandaEu.Volejbal.Facades.Osoby
 		void SmazNeaktivniOsobu(int osobaId);
 		void AktivujNeaktivniOsobu(int osobaId);
 		OsobaListDto GetNeaktivniOsoby();
+		OsobaListDto GetAktivniOsoby();
 	}
 }

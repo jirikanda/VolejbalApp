@@ -7,12 +7,16 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
 	<TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
-	<OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+	<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
 	<PackageReference Include="Havit.AspNetCore.Mvc" Version="2.0.1" />
 	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.1" />
+	<PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="3.1.1">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
 	<PackageReference Include="NSwag.AspNetCore" Version="13.2.2" />
 	<PackageReference Include="TypeLite.Lib" Version="1.8.4" NoWarn="NU1701" />
   </ItemGroup>

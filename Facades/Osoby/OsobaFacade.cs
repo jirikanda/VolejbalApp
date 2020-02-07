@@ -64,11 +64,22 @@ namespace KandaEu.Volejbal.Facades.Osoby
 			osoba.ThrowIfAktivni();
 		}
 
+
+		public OsobaListDto GetAktivniOsoby()
+		{
+			return GetOsobyByAktivni(true);
+		}
+
 		public OsobaListDto GetNeaktivniOsoby()
+		{
+			return GetOsobyByAktivni(false);
+		}
+
+		public OsobaListDto GetOsobyByAktivni(bool aktivni)
 		{
 			var result = new OsobaListDto
 			{
-				Osoby = osobaDataSource.Data.Where(osoba => !osoba.Aktivni)
+				Osoby = osobaDataSource.Data.Where(osoba => osoba.Aktivni == aktivni)
 				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)
 				.Select(item => new OsobaDto
 				{
