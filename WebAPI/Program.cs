@@ -32,9 +32,8 @@ namespace KandaEu.Volejbal.WebAPI
 					// delete all default configuration providers
 					config.Sources.Clear();
 					config
-						.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-						.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-						.AddJsonFile(@"Config\appsettings.json", optional: true, reloadOnChange: true)
+						.AddJsonFile("appsettings.WebAPI.json", optional: false, reloadOnChange: true)
+						.AddJsonFile($"appsettings.WebAPI.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
 						.AddEnvironmentVariables();
 				})
 				.ConfigureLogging((hostingContext, logging) =>
