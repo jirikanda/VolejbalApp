@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KandaEu.Volejbal.Web.WebApiClients;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +8,7 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 {
 	public class NastenkaState
 	{
-		public bool IsLoading { get; set; }
-		public bool LoadingFailed { get; set; }
-		//public List<VzkazDto> Vzkazy { get; set; }
+		public VzkazListDto Vzkazy { get; set; }
+		public OsobaListDto AktivniOsoby { get; set; }
 	}
 }

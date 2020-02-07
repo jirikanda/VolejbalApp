@@ -35,6 +35,8 @@ namespace KandaEu.Volejbal.Web
 
 			services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>();
 			services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>();
+			services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>();
+			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

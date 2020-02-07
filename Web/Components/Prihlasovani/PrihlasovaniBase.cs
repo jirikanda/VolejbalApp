@@ -29,7 +29,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 		{
 			State.AktualniTerminId = terminId;
 
-			State.IsLoading = true;
+			State.LoadingState.LoadingInProgress = true;
 			State.Prihlaseni = null;
 			State.Neprihlaseni = null;
 			StateHasChanged();
@@ -43,11 +43,11 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			}
 			catch
 			{
-				State.LoadingFailed = true;
+				State.LoadingState.LoadingFailed = true;
 			}
 			finally
 			{
-				State.IsLoading = false;
+				State.LoadingState.LoadingInProgress = false;
 			}
 
 			StateHasChanged();

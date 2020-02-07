@@ -2,20 +2,17 @@
 
 <h2>Termín</h2>
 
-@if (State.IsLoading)
-{
-	<p><em>Načítám termíny...</em></p>
-
-}
-
-@if (State.LoadingFailed)
-{
-	<p><em>Načtení termínů se nezdařilo.</em></p>
-}
+<Loading State="@LoadingState">
+	<LoadingInProgress>
+		<p><em>Načítám termíny...</em></p>
+	</LoadingInProgress>
+	<LoadingFailed>
+		<p><em>Načtení termínů se nezdařilo.</em></p>
+	</LoadingFailed>
+</Loading>
 
 @if (State.Terminy != null)
 {
-
 	<div class="button-set" data-role="button-set">
 
 		@foreach (var termin in State.Terminy)
@@ -30,4 +27,3 @@
 
 	</div>
 }
-

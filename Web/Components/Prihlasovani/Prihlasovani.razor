@@ -6,15 +6,14 @@
 }
 else
 {
-	if (State.IsLoading)
-	{
-		<p><em>Načítám detaily termínu...</em></p>
-	}
-
-	if (State.LoadingFailed)
-	{
-		<p><em>Načtení detailu termínu se nezdařilo.</em></p>
-	}
+	<Loading State="State.LoadingState">
+		<LoadingInProgress>
+			<p><em>Načítám detaily termínu...</em></p>
+		</LoadingInProgress>
+		<LoadingFailed>
+			<p><em>Načtení detailu termínu se nezdařilo.</em></p>
+		</LoadingFailed>
+	</Loading>
 }
 
 @if (State.Prihlaseni != null)

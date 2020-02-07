@@ -1,4 +1,5 @@
 ﻿using EventAggregator.Blazor;
+using KandaEu.Volejbal.Web.Components.LoadingComponent;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -18,13 +19,14 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 		[Inject]
 		public IEventAggregator EventAggregator { get; set; }
 
+		protected LoadingState LoadingState { get; } = new LoadingState();
 		protected TerminyState State { get; } = new TerminyState();
 
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
 
-			State.IsLoading = true;
+			LoadingState.LoadingInProgress = true;
 
 			KandaEu.Volejbal.Web.WebApiClients.TerminListDto terminList;
 			try
@@ -33,13 +35,14 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 			}
 			catch
 			{
-				State.LoadingFailed = true;
+				LoadingState.LoadingFailed = true;
 				throw; // ???
 			}
 			finally
 			{
-				State.IsLoading = false;
+				LoadingState.LoadingInProgress = false;
 			}
+
 			State.Terminy = terminList.Terminy.ToList();
 			
 			StateHasChanged();

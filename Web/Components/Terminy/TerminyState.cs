@@ -8,8 +8,6 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 {
 	public class TerminyState
 	{
-		public bool IsLoading { get; set; }
-		public bool LoadingFailed { get; set; }
 		public List<TerminDto> Terminy { get; set; }
 		public int? CurrentTerminId { get; set; }
 	}

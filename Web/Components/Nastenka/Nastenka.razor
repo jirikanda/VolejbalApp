@@ -1,88 +1,94 @@
-﻿@inject IHttpClientFactory httpClientFactory
+﻿@using KandaEu.Volejbal.Contracts.Nastenka.Dto;
+@using KandaEu.Volejbal.Web.WebApiClients;
 
-<h2>Prihlaseni</h2>
+@inject INastenkaWebApiClient NastenkaWebApiClient
+@inject IOsobaWebApiClient OsobaWebApiClient
 
+@page "/nastenka"
 
-@if (State.AktualniTerminId == null)
+<h2>Vzkazy</h2>
+
+@*// TODO: Loading*@
+
+@if (State.Vzkazy != null)
 {
-	<p><em>Termín není zvolen.</em></p>
-}
-else
-{
-    if (State.IsLoading)
-    {
-		<p><em>Načítám detaily termínu...</em></p>
-    }
-
-    if (State.LoadingFailed)
-    {
-		<p><em>Načtení detailu termínu se nezdařilo.</em></p>
-    }
-}
-
-@if (State.Prihlaseni != null)
-{
-	<h2>Přihlášení</h2>
-	<div>
-
-		@foreach (var prihlaseny in State.Prihlaseni)
-{
-			<p>@prihlaseny.PrijmeniJmeno</p>
-}
-
-		@if (State.Prihlaseni.Count == 0)
-{
-			<span>Na termín není dosud nikdo přihlášen.</span>
-}
-	</div>
-}
-
-@if (State.Neprihlaseni != null)
-{
-	<h2>Nepřihlášení</h2>
-	<div>
-		@foreach (var neprihlaseny in State.Neprihlaseni)
-{
-			<p>@neprihlaseny.PrijmeniJmeno</p>
-}
-	</div>
-}
-
-
-	<div>
-		TerminId: @State.AktualniTerminId
-	</div>
-
-	@functions {
-		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
-
-		public async Task SetCurrentTerminAsync(int terminId)
+	if (State.Vzkazy.Vzkazy.Count == 0)
+	{
+		<p>Na nástěnce není žádný aktuální vzkaz.</p>
+	}
+	else
+	{
+		foreach (var vzkaz in State.Vzkazy.Vzkazy)
 		{
-			State.AktualniTerminId = terminId;
+			<blockquote>
+				<small>@vzkaz.Author dne @vzkaz.DatumVlozeni.DateTime.ToShortDateString() v @vzkaz.DatumVlozeni.DateTime.ToShortTimeString()</small>
+				<p>@vzkaz.Zprava</p>
+			</blockquote>
+			<div>&nbsp;</div>
+		}
+	}
+}
 
-			try
+<h2 class="icon-plus-2">Přidat vzkaz</h2>
+
+<EditForm Model="@formData" OnValidSubmit="OnValidSubmitAsync">
+	<ValidationSummary />
+	<DataAnnotationsValidator />
+
+	<h3>Kdo</h3>
+	<div class="input-control select">
+		<InputSelect TValue="OsobaDto2" style="width:20em;">
+			<option value="">---</option>
+			@if (State.AktivniOsoby != null)
 			{
-				State.IsLoading = true;
-				State.Prihlaseni = null;
-				State.Neprihlaseni = null;
-
-				await Task.Delay(1000);
-
-				//            var terminDetail = await httpClientFactory.CreateClient().GetJsonAsync<KandaEu.Volejbal.Contracts.Terminy.Dto.TerminDetailDto>($"http://localhost:9901/api/terminy/{terminId}");
-				//System.Diagnostics.Debugger.Break();
-
-				//State.Prihlaseni = terminDetail.Prihlaseni;
-				//State.Neprihlaseni = terminDetail.Neprihlaseni;
-				State.LoadingFailed = true;
+				@foreach (var osoba in State.AktivniOsoby.Osoby)
+				{
+					<option selected="selected" value="@osoba.Id">@osoba.PrijmeniJmeno</option>
+				}
 			}
-			catch
-			{
-				State.LoadingFailed = true;
-			}
-			finally
-			{
-				State.IsLoading = false;
-			}
+		</InputSelect>
+	</div>
+
+	<h3>Vzkaz</h3>
+	<div class="input-control textarea">
+		<span></span>
+		<InputTextArea @bind-Value="@formData.Zprava" rows="5" cols="20" style="width:30em;" />
+	</div>
+
+	<input type="submit" value="přidat vzkaz" class="bg-color-red fg-color-white" />
+
+</EditForm>
+
+@code
+{
+	private NastenkaFormData formData = new NastenkaFormData();
+	private LoadingState LoadingState = new LoadingState();
+	private NastenkaState State = new NastenkaState();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await LoadDataAsync();
+	}
+
+	private async Task OnValidSubmitAsync()
+	{
+		// TODO: Sdílení Contracts!
+		await NastenkaWebApiClient.VlozVzkazAsync(new WebApiClients.VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
+		await LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		try
+		{
+			// TODO
+		}
+		catch
+		{
 
 		}
+		State.AktivniOsoby = await OsobaWebApiClient.GetAktivniOsobyAsync();
+		State.Vzkazy = await NastenkaWebApiClient.GetVzkazyAsync();
+	}
 }
