@@ -8,9 +8,16 @@
 
 <h2>Vzkazy</h2>
 
-@*// TODO: Loading*@
+<Loading State="LoadingState">
+	<LoadingInProgress>
+		<p><em>Načítám vzkazy...</em></p>
+	</LoadingInProgress>
+	<LoadingFailed>
+		<p><em>Načtení vzkazů se nezdařilo.</em></p>
+	</LoadingFailed>
+</Loading>
 
-@if (State.Vzkazy != null)
+@if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
 {
 	if (State.Vzkazy.Vzkazy.Count == 0)
 	{
@@ -27,37 +34,37 @@
 			<div>&nbsp;</div>
 		}
 	}
-}
 
-<h2 class="icon-plus-2">Přidat vzkaz</h2>
+	<h2 class="icon-plus-2">Přidat vzkaz</h2>
 
-<EditForm Model="@formData" OnValidSubmit="OnValidSubmitAsync">
-	<ValidationSummary />
-	<DataAnnotationsValidator />
+	<EditForm Model="@formData" OnValidSubmit="OnValidSubmitAsync">
+		<ValidationSummary />
+		<DataAnnotationsValidator />
 
-	<h3>Kdo</h3>
-	<div class="input-control select">
-		<InputSelect TValue="OsobaDto2" style="width:20em;">
-			<option value="">---</option>
-			@if (State.AktivniOsoby != null)
-			{
-				@foreach (var osoba in State.AktivniOsoby.Osoby)
+		<h3>Kdo</h3>
+		<div class="input-control select">
+			<InputSelectNumber @bind-Value="@formData.AutorId" style="width:20em;">
+				<option value="" selected="selected">---</option>
+				@if (State.AktivniOsoby != null)
 				{
-					<option selected="selected" value="@osoba.Id">@osoba.PrijmeniJmeno</option>
+					@foreach (var osoba in State.AktivniOsoby.Osoby)
+					{
+						<option value="@osoba.Id">@osoba.PrijmeniJmeno</option>
+					}
 				}
-			}
-		</InputSelect>
-	</div>
+			</InputSelectNumber>
+		</div>
 
-	<h3>Vzkaz</h3>
-	<div class="input-control textarea">
-		<span></span>
-		<InputTextArea @bind-Value="@formData.Zprava" rows="5" cols="20" style="width:30em;" />
-	</div>
+		<h3>Vzkaz</h3>
+		<div class="input-control textarea">
+			<span></span>
+			<InputTextArea @bind-Value="@formData.Zprava" rows="5" cols="20" style="width:30em;" />
+		</div>
 
-	<input type="submit" value="přidat vzkaz" class="bg-color-red fg-color-white" />
+		<input type="submit" value="přidat vzkaz" class="bg-color-red fg-color-white" />
 
-</EditForm>
+	</EditForm>
+}
 
 @code
 {
@@ -73,22 +80,29 @@
 
 	private async Task OnValidSubmitAsync()
 	{
-		// TODO: Sdílení Contracts!
+		// TODO: Sdílení Contracts!		
 		await NastenkaWebApiClient.VlozVzkazAsync(new WebApiClients.VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
+		formData.Zprava = ""; // vyčistit formulář
 		await LoadDataAsync();
 	}
 
 	private async Task LoadDataAsync()
 	{
+		State.AktivniOsoby = null;
+		State.Vzkazy = null;
 		try
 		{
-			// TODO
+			LoadingState.LoadingInProgress = true;
+			State.AktivniOsoby = await OsobaWebApiClient.GetAktivniOsobyAsync();
+			State.Vzkazy = await NastenkaWebApiClient.GetVzkazyAsync();
 		}
 		catch
 		{
-
+			LoadingState.LoadingFailed = true;
 		}
-		State.AktivniOsoby = await OsobaWebApiClient.GetAktivniOsobyAsync();
-		State.Vzkazy = await NastenkaWebApiClient.GetVzkazyAsync();
+		finally
+		{
+			LoadingState.LoadingInProgress = false;
+		}
 	}
 }

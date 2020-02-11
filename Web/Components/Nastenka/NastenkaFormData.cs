@@ -24,5 +24,10 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		//		Zprava = this.Zprava
 		//	};
 		//}
+
+		public override string ToString()
+		{
+			return $"[AuthorID: {AutorId}, Zprava: {Zprava}]";
+		}
 	}
 }
