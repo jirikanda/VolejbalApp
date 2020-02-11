@@ -1,6 +1,4 @@
-﻿@inherits PrihlasovaniBase
-
-@if (State.AktualniTerminId == null)
+﻿@if (State.AktualniTerminId == null)
 {
 	<p><em>Termín není zvolen.</em></p>
 }
@@ -29,7 +27,7 @@ else
 				<div class="data">
 					@*<h4 class="<%# Item.OsobaId == WebHelper.PrefferedOsobaId ? " strong" : "" %>"><%# Item.Osoba.PrijmeniJmeno %></h4>*@
 					<h4>@prihlaseny.PrijmeniJmeno</h4>
-					<a>odhlásit z termínu</a>
+					<a @onclick="@(_ => Odhlasit(prihlaseny))">odhlásit z termínu</a>
 				</div>
 			</li>
 		}
@@ -55,11 +53,16 @@ else
 				<div class="data">
 					@*<h4 class="<%# Item.Id == WebHelper.PrefferedOsobaId ? " strong" : "" %>"><%# Item.PrijmeniJmeno %></h4>*@
 					<h4>@neprihlaseny.PrijmeniJmeno</h4>
-					<a CommandName="Prihlasit" CommandArgument="<%# Item.Id %>" CssClass="fg-color-orange " runat="server">přihlásit na termín</a>
+					<a @onclick="@(_ => Prihlasit(neprihlaseny))" CssClass="fg-color-orange " runat="server">přihlásit na termín</a>
 				</div>
 			</li>
 		}
 	</ul>
+
+	@if (State.Neprihlaseni.Count == 0)
+	{
+		<p>Všichni jsou přihlášeni.</p>
+	}
 }
 
 

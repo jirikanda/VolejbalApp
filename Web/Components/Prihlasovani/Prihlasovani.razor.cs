@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 {
-	public class PrihlasovaniBase : ComponentBase, EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
+	public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
 	{
 		[Inject]
 		public ITerminWebApiClient TerminWebApiClient { get; set; }
@@ -56,6 +56,20 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 		async Task EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>.HandleAsync(CurrentTerminChanged message)
 		{
 			await SetCurrentTermin(message.TerminId);
+		}
+
+		private async Task Prihlasit(OsobaDto neprihlaseny)
+		{
+			await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, neprihlaseny.Id);
+			State.Prihlaseni.Add(neprihlaseny);
+			State.Neprihlaseni.Remove(neprihlaseny);
+		}
+
+		private async Task Odhlasit(OsobaDto prihlaseny)
+		{
+			await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, prihlaseny.Id);
+			State.Neprihlaseni.Add(prihlaseny);
+			State.Prihlaseni.Remove(prihlaseny);
 		}
 	}
 }
