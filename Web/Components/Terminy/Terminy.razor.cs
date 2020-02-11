@@ -55,11 +55,11 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 			}
 		}
 
-		protected async Task TerminClickAsync(int terminId)
+		protected async Task TerminClickAsync(TerminDto termin)
 		{
 			// TODO: Refactor (Extract)
-			State.CurrentTerminId = terminId;
-			await EventAggregator.PublishAsync(new CurrentTerminChanged(terminId));
+			State.CurrentTerminId = termin.Id;
+			await EventAggregator.PublishAsync(new CurrentTerminChanged(termin.Id));
 		}
 	}
 }
