@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Terminy
 {
-	public class TerminyBase : ComponentBase
+	public partial class Terminy
 	{
 		[Inject]
 		public ITerminWebApiClient TerminWebApiClient { get; set; }
@@ -55,14 +55,11 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 			}
 		}
 
-		protected Func<MouseEventArgs, Task> XButtonClick(int terminId)
+		protected async Task TerminClickAsync(int terminId)
 		{
-			return async (MouseEventArgs e) =>
-			{
-				// TODO: Refactor (Extract)
-				State.CurrentTerminId = terminId;
-				await EventAggregator.PublishAsync(new CurrentTerminChanged(terminId));
-			};
+			// TODO: Refactor (Extract)
+			State.CurrentTerminId = terminId;
+			await EventAggregator.PublishAsync(new CurrentTerminChanged(terminId));
 		}
 	}
 }

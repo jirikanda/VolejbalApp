@@ -1,6 +1,4 @@
-﻿@inherits TerminyBase
-
-<h2>Termín</h2>
+﻿<h2>Termín</h2>
 
 <Loading State="@LoadingState">
 	<LoadingInProgress>
@@ -13,17 +11,17 @@
 
 @if (State.Terminy != null)
 {
-	<div class="button-set" data-role="button-set">
+<div class="button-set" data-role="button-set">
 
-		@foreach (var termin in State.Terminy)
-		{
-			<a class="button @(termin.Id == this.State.CurrentTerminId) ? 'bg-color-blue fg-color-white' : 'bg-color-blueDark fg-color-white')"><span class="box"><span>@termin.Datum.ToString("d. MMMM")</span></span></a>
-		}
+	@foreach (var termin in State.Terminy)
+	{
+		<a class="button @((termin.Id == this.State.CurrentTerminId) ? "bg-color-blue fg-color-white" : "bg-color-blueDark fg-color-white")" @onclick="@(_ => TerminClickAsync(termin.Id))"><span class="box"><span>@termin.Datum.ToString("d. MMMM")</span></span></a>
+	}
 
-		@if (State.Terminy.Count == 0)
-		{
-			<span>Žádné termíny nejsou k dispozici.</span>
-		}
+	@if (State.Terminy.Count == 0)
+	{
+		<span>Žádné termíny nejsou k dispozici.</span>
+	}
 
-	</div>
+</div>
 }
