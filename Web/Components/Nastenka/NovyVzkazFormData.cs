@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Nastenka
 {
-	public class NastenkaFormData
+	public class NovyVzkazFormData
 	{
 		[Required(ErrorMessage = "Zadej, kdo zprávu posílá.")]
 		public int? AutorId { get; set; }

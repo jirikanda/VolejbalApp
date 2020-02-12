@@ -8,13 +8,13 @@
 
 @if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
 {
-	if (State.Vzkazy.Vzkazy.Count == 0)
+	if (State.Vzkazy.Count == 0)
 	{
 		<p>Na nástěnce není žádný aktuální vzkaz.</p>
 	}
 	else
 	{
-		foreach (var vzkaz in State.Vzkazy.Vzkazy)
+		foreach (var vzkaz in State.Vzkazy)
 		{
 			<blockquote>
 				<small>@vzkaz.Author dne @vzkaz.DatumVlozeni.DateTime.ToShortDateString() v @vzkaz.DatumVlozeni.DateTime.ToShortTimeString()</small>
@@ -36,7 +36,7 @@
 				<option value="" selected="selected">---</option>
 				@if (State.AktivniOsoby != null)
 					{
-					@foreach (var osoba in State.AktivniOsoby.Osoby)
+					@foreach (var osoba in State.AktivniOsoby)
 						{
 						<option value="@osoba.Id">@osoba.PrijmeniJmeno</option>
 						}

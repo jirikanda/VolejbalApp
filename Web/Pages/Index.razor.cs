@@ -10,10 +10,10 @@ namespace KandaEu.Volejbal.Web.Pages
 	public partial class Index
 	{
 		[Inject]
-		public INastenkaWebApiClient NastenkaWebApiClient { get; set; }
+		protected INastenkaWebApiClient NastenkaWebApiClient { get; set; }
 		
 		[Inject]
-		Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
+		protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
 
 		protected bool ShowNastenkaLink { get; set; }
 

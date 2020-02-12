@@ -13,10 +13,10 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 	public partial class Terminy
 	{
 		[Inject]
-		public ITerminWebApiClient TerminWebApiClient { get; set; }
+		protected ITerminWebApiClient TerminWebApiClient { get; set; }
 		
 		[Inject]
-		public IEventAggregator EventAggregator { get; set; }
+		protected IEventAggregator EventAggregator { get; set; }
 
 		protected TerminyState State { get; } = new TerminyState();
 

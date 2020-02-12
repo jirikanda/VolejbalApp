@@ -12,10 +12,10 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 	public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
 	{
 		[Inject]
-		public ITerminWebApiClient TerminWebApiClient { get; set; }
+		protected ITerminWebApiClient TerminWebApiClient { get; set; }
 
 		[Inject]
-		public EventAggregator.Blazor.IEventAggregator EventAggregator { get; set; }
+		protected EventAggregator.Blazor.IEventAggregator EventAggregator { get; set; }
 
 		[CascadingParameter]
 		protected Progress Progress { get; set; }
@@ -28,7 +28,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			EventAggregator.Subscribe(this);
 		}
 
-		public async Task SetCurrentTermin(int terminId)
+		protected async Task SetCurrentTermin(int terminId)
 		{
 			State.AktualniTerminId = terminId;
 

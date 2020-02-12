@@ -10,17 +10,17 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 	public partial class ZalozeniNoveOsoby
 	{
 		[Inject]
-		public IOsobaWebApiClient OsobaWebApiClient { get; set; }
+		protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
 
 		[Inject]
-		public NavigationManager NavigationManager { get; set; }
+		protected NavigationManager NavigationManager { get; set; }
 
 		[CascadingParameter]
-		public Progress Progress { get; set; }
+		protected Progress Progress { get; set; }
 
-		public NovaOsobaFormData formData = new NovaOsobaFormData();
-		
-		private async Task ValidSubmit()
+		protected NovaOsobaFormData formData = new NovaOsobaFormData();
+
+		protected async Task ValidSubmit()
 		{
 			OsobaInputDto novaOsoba = new OsobaInputDto()
 			{

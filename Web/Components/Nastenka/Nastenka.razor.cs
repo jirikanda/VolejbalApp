@@ -8,7 +8,7 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 {
 	public partial class Nastenka
 	{
-		private NastenkaFormData formData = new NastenkaFormData();
+		private NovyVzkazFormData formData = new NovyVzkazFormData();
 		private NastenkaState State = new NastenkaState();
 
 		[CascadingParameter]
@@ -36,8 +36,8 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 
 			await Progress.ExecuteInProgressAsync(async () =>
 			{
-				State.AktivniOsoby = await OsobaWebApiClient.GetAktivniOsobyAsync();
-				State.Vzkazy = await NastenkaWebApiClient.GetVzkazyAsync();
+				State.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
+				State.Vzkazy = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.ToList();
 			});
 		}
 	}
