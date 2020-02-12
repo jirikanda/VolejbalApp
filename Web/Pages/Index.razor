@@ -1,7 +1,9 @@
 ﻿@page "/"
 
-TODO: Jen někdy
-<a href="/Nastenka" class="fg-color-red">Na nástěnce jsou nové vzkazy!</a>
+@if (@ShowNastenkaLink)
+{
+	<a href="/Nastenka" class="fg-color-red">Na nástěnce jsou nové vzkazy!</a>
+}
 
 <Terminy />
 <Prihlasovani />
