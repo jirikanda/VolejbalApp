@@ -1,5 +1,5 @@
-﻿using KandaEu.Volejbal.Web.Components.LoadingComponent;
-using System;
+﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +9,10 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 	public partial class Nastenka
 	{
 		private NastenkaFormData formData = new NastenkaFormData();
-		private LoadingState LoadingState = new LoadingState();
 		private NastenkaState State = new NastenkaState();
+
+		[CascadingParameter]
+		public Progress Progress { get; set; }
 
 		protected override async Task OnInitializedAsync()
 		{
@@ -30,20 +32,13 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		{
 			State.AktivniOsoby = null;
 			State.Vzkazy = null;
-			try
+
+
+			await Progress.ExecuteInProgressAsync(async () =>
 			{
-				LoadingState.LoadingInProgress = true;
 				State.AktivniOsoby = await OsobaWebApiClient.GetAktivniOsobyAsync();
 				State.Vzkazy = await NastenkaWebApiClient.GetVzkazyAsync();
-			}
-			catch
-			{
-				LoadingState.LoadingFailed = true;
-			}
-			finally
-			{
-				LoadingState.LoadingInProgress = false;
-			}
+			});
 		}
 	}
 }

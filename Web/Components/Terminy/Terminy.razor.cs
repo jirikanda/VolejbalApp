@@ -1,5 +1,4 @@
 ﻿using EventAggregator.Blazor;
-using KandaEu.Volejbal.Web.Components.LoadingComponent;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -19,29 +18,16 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 		[Inject]
 		public IEventAggregator EventAggregator { get; set; }
 
-		protected LoadingState LoadingState { get; } = new LoadingState();
 		protected TerminyState State { get; } = new TerminyState();
+
+		[CascadingParameter]
+		protected ProgressComponent.Progress Progress { get; set; }
 
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
 
-			LoadingState.LoadingInProgress = true;
-
-			KandaEu.Volejbal.Web.WebApiClients.TerminListDto terminList;
-			try
-			{
-				terminList = await TerminWebApiClient.GetTerminyAsync();
-			}
-			catch
-			{
-				LoadingState.LoadingFailed = true;
-				throw; // ???
-			}
-			finally
-			{
-				LoadingState.LoadingInProgress = false;
-			}
+			KandaEu.Volejbal.Web.WebApiClients.TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetTerminyAsync());
 
 			State.Terminy = terminList.Terminy.ToList();
 			

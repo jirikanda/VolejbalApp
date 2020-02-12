@@ -1,7 +1,7 @@
-﻿using KandaEu.Volejbal.Web.Components.Terminy;
+﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+using KandaEu.Volejbal.Web.Components.Terminy;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -17,6 +17,9 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 		[Inject]
 		public EventAggregator.Blazor.IEventAggregator EventAggregator { get; set; }
 
+		[CascadingParameter]
+		protected Progress Progress { get; set; }
+
 		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
 		protected override void OnInitialized()
@@ -29,26 +32,14 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 		{
 			State.AktualniTerminId = terminId;
 
-			State.LoadingState.LoadingInProgress = true;
 			State.Prihlaseni = null;
 			State.Neprihlaseni = null;
 			StateHasChanged();
 
-			try
-			{
-				var terminDetail = await TerminWebApiClient.GetDetailTerminuAsync(terminId);
+			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetDetailTerminuAsync(terminId));
 
-				State.Prihlaseni = terminDetail.Prihlaseni.ToList();
-				State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
-			}
-			catch
-			{
-				State.LoadingState.LoadingFailed = true;
-			}
-			finally
-			{
-				State.LoadingState.LoadingInProgress = false;
-			}
+			State.Prihlaseni = terminDetail.Prihlaseni.ToList();
+			State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
 
 			StateHasChanged();
 		}

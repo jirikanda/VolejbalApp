@@ -8,15 +8,6 @@
 
 <h2>Vzkazy</h2>
 
-<Loading State="LoadingState">
-	<LoadingInProgress>
-		<p><em>Načítám vzkazy...</em></p>
-	</LoadingInProgress>
-	<LoadingFailed>
-		<p><em>Načtení vzkazů se nezdařilo.</em></p>
-	</LoadingFailed>
-</Loading>
-
 @if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
 {
 	if (State.Vzkazy.Vzkazy.Count == 0)
