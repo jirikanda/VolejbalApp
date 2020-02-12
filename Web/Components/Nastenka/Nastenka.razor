@@ -6,8 +6,6 @@
 
 @page "/nastenka"
 
-<h2>Vzkazy</h2>
-
 @if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
 {
 	if (State.Vzkazy.Vzkazy.Count == 0)
@@ -37,12 +35,14 @@
 			<InputSelectNumber @bind-Value="@formData.AutorId" style="width:20em;">
 				<option value="" selected="selected">---</option>
 				@if (State.AktivniOsoby != null)
-				{
-					@foreach (var osoba in State.AktivniOsoby.Osoby)
 					{
+					@foreach (var osoba in State.AktivniOsoby.Osoby)
+						{
 						<option value="@osoba.Id">@osoba.PrijmeniJmeno</option>
+						}
+					/**/
 					}
-				}
+				/**/
 			</InputSelectNumber>
 		</div>
 
