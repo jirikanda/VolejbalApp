@@ -1,0 +1,21 @@
+﻿<h2 class="icon-plus-2">Založení nové osoby</h2>
+
+<EditForm Model="@formData" OnValidSubmit="ValidSubmit">
+
+	<h3>jméno</h3>
+	<div class="input-control text">
+		<input type="text" maxlength="50" style="width:22em;" @bind-value="@formData.Jmeno" />
+	</div>
+
+	<h3>příjmení</h3>
+	<div class="input-control text">
+		<input type="text" maxlength="50" style="width:22em;" @bind-value="@formData.Prijmeni"/>
+	</div>
+
+	<h3>email</h3>
+	<div class="input-control email">
+		<input type="text" maxlength="50" style="width:22em;" @bind-value="@formData.Email"/>
+	</div>
+
+	<input type="submit" value="založit osobu" class="bg-color-green fg-color-white" />
+</EditForm>

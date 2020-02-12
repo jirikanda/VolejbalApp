@@ -1,0 +1,27 @@
+﻿<h2>Aktivace deaktivované osoby</h2>
+<p>Kdo na volejbale nebyl 2 měsíce, je automaticky deaktivován. Může se zde znovu aktivovat a přihlásit se (nepřihlásí-li se, je další den opět deaktivován).</p>
+
+@if (osoby != null)
+{
+	@if (osoby.Osoby.Count > 0)
+	{
+		<div>
+			<table class="bordered" cellspacing="0" style="border-collapse:collapse;">
+				@foreach (var osoba in osoby.Osoby)
+				{
+					<tr>
+						<td>@osoba.PrijmeniJmeno</td>
+						<td>
+							<a class="fg-color-green" @onclick="@(() => Aktivovat(osoba))">aktivovat</a>
+							<a class="fg-color-red" @onclick="@(() => Smazat(osoba))">smazat</a>
+						</td>
+					</tr>
+				}
+			</table>
+		</div>
+	}
+	else
+	{
+		<p>Neevidujeme žádné neaktivní osoby.</p>
+	}
+}
