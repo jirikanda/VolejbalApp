@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using KandaEu.Volejbal.Web.WebApiClients;
 using KandaEu.Volejbal.Web.App_Start;
+using Blazored.LocalStorage;
 
 namespace KandaEu.Volejbal.Web
 {
@@ -37,7 +38,9 @@ namespace KandaEu.Volejbal.Web
 			services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>();
 			services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>();
 			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>();
-		}
+
+            services.AddBlazoredLocalStorage();
+        }
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
