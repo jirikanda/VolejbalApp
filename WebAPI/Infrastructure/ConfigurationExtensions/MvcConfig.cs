@@ -39,11 +39,9 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 					//options.SuppressConsumesConstraintForFormFileParameters = true;
 					//options.SuppressInferBindingSourcesForParameters = true;
 					options.SuppressModelStateInvalidFilter = true; // zajišťujeme pomocí ValidateModelAttribute výše
-				})
+				});
 #if DEBUG
-				;// TODO .AddNewtonsoftJson(options => options.SerializerSettings.Formatting = Formatting.Indented);
-#else
-				;// TODO.AddNewtonsoftJson();
+			mvcBuilder.AddJsonOptions(c => c.JsonSerializerOptions.WriteIndented = true);
 #endif
 		}
 	}
