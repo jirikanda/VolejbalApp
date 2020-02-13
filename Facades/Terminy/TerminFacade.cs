@@ -6,6 +6,7 @@ using KandaEu.Volejbal.DataLayer.DataSources;
 using KandaEu.Volejbal.Facades.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
 using KandaEu.Volejbal.Model;
+using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,20 +23,20 @@ namespace KandaEu.Volejbal.Facades.Terminy
 		private readonly IOsobaDataSource osobaDataSource;
 		private readonly ITimeService timeService;
 		private readonly IUnitOfWork unitOfWork;
+		private readonly IEnsureTerminyService ensureTerminyService;
 
-		public TerminFacade(ITerminDataSource terminDataSource, IPrihlaskaDataSource prihlaskaDataSource, IOsobaDataSource osobaDataSource, ITimeService timeService, IUnitOfWork unitOfWork)
+		public TerminFacade(ITerminDataSource terminDataSource, IPrihlaskaDataSource prihlaskaDataSource, IOsobaDataSource osobaDataSource, ITimeService timeService, IUnitOfWork unitOfWork, IEnsureTerminyService ensureTerminyService)
 		{
 			this.terminDataSource = terminDataSource;
 			this.prihlaskaDataSource = prihlaskaDataSource;
 			this.osobaDataSource = osobaDataSource;
 			this.timeService = timeService;
 			this.unitOfWork = unitOfWork;
+			this.ensureTerminyService = ensureTerminyService;
 		}
 
 		public TerminListDto GetTerminy()
 		{
-			EnsureTerminy();
-
 			var terminy = terminDataSource.Data
 				.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
 				.Select(item => new TerminDto
@@ -43,43 +44,14 @@ namespace KandaEu.Volejbal.Facades.Terminy
 					Id = item.Id,
 					Datum = item.Datum
 				}).ToList();
-			
+		
 			return new TerminListDto
 			{
 				Terminy = terminy
 			};
 		}
 
-		private void EnsureTerminy()
-		{
-			// TODO: Deaktivace osob
-
-			int budouciTerminyPocet = terminDataSource.Data.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate()).Count();
-
-			if (budouciTerminyPocet < 3)
-			{
-				DateTime posledniDatum = terminDataSource.DataWithDeleted.OrderByDescending(item => item.Datum).Select(item => item.Datum).FirstOrDefault();
-				if (posledniDatum < timeService.GetCurrentDate())
-				{
-					posledniDatum = timeService.GetCurrentDate();
-				}
-
-				DateTime datum = posledniDatum.AddDays(1);
-				while (datum.DayOfWeek != DayOfWeek.Tuesday) // TODO: Parametrizovat?
-				{
-					datum = datum.AddDays(1);
-				}
-
-				for (int i = budouciTerminyPocet; i < 3; i++)
-				{
-					Termin termin = new Termin { Datum = datum };
-					unitOfWork.AddForInsert(termin);
-					datum = datum.AddDays(7);
-				}
-
-				unitOfWork.Commit();
-			}
-		}
+	
 
 		public TerminDetailDto GetDetailTerminu(int terminId)
 		{

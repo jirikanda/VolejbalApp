@@ -11,5 +11,7 @@ namespace KandaEu.Volejbal.Model
 		public DateTime Datum { get; set; }
 
 		public DateTime? Deleted { get; set; }
+
+		public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
 	}
 }

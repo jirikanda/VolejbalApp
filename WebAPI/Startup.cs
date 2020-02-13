@@ -19,6 +19,8 @@ using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 using Microsoft.Extensions.Hosting;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
+using KandaEu.Volejbal.Services.DeaktivaceOsob;
+using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 [assembly: ApiControllerAttribute]
 
@@ -58,6 +60,10 @@ namespace KandaEu.Volejbal.WebAPI
 
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 			services.AddTransient<ErrorMonitoringFilter>();
+
+            // background jobs
+            services.AddHostedService<DeaktivaceOsobBackgroundService>();
+            services.AddHostedService<EnsureTerminyBackgroundService>();
 
             services.ConfigureForWebAPI(configuration);
 		}

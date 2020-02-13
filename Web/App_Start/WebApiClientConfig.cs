@@ -12,7 +12,9 @@ namespace KandaEu.Volejbal.Web.App_Start
 			where TClient : class
 			where TImplementation : class, TClient
 		{
-			services.AddHttpClient<TClient, TImplementation>().ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:9901/"));
+			services.AddHttpClient<TClient, TImplementation>()
+				.ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:9901/"))
+				.AddPolicyHandler()
 		}
 	}
 }
