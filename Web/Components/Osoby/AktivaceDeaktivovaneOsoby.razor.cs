@@ -1,6 +1,7 @@
 ﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 
 		[CascadingParameter]
 		protected Progress Progress { get; set; }
+
+		[Inject]
+		protected IJSRuntime JSRuntime { get; set; }
 
 		protected OsobaListDto osoby;
 
@@ -32,9 +36,12 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 
 		protected async Task Smazat(OsobaDto2 osoba)
 		{
-			// TODO: TOASTER
-			await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
-			osoby.Osoby.Remove(osoba);
+			bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Opravdu chceš smazat osobu \"{osoba.PrijmeniJmeno}\"?");
+			if (confirmed)
+			{
+				await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
+				osoby.Osoby.Remove(osoba);
+			}
 		}
 	}
 }
