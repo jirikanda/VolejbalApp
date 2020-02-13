@@ -6,17 +6,21 @@
 	@if (osoby.Osoby.Count > 0)
 	{
 		<div>
-			<table class="bordered" cellspacing="0" style="border-collapse:collapse;">
-				@foreach (var osoba in osoby.Osoby)
-				{
-					<tr>
-						<td>@osoba.PrijmeniJmeno</td>
-						<td>
-							<a class="fg-color-green" @onclick="@(() => Aktivovat(osoba))">aktivovat</a>
-							<a class="fg-color-red" @onclick="@(() => Smazat(osoba))">smazat</a>
-						</td>
-					</tr>
-				}
+			<table class="bordered" cellspacing="0" style="border-collapse:collapse; width: inherit;">
+				<tbody>
+					@foreach (var osoba in osoby.Osoby)
+					{
+						<tr>
+							<td>@osoba.PrijmeniJmeno</td>
+							<td>
+								<a class="fg-color-green" @onclick="@(() => Aktivovat(osoba))">aktivovat</a>
+							</td>
+							<td>
+								<a class="fg-color-red" @onclick="@(() => Smazat(osoba))">smazat</a>
+							</td>
+						</tr>
+					}
+				</tbody>
 			</table>
 		</div>
 	}

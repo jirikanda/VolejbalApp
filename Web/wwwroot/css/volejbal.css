@@ -62,3 +62,12 @@ h4.strong
     font-weight: bold;
     color: black;
 }
+
+a:hover {
+    cursor: pointer;
+}
+
+.listview li
+{
+    cursor: inherit;
+}
