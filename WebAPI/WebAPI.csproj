@@ -26,11 +26,11 @@
 	<ProjectReference Include="..\Facades\Facades.csproj" />
   </ItemGroup>
 
-  <Target Name="TfsPublish" AfterTargets="AfterPublish" Condition="'$(PublishDirectory)' != ''">
-	<ItemGroup>
-	  <WebToCopy Include="obj\Release\TfsPublish\**\*.*" />
-	  <WebToCopy Remove="obj\Release\TfsPublish\Config\*.*" />
-	</ItemGroup>
-	<Copy SourceFiles="@(WebToCopy)" DestinationFiles="@(WebToCopy->'$(PublishDirectory)\WebAPI\%(RecursiveDir)%(Filename)%(Extension)')" />
-  </Target>
+	<Target Name="TfsPublish" AfterTargets="AfterPublish" Condition="'$(PublishDirectory)' != ''">
+		<ItemGroup>
+			<PublishToCopy Include="obj\Release\TfsPublish\*.zip" />
+		</ItemGroup>
+		<Copy SourceFiles="@(PublishToCopy)" DestinationFolder="$(PublishDirectory)\WebAPI" />
+	</Target>
+
 </Project>
