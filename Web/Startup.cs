@@ -34,10 +34,10 @@ namespace KandaEu.Volejbal.Web
             services.AddServerSideBlazor();
 			services.AddHttpClient();
 
-			services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>();
-			services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>();
-			services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>();
-			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>();
+			services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(Configuration);
+			services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(Configuration);
+			services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(Configuration);
+			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(Configuration);
 
             services.AddBlazoredLocalStorage();
         }

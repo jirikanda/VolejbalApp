@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,12 @@ namespace KandaEu.Volejbal.Web.App_Start
 {
 	public static class WebApiClientConfig
 	{
-		public static void AddCustomizedHttpClient<TClient, TImplementation>(this IServiceCollection services)
+		public static void AddCustomizedHttpClient<TClient, TImplementation>(this IServiceCollection services, IConfiguration configuration)
 			where TClient : class
 			where TImplementation : class, TClient
 		{
-			services.AddHttpClient<TClient, TImplementation>().ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:9901/"));
+			string webAPIUrl = configuration.GetValue<string>("WebAPIUrl");
+			services.AddHttpClient<TClient, TImplementation>().ConfigureHttpClient(c => c.BaseAddress = new Uri(webAPIUrl));
 		}
 	}
 }
