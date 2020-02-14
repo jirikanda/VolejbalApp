@@ -8,6 +8,7 @@
 	<NoWarn>1701;1702;1705;1591</NoWarn>
 	<TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
 	<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

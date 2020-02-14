@@ -5,6 +5,7 @@
     <LangVersion>8.0</LangVersion>
     <AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
     <RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
