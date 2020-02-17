@@ -19,6 +19,7 @@ namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
+			await Task.Delay(15000, stoppingToken); // workaround: necháme aplikaci nastartovat a spustit migrace
 			while (!stoppingToken.IsCancellationRequested)
 			{
 				using (var scope = serviceProvider.CreateScope())

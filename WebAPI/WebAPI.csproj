@@ -18,7 +18,7 @@
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
-	<PackageReference Include="NSwag.AspNetCore" Version="13.2.2" />
+	  <PackageReference Include="NSwag.AspNetCore" Version="13.2.2" />
 	<PackageReference Include="TypeLite.Lib" Version="1.8.4" NoWarn="NU1701" />
   </ItemGroup>
 
