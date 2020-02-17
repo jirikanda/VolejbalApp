@@ -13,8 +13,8 @@ namespace KandaEu.Volejbal.Web.App_Start
 			where TClient : class
 			where TImplementation : class, TClient
 		{
-			string webAPIUrl = configuration.GetValue<string>("WebAPIUrl");
-			services.AddHttpClient<TClient, TImplementation>().ConfigureHttpClient(c => c.BaseAddress = new Uri(webAPIUrl));
+			string webAPIConnectionString = configuration.GetConnectionString("WebAPI");
+			services.AddHttpClient<TClient, TImplementation>().ConfigureHttpClient(c => c.BaseAddress = new Uri(webAPIConnectionString));
 		}
 	}
 }

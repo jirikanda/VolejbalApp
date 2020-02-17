@@ -23,6 +23,15 @@ namespace KandaEu.Volejbal.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureAppConfiguration((hostContext, config) =>
+                {
+                    // delete all default configuration providers
+                    config.Sources.Clear();
+                    config
+                        .AddJsonFile("appsettings.Web.json", optional: false, reloadOnChange: false)
+                        .AddJsonFile($"appsettings.Web.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false)
+                        .AddEnvironmentVariables();
                 });
     }
 }
