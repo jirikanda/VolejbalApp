@@ -46,9 +46,8 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 			{
 				await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
 				osoby.Osoby.Remove(osoba);
+				Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
 			}
-			
-			Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
 		}
 	}
 }
