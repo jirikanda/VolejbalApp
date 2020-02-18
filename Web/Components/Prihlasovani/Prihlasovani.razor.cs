@@ -23,12 +23,29 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
 		[Inject]
+		Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
+
+		[Inject]
 		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
+
+		protected int? PrefferedOsobaId { get; set; }
 
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 			EventAggregator.Subscribe(this);
+		}
+
+		protected override async Task OnAfterRenderAsync(bool firstRender)
+		{
+			await base.OnAfterRenderAsync(firstRender);
+			if (firstRender)
+			{
+				if (await LocalStorageService.ContainKeyAsync("PrefferedOsobaId"))
+				{
+					this.PrefferedOsobaId = await LocalStorageService.GetItemAsync<int>("PrefferedOsobaId");
+				}
+			}
 		}
 
 		protected async Task SetCurrentTermin(int terminId)
@@ -74,6 +91,9 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			neprihlaseni.Remove(neprihlaseny);
 
 			Toaster.Success($"{neprihlaseny.PrijmeniJmeno} přihlášen(a).");
+			
+			await LocalStorageService.SetItemAsync("PrefferedOsobaId", neprihlaseny.Id);
+			PrefferedOsobaId = neprihlaseny.Id;
 		}
 
 		private async Task Odhlasit(OsobaDto prihlaseny)
