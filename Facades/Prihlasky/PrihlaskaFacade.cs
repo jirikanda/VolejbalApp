@@ -2,6 +2,7 @@
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Havit.Services.TimeServices;
 using KandaEu.Volejbal.DataLayer.DataSources;
+using KandaEu.Volejbal.DataLayer.Repositories;
 using KandaEu.Volejbal.Model;
 using System;
 using System.Collections.Generic;
@@ -15,34 +16,47 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 	{
 		private readonly IUnitOfWork unitOfWork;
 		private readonly ITimeService timeService;
-		private readonly IPrihlaskaDataSource prihlaskaDataSource;
+		private readonly IPrihlaskaRepository prihlaskaRepository;
 
-		public PrihlaskaFacade(IUnitOfWork unitOfWork, ITimeService timeService, IPrihlaskaDataSource prihlaskaDataSource)
+		private static object _lock = new object();
+
+		public PrihlaskaFacade(IUnitOfWork unitOfWork, ITimeService timeService, IPrihlaskaRepository prihlaskaRepository)
 		{
 			this.unitOfWork = unitOfWork;
 			this.timeService = timeService;
-			this.prihlaskaDataSource = prihlaskaDataSource;
+			this.prihlaskaRepository = prihlaskaRepository;
 		}
 
 		public void Prihlasit(int terminId, int osobaId)
 		{
-			Prihlaska prihlaska = new Prihlaska
+			lock (_lock)
 			{
-				TerminId = terminId,
-				OsobaId = osobaId,
-				DatumPrihlaseni = timeService.GetCurrentTime(),
-			};
+				if (prihlaskaRepository.GetPrihlaska(terminId, osobaId) == null)
+				{
+					Prihlaska prihlaska = new Prihlaska
+					{
+						TerminId = terminId,
+						OsobaId = osobaId,
+						DatumPrihlaseni = timeService.GetCurrentTime(),
+					};
 
-			unitOfWork.AddForInsert(prihlaska);
-			unitOfWork.Commit();
+					unitOfWork.AddForInsert(prihlaska);
+					unitOfWork.Commit();
+				}
+			}
 		}
 
 		public void Odhlasit(int terminId, int osobaId)
 		{
-			var prihlaska = prihlaskaDataSource.Data.Where(item => (item.TerminId == terminId) && (item.OsobaId == osobaId)).Single();
-
-			unitOfWork.AddForDelete(prihlaska);
-			unitOfWork.Commit();
+			lock (_lock)
+			{
+				Prihlaska prihlaska = prihlaskaRepository.GetPrihlaska(terminId, osobaId);
+				if (prihlaska != null)
+				{
+					unitOfWork.AddForDelete(prihlaska);
+					unitOfWork.Commit();
+				}
+			}
 		}
 	}
 }

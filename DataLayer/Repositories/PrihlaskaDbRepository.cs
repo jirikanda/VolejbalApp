@@ -14,6 +14,9 @@ namespace KandaEu.Volejbal.DataLayer.Repositories
 {
 	public partial class PrihlaskaDbRepository : IPrihlaskaRepository
 	{
-		
+		public Prihlaska GetPrihlaska(int terminId, int osobaId)
+		{
+			return Data.Where(item => (item.TerminId == terminId) && (item.OsobaId == osobaId)).SingleOrDefault();
+		}
 	}
 }

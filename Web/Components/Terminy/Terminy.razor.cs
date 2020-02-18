@@ -35,15 +35,17 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 
 			if (State.Terminy.Count > 0)
 			{
-				// TODO: Refactor (Extract)
-				State.CurrentTerminId = State.Terminy[0].Id;
-				await EventAggregator.PublishAsync(new CurrentTerminChanged(State.Terminy[0].Id));
+				await SetCurrentTerminAsync(State.Terminy[0]);
 			}
 		}
 
 		protected async Task TerminClickAsync(TerminDto termin)
 		{
-			// TODO: Refactor (Extract)
+			await SetCurrentTerminAsync(termin);
+		}
+
+		private async Task SetCurrentTerminAsync(TerminDto termin)
+		{
 			State.CurrentTerminId = termin.Id;
 			await EventAggregator.PublishAsync(new CurrentTerminChanged(termin.Id));
 		}

@@ -51,16 +51,38 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 
 		private async Task Prihlasit(OsobaDto neprihlaseny)
 		{
-			await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, neprihlaseny.Id);
-			State.Prihlaseni.Add(neprihlaseny);
-			State.Neprihlaseni.Remove(neprihlaseny);
+			// pokud kliknu na přihlášení a následně na změnu termínu, dojde
+			// - ke spuštění volání API pro přihlášení
+			// - k nastavení State.Prihlaseni na null
+			// - a k spuštění volní API pro načtení detailů termínu.
+			// Pokud dojde k dokončení přihlášení před načtením termínu, je již State.Prihlaseni a State.Neprihlaseni null.
+			// Pokud dokde k dokončení přihlášení po načtení termíu, jsou ve State.Prihlaseni a State.Neprihlaseni hodnoty nového termínu.
+			// Takže nemůžeme volat Add/Remove nad State.Prihlaseni. Potřebujeme je volat nad kolekcemi platnými před spuštěním přihlašování.
+
+			var prihlaseni = State.Prihlaseni;
+			var neprihlaseni = State.Neprihlaseni;
+
+			await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, neprihlaseny.Id));
+
+			if (!prihlaseni.Contains(neprihlaseny))
+			{
+				prihlaseni.Add(neprihlaseny);
+			}
+			neprihlaseni.Remove(neprihlaseny);
 		}
 
 		private async Task Odhlasit(OsobaDto prihlaseny)
 		{
-			await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, prihlaseny.Id);
-			State.Neprihlaseni.Add(prihlaseny);
-			State.Prihlaseni.Remove(prihlaseny);
+			var prihlaseni = State.Prihlaseni;
+			var neprihlaseni = State.Neprihlaseni;
+
+			await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, prihlaseny.Id));
+
+			if (!neprihlaseni.Contains(prihlaseny)) // pokud došlo k doubleclicku, mohl se tam dostat
+			{
+				neprihlaseni.Add(prihlaseny);
+			}
+			prihlaseni.Remove(prihlaseny);
 		}
 	}
 }
