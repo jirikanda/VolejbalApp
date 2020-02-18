@@ -15,9 +15,20 @@
 <body class="modern-ui">
 	<div class="page secondary">
 		<app>
-			@(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered))
+			@(await Html.RenderComponentAsync<App>(RenderMode.Server))
 		</app>
 	</div>
+
+	<div id="blazor-error-ui">
+		<environment include="Staging,Production">
+			V aplikaci došlo k chybě, aplikace přestala fungovat. Pro pokračování klikni na 
+		</environment>
+		<environment include="Development">
+			V aplikaci došlo k chybě, aplikace přestala fungovat. Detaily jsou vidět v konzoli. Pro pokračování klikni na
+		</environment>
+		<a href="" class="reload">Reload</a>.		
+	</div>
+
 	<script src="_framework/blazor.server.js"></script>
 </body>
 </html>

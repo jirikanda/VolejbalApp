@@ -33,7 +33,6 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 			State.AktivniOsoby = null;
 			State.Vzkazy = null;
 
-
 			await Progress.ExecuteInProgressAsync(async () =>
 			{
 				State.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
