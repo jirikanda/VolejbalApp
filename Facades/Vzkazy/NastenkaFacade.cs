@@ -53,7 +53,7 @@ namespace KandaEu.Volejbal.Facades.Vzkazy
 		{
 			Osoba autor = osobaRepository.GetObject(vzkazInputDto.AutorId);
 			autor.ThrowIfDeleted();
-			autor.ThrowIfAktivni();
+			autor.ThrowIfNotAktivni();
 
 			Vzkaz vzkaz = new Vzkaz
 			{

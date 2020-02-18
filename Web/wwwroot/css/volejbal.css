@@ -71,3 +71,8 @@ a:hover {
 {
     cursor: inherit;
 }
+
+.validation-errors
+{
+    color: red;
+}

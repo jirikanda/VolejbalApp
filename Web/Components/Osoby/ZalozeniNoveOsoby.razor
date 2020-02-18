@@ -1,6 +1,8 @@
 ﻿<h2 class="icon-plus-2">Založení nové osoby</h2>
 
 <EditForm Model="@formData" OnValidSubmit="ValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
 
 	<h3>jméno</h3>
 	<div class="input-control text">

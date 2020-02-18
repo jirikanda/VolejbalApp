@@ -47,5 +47,13 @@ namespace KandaEu.Volejbal.Model
 				throw new InvalidOperationException("Osoba je aktivní.");
 			}
 		}
+
+		public void ThrowIfNotAktivni()
+		{
+			if (!this.Aktivni)
+			{
+				throw new InvalidOperationException("Osoba je neaktivní.");
+			}
+		}
 	}
 }
