@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Web.Pages
+namespace KandaEu.Volejbal.Web.Components
 {
 	public partial class Index
 	{
