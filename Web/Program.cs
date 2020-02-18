@@ -22,6 +22,7 @@ namespace KandaEu.Volejbal.Web
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseStaticWebAssets(); // Sotsera.Blazor.Toaster
                     webBuilder.UseStartup<Startup>();
                 })
                 .ConfigureAppConfiguration((hostContext, config) =>

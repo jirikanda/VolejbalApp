@@ -21,6 +21,9 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 
 		protected OsobaListDto osoby;
 
+		[Inject]
+		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
+
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
@@ -32,6 +35,8 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 			// TODO: TOASTER
 			await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
 			osoby.Osoby.Remove(osoba);
+
+			Toaster.Success($"{osoba.PrijmeniJmeno} aktivován(a).");
 		}
 
 		protected async Task Smazat(OsobaDto2 osoba)
@@ -42,6 +47,8 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 				await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
 				osoby.Osoby.Remove(osoba);
 			}
+			
+			Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
 		}
 	}
 }

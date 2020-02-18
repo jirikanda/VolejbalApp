@@ -22,6 +22,9 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 
 		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
+		[Inject]
+		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
+
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -69,6 +72,8 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 				prihlaseni.Add(neprihlaseny);
 			}
 			neprihlaseni.Remove(neprihlaseny);
+
+			Toaster.Success($"{neprihlaseny.PrijmeniJmeno} přihlášen(a).");
 		}
 
 		private async Task Odhlasit(OsobaDto prihlaseny)
@@ -83,6 +88,8 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 				neprihlaseni.Add(prihlaseny);
 			}
 			prihlaseni.Remove(prihlaseny);
+
+			Toaster.Success($"{prihlaseny.PrijmeniJmeno} odhlášen(a).");
 		}
 	}
 }

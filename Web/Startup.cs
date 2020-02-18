@@ -13,6 +13,7 @@ using System.Globalization;
 using KandaEu.Volejbal.Web.WebApiClients;
 using KandaEu.Volejbal.Web.App_Start;
 using Blazored.LocalStorage;
+using Sotsera.Blazor.Toaster.Core.Models;
 
 namespace KandaEu.Volejbal.Web
 {
@@ -40,10 +41,24 @@ namespace KandaEu.Volejbal.Web
 			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(Configuration);
 
             services.AddBlazoredLocalStorage();
+
+            services.AddToaster(config =>
+            {
+                config.PositionClass = Defaults.Classes.Position.TopRight;
+                config.PreventDuplicates = false;
+                config.NewestOnTop = true;
+                config.ShowProgressBar = true;
+                config.ShowCloseIcon = false;
+                config.RequireInteraction = false;
+                config.ShowTransitionDuration = 0;
+                config.HideTransitionDuration = 0;
+                config.VisibleStateDuration = 4000;
+            });
+
         }
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

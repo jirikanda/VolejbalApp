@@ -14,6 +14,9 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		[CascadingParameter]
 		public Progress Progress { get; set; }
 
+		[Inject]
+		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
+
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
@@ -26,6 +29,8 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 			await NastenkaWebApiClient.VlozVzkazAsync(new WebApiClients.VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
 			formData.Zprava = ""; // vyčistit formulář
 			await LoadDataAsync();
+
+			Toaster.Success("Vzkaz zapsán.");
 		}
 
 		private async Task LoadDataAsync()
