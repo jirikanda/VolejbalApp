@@ -23,7 +23,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 		protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
 		[Inject]
-		Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
+		protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
 
 		[Inject]
 		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
