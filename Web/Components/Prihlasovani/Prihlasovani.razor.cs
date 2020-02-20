@@ -106,6 +106,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			if (!neprihlaseni.Contains(prihlaseny)) // pokud došlo k doubleclicku, mohl se tam dostat
 			{
 				neprihlaseni.Add(prihlaseny);
+				neprihlaseni.Sort((a, b) => a.PrijmeniJmeno.CompareTo(b.PrijmeniJmeno));
 			}
 			prihlaseni.Remove(prihlaseny);
 
