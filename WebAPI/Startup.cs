@@ -100,6 +100,7 @@ namespace KandaEu.Volejbal.WebAPI
             catch (Exception exception)
             {
                 exceptionMonitoringService.HandleException(exception);
+                throw;
             }
         }
 
