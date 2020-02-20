@@ -9,6 +9,7 @@
 	<TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
 	<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>

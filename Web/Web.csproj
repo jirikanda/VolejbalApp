@@ -6,6 +6,7 @@
     <AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
     <RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
