@@ -21,6 +21,7 @@ using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+using Havit.AspNetCore.Mvc.ExceptionMonitoring.Services;
 
 [assembly: ApiControllerAttribute]
 
@@ -71,28 +72,35 @@ namespace KandaEu.Volejbal.WebAPI
         /// <summary>
         /// Configure middleware.
         /// </summary>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions, IExceptionMonitoringService exceptionMonitoringService)
         {
-            if (env.IsDevelopment())
-	        {
-		        app.UseDeveloperExceptionPage();
-				app.UseMiddleware<DelayRequestMiddleware>();
-			}
+            try
+            {
+                if (env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                    app.UseMiddleware<DelayRequestMiddleware>();
+                }
 
-            app.UseCustomizedCors(corsOptions);
-            app.UseStaticFiles();
-            app.UseAuthentication();
+                app.UseCustomizedCors(corsOptions);
+                app.UseStaticFiles();
+                app.UseAuthentication();
 
-            app.UseRequestLocalization();
+                app.UseRequestLocalization();
 
-            app.UseExceptionMonitoring();
-            app.UseErrorToJson();
-            app.UseRouting();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+                app.UseExceptionMonitoring();
+                app.UseErrorToJson();
+                app.UseRouting();
+                app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-            app.UseCustomizedOpenApiSwaggerUI();
+                app.UseCustomizedOpenApiSwaggerUI();
 
-            app.UpgradeDatabaseSchemaAndData();
+                app.UpgradeDatabaseSchemaAndData();
+            }
+            catch (Exception exception)
+            {
+                exceptionMonitoringService.HandleException(exception);
+            }
         }
 
     }
