@@ -3,9 +3,9 @@
 	<p><em>Termín není zvolen.</em></p>
 }
 
+<h2>Přihlášení</h2>
 @if (State.Prihlaseni != null)
 {
-	<h2>Přihlášení</h2>
 	<ul class="listview fluid">
 		@foreach (var prihlaseny in State.Prihlaseni)
 		{
@@ -27,9 +27,9 @@
 	}
 }
 
+<h2>Nepřihlášení</h2>
 @if (State.Neprihlaseni != null)
 {
-	<h2>Nepřihlášení</h2>
 	<ul class="listview fluid">
 		@foreach (var neprihlaseny in State.Neprihlaseni)
 		{
