@@ -32,7 +32,6 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 
 		protected async Task Aktivovat(OsobaDto2 osoba)
 		{
-			// TODO: TOASTER
 			await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
 			osoby.Osoby.Remove(osoba);
 

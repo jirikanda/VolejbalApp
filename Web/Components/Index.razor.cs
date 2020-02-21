@@ -1,5 +1,6 @@
 ﻿using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace KandaEu.Volejbal.Web.Components
 		[Inject]
 		protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
 
+		[Inject]
+		protected IJSRuntime JSRuntime { get; set; }
+
 		protected bool ShowNastenkaLink { get; set; }
 
 		protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -29,6 +33,8 @@ namespace KandaEu.Volejbal.Web.Components
 				}
 				ShowNastenkaLink = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit);
 				await LocalStorageService.SetItemAsync("LastVisit", DateTime.Now);
+
+				await JSRuntime.InvokeVoidAsync("setTitle", "Volejbal - Přihlašování");
 			}
 		}
 	}
