@@ -31,7 +31,13 @@ namespace KandaEu.Volejbal.Web.Components
 				{
 					lastVisit = await LocalStorageService.GetItemAsync<DateTime>("LastVisit");
 				}
-				ShowNastenkaLink = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit);
+
+				if ((await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
+				{
+					ShowNastenkaLink = true;
+					StateHasChanged();
+				}
+
 				await LocalStorageService.SetItemAsync("LastVisit", DateTime.Now);
 
 				await JSRuntime.InvokeVoidAsync("setTitle", "Volejbal - Přihlašování");
