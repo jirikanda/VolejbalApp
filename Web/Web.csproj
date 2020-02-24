@@ -7,6 +7,7 @@
     <RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
+    <UserSecretsId>c445c45f-cfa6-4831-83bb-532164a995f5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
 
   <ItemGroup>
 	<PackageReference Include="Blazored.LocalStorage" Version="2.1.1" />
+	<PackageReference Include="ChartJs.Blazor" Version="1.0.3" />
 	<PackageReference Include="EventAggregator.Blazor" Version="1.5.0" />
 	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 	<PackageReference Include="NSwag.ApiDescription.Client" Version="13.2.2">

@@ -36,6 +36,7 @@ namespace KandaEu.Volejbal.Facades.Reporty
 				})
 				.ToList()
 				.Where(item => item.PocetTerminu > 0) // in memory
+				.OrderBy(item => item.PrijmeniJmeno)
 				.ToList()
 			};
 		}

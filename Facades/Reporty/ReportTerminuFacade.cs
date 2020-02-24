@@ -28,11 +28,14 @@ namespace KandaEu.Volejbal.Facades.Reporty
 
 			return new ReportTerminu
 			{
-				ObsazenostTerminu = terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today)).Select(termin => new ReportTerminuItem
+				ObsazenostTerminu = terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
+				.OrderBy(item => item.Datum)
+				.Select(termin => new ReportTerminuItem
 				{
 					Datum = termin.Datum,
 					PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
-				}).ToList()
+				}).ToList()				
+
 			};
 		}
 	}

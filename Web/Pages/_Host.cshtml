@@ -7,11 +7,13 @@
 <head>
 	<title>Volejbal</title>
 	<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0" />
-	<link type="text/css" rel="stylesheet" href="css/normalize.css" />
-	<link type="text/css" rel="stylesheet" href="less/modern.min.css" media="screen" />
-	<link type="text/css" rel="stylesheet" href="less/modern-responsive.min.css" media="screen" />
-	<link type="text/css" rel="stylesheet" href="css/volejbal.css" />
-	<link type="text/css" rel="stylesheet" href="_content/Sotsera.Blazor.Toaster/toastr.min.css"  />
+	<link type="text/css" rel="stylesheet" href="/css/normalize.css" />
+	<link type="text/css" rel="stylesheet" href="/less/modern.min.css" media="screen" />
+	<link type="text/css" rel="stylesheet" href="/less/modern-responsive.min.css" media="screen" />
+	<link type="text/css" rel="stylesheet" href="/css/volejbal.css" />
+	<link type="text/css" rel="stylesheet" href="/_content/Sotsera.Blazor.Toaster/toastr.min.css" />
+	<link rel="stylesheet" href="/_content/ChartJs.Blazor/ChartJSBlazor.css" />
+
 </head>
 <body class="modern-ui">
 	<div class="page secondary">
@@ -22,15 +24,25 @@
 
 	<div id="blazor-error-ui">
 		<environment include="Staging,Production">
-			V aplikaci došlo k chybě, aplikace přestala fungovat. Pro pokračování klikni na 
+			V aplikaci došlo k chybě, aplikace přestala fungovat. Pro pokračování klikni na
 		</environment>
 		<environment include="Development">
 			V aplikaci došlo k chybě, aplikace přestala fungovat. Detaily jsou vidět v konzoli. Pro pokračování klikni na
 		</environment>
-		<a href="" class="reload">Reload</a>.		
+		<a href="" class="reload">Reload</a>.
 	</div>
 
 	<script src="/javascript/setWindowTitle.js"></script>
-	<script src="_framework/blazor.server.js"></script>
+	<script src="/_framework/blazor.server.js"></script>
+
+	<!-- Reference the included moment.js javascript file. -->
+	<script src="/_content/ChartJs.Blazor/moment-with-locales.min.js" type="text/javascript" language="javascript"></script>
+
+	<!-- Reference the included ChartJs javascript file. -->
+	<script src="/_content/ChartJs.Blazor/Chart.min.js" type="text/javascript" language="javascript"></script>
+
+	<!-- This is the glue between the C# code and the ChartJs charts -->
+	<script src="/_content/ChartJs.Blazor/ChartJsBlazorInterop.js" type="text/javascript" language="javascript"></script>
+
 </body>
 </html>

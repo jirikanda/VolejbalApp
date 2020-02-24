@@ -39,6 +39,7 @@ namespace KandaEu.Volejbal.Web
 			services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(Configuration);
 			services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(Configuration);
 			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(Configuration);
+			services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(Configuration);
 
             services.AddBlazoredLocalStorage();
 
