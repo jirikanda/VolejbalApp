@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,8 @@ namespace KandaEu.Volejbal.Model
 		public DateTime? Deleted { get; set; }
 
 		public bool Aktivni { get; set; } = true;
+
+		public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
 
 		public string PrijmeniJmeno
 		{
