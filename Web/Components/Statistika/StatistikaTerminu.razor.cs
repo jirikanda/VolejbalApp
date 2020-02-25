@@ -72,7 +72,7 @@ namespace KandaEu.Volejbal.Web.Components.Statistika
 
             BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
             {
-                BackgroundColor = Enumerable.Range(0, report.ObsazenostTerminu.Count).Select(i => ColorUtil.ColorHexString(0, (byte)(255 - (64 + i * 29) % 128), 0)).ToArray()
+                BackgroundColor = Enumerable.Range(0, report.ObsazenostTerminu.Count).Select(i => ColorUtil.ColorHexString(0, (byte)(255 - ((i * 15) % 200)), 0)).ToArray()
             };
 
             barDataSet.AddRange(report.ObsazenostTerminu.Select(item => item.PocetHracu).ToArray().Wrap());
