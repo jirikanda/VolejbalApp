@@ -15,7 +15,7 @@ using Havit.Data.Patterns.Repositories;
 namespace KandaEu.Volejbal.DataLayer.Repositories
 {
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public partial interface IOsobaRepository : IRepository<KandaEu.Volejbal.Model.Osoba>, IRepositoryAsync<KandaEu.Volejbal.Model.Osoba>
+	public partial interface IOsobaRepository : IRepository<KandaEu.Volejbal.Model.Osoba>
 	{
 	}
 }

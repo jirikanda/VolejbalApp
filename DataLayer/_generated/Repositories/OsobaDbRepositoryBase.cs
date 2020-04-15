@@ -23,8 +23,8 @@ namespace KandaEu.Volejbal.DataLayer.Repositories
 	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 	public abstract class OsobaDbRepositoryBase : DbRepository<KandaEu.Volejbal.Model.Osoba>
 	{
-		protected OsobaDbRepositoryBase(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.IOsobaDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Osoba, int> entityKeyAccessor, IDataLoader dataLoader, IDataLoaderAsync dataLoaderAsync, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
-			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, dataLoaderAsync, softDeleteManager, entityCacheManager)
+		protected OsobaDbRepositoryBase(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.IOsobaDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Osoba, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
+			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
 		{
 		}
 
