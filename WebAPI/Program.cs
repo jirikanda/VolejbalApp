@@ -26,8 +26,6 @@ namespace KandaEu.Volejbal.WebAPI
 					webBuilder.UseUrls("http://localhost:9901"); // pro Red-Gate ANTS Performance Profiler
 #endif
 				})
-				// TODO: bez totoho řádku nejde IDataLoader. Proč???
-				.UseDefaultServiceProvider(c => c.ValidateScopes = false)
 				.ConfigureAppConfiguration((hostContext, config) =>
 				{
 					// delete all default configuration providers
