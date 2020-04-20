@@ -22,6 +22,12 @@ using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Services;
+using ProtoBuf.Grpc.Server;
+using KandaEu.Volejbal.Facades.Terminy;
+using KandaEu.Volejbal.Facades.Osoby;
+using KandaEu.Volejbal.Facades.Prihlasky;
+using KandaEu.Volejbal.Facades.Nastenka;
+using KandaEu.Volejbal.Facades.System;
 
 [assembly: ApiControllerAttribute]
 
@@ -47,15 +53,12 @@ namespace KandaEu.Volejbal.WebAPI
             services.AddMemoryCache(); // ie. IClaimsCacheStorage
 
             services.AddCustomizedRequestLocalization();
-            services.AddCustomizedMvc(configuration);
             services.AddAuthorization();
             services.AddCustomizedMailing(configuration);
 
             services.AddExceptionMonitoring(configuration);
-            services.AddCustomizedErrorToJson();
 
             services.AddCustomizedCors(configuration);
-            services.AddCustomizedOpenApi();
 
             services.AddApplicationInsightsTelemetry(configuration);
 
@@ -67,6 +70,9 @@ namespace KandaEu.Volejbal.WebAPI
             services.AddHostedService<EnsureTerminyBackgroundService>();
 
             services.ConfigureForWebAPI(configuration);
+
+            services.AddCodeFirstGrpc();
+            services.AddGrpcWeb(options => options.GrpcWebEnabled = true);
         }
 
         /// <summary>
@@ -88,12 +94,17 @@ namespace KandaEu.Volejbal.WebAPI
 
                 app.UseRequestLocalization();
 
-                app.UseExceptionMonitoring();
-                app.UseErrorToJson();
+                app.UseExceptionMonitoring(); 
                 app.UseRouting();
-                app.UseEndpoints(endpoints => endpoints.MapControllers());
-
-                app.UseCustomizedOpenApiSwaggerUI();
+                app.UseGrpcWeb();
+                app.UseEndpoints(endpoints =>
+                {                    
+                    endpoints.MapGrpcService<TerminFacade>();
+                    endpoints.MapGrpcService<OsobaFacade>();
+                    endpoints.MapGrpcService<PrihlaskaFacade>();
+                    endpoints.MapGrpcService<NastenkaFacade>();
+                    endpoints.MapGrpcService<DataSeedFacade>();
+                });               
 
                 app.UpgradeDatabaseSchemaAndData();
             }
