@@ -1,6 +1,7 @@
 ﻿using Havit.Data.Patterns.UnitOfWorks;
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Havit.Services.TimeServices;
+using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.DataLayer.DataSources;
 using KandaEu.Volejbal.Facades.Terminy.Dto;

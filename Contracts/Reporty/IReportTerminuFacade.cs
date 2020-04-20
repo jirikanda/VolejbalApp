@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Facades.Reporty
+namespace KandaEu.Volejbal.Contracts.Reporty
 {
 	public interface IReportTerminuFacade
 	{

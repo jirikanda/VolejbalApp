@@ -1,5 +1,6 @@
 ﻿using Havit.Extensions.DependencyInjection.Abstractions;
 using Havit.Services.TimeServices;
+using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
 using KandaEu.Volejbal.DataLayer.DataSources;
 using System;

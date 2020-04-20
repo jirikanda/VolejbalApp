@@ -1,4 +1,5 @@
-﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
+﻿using KandaEu.Volejbal.Contracts.Osoby;
+using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Facades.Osoby;
 using Microsoft.AspNetCore.Mvc;
 using System;

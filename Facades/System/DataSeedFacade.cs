@@ -2,6 +2,7 @@
 using System.Linq;
 using Havit.Data.Patterns.DataSeeds;
 using Havit.Extensions.DependencyInjection.Abstractions;
+using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
 using KandaEu.Volejbal.Services.Infrastructure;
 

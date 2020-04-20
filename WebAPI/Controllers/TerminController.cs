@@ -1,4 +1,6 @@
-﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
+﻿using KandaEu.Volejbal.Contracts.Prihlasky;
+using KandaEu.Volejbal.Contracts.Terminy;
+using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Prihlasky;
 using KandaEu.Volejbal.Facades.Terminy;
 using KandaEu.Volejbal.Facades.Terminy.Dto;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Havit.Extensions.DependencyInjection.Abstractions;
+using KandaEu.Volejbal.Contracts.Reporty;
 
 namespace KandaEu.Volejbal.Facades.Reporty
 {

@@ -1,5 +1,5 @@
-﻿using KandaEu.Volejbal.Contracts.Nastenka.Dto;
-using KandaEu.Volejbal.Facades.Vzkazy;
+﻿using KandaEu.Volejbal.Contracts.Nastenka;
+using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

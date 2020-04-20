@@ -1,4 +1,4 @@
-﻿namespace KandaEu.Volejbal.Facades.System
+﻿namespace KandaEu.Volejbal.Contracts.System
 {
     public interface IDataSeedFacade
     {

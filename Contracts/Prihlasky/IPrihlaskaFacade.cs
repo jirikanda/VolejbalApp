@@ -1,4 +1,4 @@
-﻿namespace KandaEu.Volejbal.Facades.Prihlasky
+﻿namespace KandaEu.Volejbal.Contracts.Prihlasky
 {
 	public interface IPrihlaskaFacade
 	{

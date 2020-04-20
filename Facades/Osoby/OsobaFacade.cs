@@ -1,5 +1,6 @@
 ﻿using Havit.Data.Patterns.UnitOfWorks;
 using Havit.Extensions.DependencyInjection.Abstractions;
+using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.DataLayer.DataSources;
 using KandaEu.Volejbal.DataLayer.Repositories;

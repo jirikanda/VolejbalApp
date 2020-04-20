@@ -1,8 +1,7 @@
 ﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
-using KandaEu.Volejbal.Facades.Terminy.Dto;
 using System.Collections.Generic;
 
-namespace KandaEu.Volejbal.Facades.Terminy
+namespace KandaEu.Volejbal.Contracts.Terminy
 {
 	public interface ITerminFacade
 	{

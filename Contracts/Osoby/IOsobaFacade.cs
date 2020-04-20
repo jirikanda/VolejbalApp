@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Facades.Osoby
+namespace KandaEu.Volejbal.Contracts.Osoby
 {
 	public interface IOsobaFacade
 	{
