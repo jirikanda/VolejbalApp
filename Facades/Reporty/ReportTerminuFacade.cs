@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Text;
 using Havit.Extensions.DependencyInjection.Abstractions;
 using KandaEu.Volejbal.Contracts.Reporty;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Facades.Reporty
 {
@@ -22,21 +24,20 @@ namespace KandaEu.Volejbal.Facades.Reporty
 			this.timeService = timeService;
 		}
 
-		public ReportTerminu GetReport()
+		public async Task<ReportTerminu> GetReport()
 		{
 			DateTime today = timeService.GetCurrentDate();
 			DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
 			return new ReportTerminu
 			{
-				ObsazenostTerminu = terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
+				ObsazenostTerminu = await terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
 				.OrderBy(item => item.Datum)
 				.Select(termin => new ReportTerminuItem
 				{
 					Datum = termin.Datum,
 					PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
-				}).ToList()				
-
+				}).ToListAsync()
 			};
 		}
 	}

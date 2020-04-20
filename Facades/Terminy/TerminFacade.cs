@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Terminy
 {
@@ -36,15 +37,15 @@ namespace KandaEu.Volejbal.Facades.Terminy
 			this.ensureTerminyService = ensureTerminyService;
 		}
 
-		public TerminListDto GetTerminy()
+		public async Task<TerminListDto> GetTerminy()
 		{
-			var terminy = terminDataSource.Data
+			var terminy = await terminDataSource.Data
 				.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
 				.Select(item => new TerminDto
 				{
 					Id = item.Id,
 					Datum = item.Datum
-				}).ToList();
+				}).ToListAsync();
 		
 			return new TerminListDto
 			{
@@ -54,21 +55,21 @@ namespace KandaEu.Volejbal.Facades.Terminy
 
 	
 
-		public TerminDetailDto GetDetailTerminu(int terminId)
+		public async Task<TerminDetailDto> GetDetailTerminu(int terminId)
 		{
-			List<Prihlaska> prihlasky = prihlaskaDataSource.Data
+			List<Prihlaska> prihlasky = await prihlaskaDataSource.Data
 				.Where(prihlaska => prihlaska.TerminId == terminId)
 				.Include(prihlaska => prihlaska.Osoba)
 				.OrderBy(prihlaska => prihlaska.DatumPrihlaseni)
-				.ToList();
+				.ToListAsync();
 
 			List<Osoba> prihlaseni = prihlasky
 				.Select(item => item.Osoba)
 				.ToList();
 
-			List<Osoba> neprihlaseni = osobaDataSource.Data
+			List<Osoba> neprihlaseni = (await osobaDataSource.Data
 				.Where(osoba => osoba.Aktivni)
-				.ToList()
+				.ToListAsync())
 				.Except(prihlaseni /* in memory */)
 				.OrderBy(item => item.PrijmeniJmeno)
 				.ToList();

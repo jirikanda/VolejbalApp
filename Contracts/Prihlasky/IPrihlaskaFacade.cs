@@ -1,8 +1,10 @@
-﻿namespace KandaEu.Volejbal.Contracts.Prihlasky
+﻿using System.Threading.Tasks;
+
+namespace KandaEu.Volejbal.Contracts.Prihlasky
 {
 	public interface IPrihlaskaFacade
 	{
-		void Prihlasit(int terminId, int osobaId);
-		void Odhlasit(int terminId, int osobaId);
+		Task Prihlasit(int terminId, int osobaId);
+		Task Odhlasit(int terminId, int osobaId);
 	}
 }

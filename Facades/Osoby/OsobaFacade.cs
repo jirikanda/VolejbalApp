@@ -5,10 +5,13 @@ using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.DataLayer.DataSources;
 using KandaEu.Volejbal.DataLayer.Repositories;
 using KandaEu.Volejbal.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Osoby
 {
@@ -26,7 +29,7 @@ namespace KandaEu.Volejbal.Facades.Osoby
 			this.unitOfWork = unitOfWork;
 		}
 
-		public void VlozOsobu(OsobaInputDto osobaInputDto)
+		public async Task VlozOsobu(OsobaInputDto osobaInputDto)
 		{
 			Osoba osoba = new Osoba
 			{
@@ -36,27 +39,27 @@ namespace KandaEu.Volejbal.Facades.Osoby
 			};
 
 			unitOfWork.AddForInsert(osoba);
-			unitOfWork.Commit();
+			await unitOfWork.CommitAsync();
 		}
 
-		public void AktivujNeaktivniOsobu(int osobaId)
+		public async Task AktivujNeaktivniOsobu(int osobaId)
 		{
-			Osoba osoba = osobaRepository.GetObject(osobaId);
+			Osoba osoba = await osobaRepository.GetObjectAsync(osobaId);
 
 			CheckNeaktivniNesmazana(osoba);
 			
 			osoba.Aktivni = true;
 
 			unitOfWork.AddForUpdate(osoba);
-			unitOfWork.Commit();
+			await unitOfWork.CommitAsync();
 		}
 
-		public void SmazNeaktivniOsobu(int osobaId)
+		public async Task SmazNeaktivniOsobu(int osobaId)
 		{
-			Osoba osoba = osobaRepository.GetObject(osobaId);
+			Osoba osoba = await osobaRepository.GetObjectAsync(osobaId);
 
 			unitOfWork.AddForDelete(osoba);
-			unitOfWork.Commit();
+			await unitOfWork.CommitAsync();
 		}
 
 		private void CheckNeaktivniNesmazana(Osoba osoba)
@@ -66,27 +69,27 @@ namespace KandaEu.Volejbal.Facades.Osoby
 		}
 
 
-		public OsobaListDto GetAktivniOsoby()
+		public async Task<OsobaListDto> GetAktivniOsoby()
 		{
-			return GetOsobyByAktivni(true);
+			return await GetOsobyByAktivni(true);
 		}
 
-		public OsobaListDto GetNeaktivniOsoby()
+		public async Task<OsobaListDto> GetNeaktivniOsoby()
 		{
-			return GetOsobyByAktivni(false);
+			return await GetOsobyByAktivni(false);
 		}
 
-		public OsobaListDto GetOsobyByAktivni(bool aktivni)
+		public async Task<OsobaListDto> GetOsobyByAktivni(bool aktivni)
 		{
 			var result = new OsobaListDto
 			{
-				Osoby = osobaDataSource.Data.Where(osoba => osoba.Aktivni == aktivni)
+				Osoby = await osobaDataSource.Data.Where(osoba => osoba.Aktivni == aktivni)
 				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)
 				.Select(item => new OsobaDto
 				{
 					Id = item.Id,
 					PrijmeniJmeno = item.PrijmeniJmeno
-				}).ToList()
+				}).ToListAsync()
 			};
 			return result;
 		}

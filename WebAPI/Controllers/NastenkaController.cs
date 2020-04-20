@@ -18,17 +18,10 @@ namespace KandaEu.Volejbal.WebAPI.Controllers
 		}
 
 		[HttpGet("/api/nastenka")]
-		public VzkazListDto GetVzkazy()
-		{
-			return nastenkaFacade.GetVzkazy();
-		}
+		public async Task<VzkazListDto> GetVzkazy() => await nastenkaFacade.GetVzkazy();
 
 		[HttpPost("/api/nastenka")]
-		public void VlozVzkaz(VzkazInputDto vzkaz)
-		{
-			nastenkaFacade.VlozVzkaz(vzkaz);
-		}
+		public async Task VlozVzkaz(VzkazInputDto vzkaz) => await nastenkaFacade.VlozVzkaz(vzkaz);
 	}
-
 }
 

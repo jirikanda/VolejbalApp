@@ -21,9 +21,9 @@ namespace KandaEu.Volejbal.WebAPI.Controllers
 		}
 
 		[HttpGet("/reporty/terminy")]
-		public ReportTerminu GetReportTerminu() => reportTerminuFacade.GetReport();
+		public async Task<ReportTerminu> GetReportTerminu() => await reportTerminuFacade.GetReport();
 
 		[HttpGet("/reporty/osoby")]
-		public ReportOsob GetReportOsob() => reportOsobFacade.GetReport();
+		public async Task<ReportOsob> GetReportOsob() => await reportOsobFacade.GetReport();
 	}
 }

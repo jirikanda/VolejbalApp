@@ -25,27 +25,15 @@ namespace Havit.VolejbalApp.WebAPI.Controllers
 		}
 
 		[HttpGet("/api/terminy")]
-		public TerminListDto GetTerminy()
-		{
-			return terminFacade.GetTerminy();
-		}
+		public async Task<TerminListDto> GetTerminy() => await terminFacade.GetTerminy();
 
 		[HttpGet("/api/terminy/{terminId}")]
-		public TerminDetailDto GetDetailTerminu(int terminId)
-		{
-			return terminFacade.GetDetailTerminu(terminId);
-		}
+		public async Task<TerminDetailDto> GetDetailTerminu(int terminId) => await terminFacade.GetDetailTerminu(terminId);
 
 		[HttpPost("/api/terminy/{terminId}/osoby/{osobaId}/prihlasit")]
-		public void Prihlasit(int terminId, int osobaId)
-		{
-			prihlaskaFacade.Prihlasit(terminId, osobaId);
-		}
+		public Task Prihlasit(int terminId, int osobaId) => prihlaskaFacade.Prihlasit(terminId, osobaId);
 
 		[HttpPost("/api/terminy/{terminId}/osoby/{osobaId}/odhlasit")]
-		public void Odhlasit(int terminId, int osobaId)
-		{
-			prihlaskaFacade.Odhlasit(terminId, osobaId);
-		}
+		public Task Odhlasit(int terminId, int osobaId) => prihlaskaFacade.Odhlasit(terminId, osobaId);
 	}
 }

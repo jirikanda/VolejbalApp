@@ -6,10 +6,12 @@ using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 using KandaEu.Volejbal.DataLayer.DataSources;
 using KandaEu.Volejbal.DataLayer.Repositories;
 using KandaEu.Volejbal.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Nastenka
 {
@@ -29,14 +31,14 @@ namespace KandaEu.Volejbal.Facades.Nastenka
 			this.osobaRepository = osobaRepository;
 		}
 
-		public VzkazListDto GetVzkazy()
+		public async Task<VzkazListDto> GetVzkazy()
 		{
 			DateTime today = timeService.GetCurrentDate();
 			DateTime prispevkyOd = today.AddDays(-14);
 
 			VzkazListDto result = new VzkazListDto
 			{
-				Vzkazy = vzkazDataSource.Data
+				Vzkazy = await vzkazDataSource.Data
 					.Where(item => item.DatumVlozeni > prispevkyOd)
 					.OrderByDescending(item => item.DatumVlozeni)
 					.Select(vzkaz => new VzkazDto
@@ -44,15 +46,15 @@ namespace KandaEu.Volejbal.Facades.Nastenka
 						Author = vzkaz.Autor.PrijmeniJmeno,
 						Zprava = vzkaz.Zprava,
 						DatumVlozeni = vzkaz.DatumVlozeni
-					}).ToList()
+					}).ToListAsync()
 			};
 
 			return result;
 		}
 
-		public void VlozVzkaz(VzkazInputDto vzkazInputDto)
+		public async Task VlozVzkaz(VzkazInputDto vzkazInputDto)
 		{
-			Osoba autor = osobaRepository.GetObject(vzkazInputDto.AutorId);
+			Osoba autor = await osobaRepository.GetObjectAsync(vzkazInputDto.AutorId);
 			autor.ThrowIfDeleted();
 			autor.ThrowIfNotAktivni();
 
@@ -64,7 +66,7 @@ namespace KandaEu.Volejbal.Facades.Nastenka
 			};
 
 			unitOfWork.AddForInsert(vzkaz);
-			unitOfWork.Commit();
+			await unitOfWork.CommitAsync();
 		}
 	}
 }

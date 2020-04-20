@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Prihlasky
 {
@@ -28,11 +29,11 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 			this.prihlaskaRepository = prihlaskaRepository;
 		}
 
-		public void Prihlasit(int terminId, int osobaId)
+		public async Task Prihlasit(int terminId, int osobaId)
 		{
-			lock (_lock)
+			// TODO: lock (_lock)
 			{
-				if (prihlaskaRepository.GetPrihlaska(terminId, osobaId) == null)
+				if (await prihlaskaRepository.GetPrihlaska(terminId, osobaId) == null)
 				{
 					Prihlaska prihlaska = new Prihlaska
 					{
@@ -42,20 +43,20 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 					};
 
 					unitOfWork.AddForInsert(prihlaska);
-					unitOfWork.Commit();
+					await unitOfWork.CommitAsync();
 				}
 			}
 		}
 
-		public void Odhlasit(int terminId, int osobaId)
+		public async Task Odhlasit(int terminId, int osobaId)
 		{
-			lock (_lock)
+			// TODO: lock (_lock)
 			{
-				Prihlaska prihlaska = prihlaskaRepository.GetPrihlaska(terminId, osobaId);
+				Prihlaska prihlaska = await prihlaskaRepository.GetPrihlaska(terminId, osobaId);
 				if (prihlaska != null)
 				{
 					unitOfWork.AddForDelete(prihlaska);
-					unitOfWork.Commit();
+					await unitOfWork.CommitAsync();
 				}
 			}
 		}

@@ -2,15 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Contracts.Osoby
 {
 	public interface IOsobaFacade
 	{
-		void VlozOsobu(OsobaInputDto osobaInputDto);
-		void SmazNeaktivniOsobu(int osobaId);
-		void AktivujNeaktivniOsobu(int osobaId);
-		OsobaListDto GetNeaktivniOsoby();
-		OsobaListDto GetAktivniOsoby();
+		Task VlozOsobu(OsobaInputDto osobaInputDto);
+		Task SmazNeaktivniOsobu(int osobaId);
+		Task AktivujNeaktivniOsobu(int osobaId);
+		Task<OsobaListDto> GetNeaktivniOsoby();
+		Task<OsobaListDto> GetAktivniOsoby();
 	}
 }

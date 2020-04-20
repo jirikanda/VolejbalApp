@@ -1,7 +1,9 @@
-﻿namespace KandaEu.Volejbal.Contracts.System
+﻿using System.Threading.Tasks;
+
+namespace KandaEu.Volejbal.Contracts.System
 {
     public interface IDataSeedFacade
     {
-        void SeedDataProfile(string profileName);
+        Task SeedDataProfile(string profileName);
     }
 }

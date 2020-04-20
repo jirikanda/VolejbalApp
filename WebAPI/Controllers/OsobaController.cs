@@ -19,34 +19,18 @@ namespace KandaEu.Volejbal.WebAPI.Controllers
 		}
 
 		[HttpPost("api/osoby")]
-		public void VlozOsobu(OsobaInputDto osobaInputDto)
-		{
-			osobaFacade.VlozOsobu(osobaInputDto);
-		}
+		public async Task VlozOsobu(OsobaInputDto osobaInputDto) => await osobaFacade.VlozOsobu(osobaInputDto);
 
 		[HttpGet("api/osoby/aktivni")]
-		public OsobaListDto GetAktivniOsoby()
-		{
-			return osobaFacade.GetAktivniOsoby();
-		}
+		public async Task<OsobaListDto> GetAktivniOsoby() => await osobaFacade.GetAktivniOsoby();
 
 		[HttpGet("api/osoby/neaktivni")]
-		public OsobaListDto GetNeaktivniOsoby()
-		{
-			return osobaFacade.GetNeaktivniOsoby();
-		}
+		public async Task<OsobaListDto> GetNeaktivniOsoby() => await osobaFacade.GetNeaktivniOsoby();
 
 		[HttpDelete("api/osoby/neaktivni/{osobaId}")]
-		public void SmazNeaktivniOsobu(int osobaId)
-		{
-			osobaFacade.SmazNeaktivniOsobu(osobaId);
-		}
+		public async Task SmazNeaktivniOsobu(int osobaId) => await osobaFacade.SmazNeaktivniOsobu(osobaId);
 
 		[HttpPost("api/osoby/neaktivni/{osobaId}/aktivovat")]
-		public void AktivujNeaktivniOsobu(int osobaId)
-		{
-			osobaFacade.AktivujNeaktivniOsobu(osobaId);
-		}
-
+		public async Task AktivujNeaktivniOsobu(int osobaId) => await osobaFacade.AktivujNeaktivniOsobu(osobaId);
 	}
 }

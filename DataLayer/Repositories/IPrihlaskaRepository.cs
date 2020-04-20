@@ -10,6 +10,6 @@ namespace KandaEu.Volejbal.DataLayer.Repositories
 {
 	public partial interface IPrihlaskaRepository
 	{
-		Prihlaska GetPrihlaska(int terminId, int osobaId);
+		Task<Prihlaska> GetPrihlaska(int terminId, int osobaId);
 	}
 }
