@@ -1,5 +1,4 @@
 ﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
-using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;

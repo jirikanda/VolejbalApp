@@ -10,8 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Globalization;
-using KandaEu.Volejbal.Web.WebApiClients;
-using KandaEu.Volejbal.Web.App_Start;
 using Blazored.LocalStorage;
 using Sotsera.Blazor.Toaster.Core.Models;
 
@@ -34,12 +32,6 @@ namespace KandaEu.Volejbal.Web
 			services.AddRazorPages();
             services.AddServerSideBlazor();
 			services.AddHttpClient();
-
-			services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(Configuration);
-			services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(Configuration);
-			services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(Configuration);
-			services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(Configuration);
-			services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(Configuration);
 
             services.AddBlazoredLocalStorage();
 

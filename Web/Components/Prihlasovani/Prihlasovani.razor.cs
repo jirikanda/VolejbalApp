@@ -1,6 +1,9 @@
-﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
+using KandaEu.Volejbal.Contracts.Prihlasky;
+using KandaEu.Volejbal.Contracts.Terminy;
+using KandaEu.Volejbal.Contracts.Terminy.Dto;
+using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using KandaEu.Volejbal.Web.Components.Terminy;
-using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +15,10 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 	public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
 	{
 		[Inject]
-		protected ITerminWebApiClient TerminWebApiClient { get; set; }
+		protected ITerminFacade TerminFacade { get; set; }
+
+		[Inject]
+		protected IPrihlaskaFacade PrihlaskaFacade { get; set; }
 
 		[Inject]
 		protected EventAggregator.Blazor.IEventAggregator EventAggregator { get; set; }
@@ -56,7 +62,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			State.Neprihlaseni = null;
 			StateHasChanged();
 
-			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetDetailTerminuAsync(terminId));
+			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminFacade.GetDetailTerminu(terminId));
 
 			State.Prihlaseni = terminDetail.Prihlaseni.ToList();
 			State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
@@ -69,7 +75,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			await SetCurrentTermin(message.TerminId);
 		}
 
-		private async Task Prihlasit(OsobaDto neprihlaseny)
+		private async Task Prihlasit(Contracts.Terminy.Dto.OsobaDto neprihlaseny)
 		{
 			// pokud kliknu na přihlášení a následně na změnu termínu, dojde
 			// - ke spuštění volání API pro přihlášení
@@ -82,7 +88,7 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			var prihlaseni = State.Prihlaseni;
 			var neprihlaseni = State.Neprihlaseni;
 
-			await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, neprihlaseny.Id));
+			await Progress.ExecuteInProgressAsync(async () => await PrihlaskaFacade.Prihlasit(State.AktualniTerminId.Value, neprihlaseny.Id));
 
 			if (!prihlaseni.Contains(neprihlaseny))
 			{
@@ -96,12 +102,12 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			PrefferedOsobaId = neprihlaseny.Id;
 		}
 
-		private async Task Odhlasit(OsobaDto prihlaseny)
+		private async Task Odhlasit(Contracts.Terminy.Dto.OsobaDto prihlaseny)
 		{
 			var prihlaseni = State.Prihlaseni;
 			var neprihlaseni = State.Neprihlaseni;
 
-			await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, prihlaseny.Id));
+			await Progress.ExecuteInProgressAsync(async () => await PrihlaskaFacade.Odhlasit(State.AktualniTerminId.Value, prihlaseny.Id));
 
 			if (!neprihlaseni.Contains(prihlaseny)) // pokud došlo k doubleclicku, mohl se tam dostat
 			{

@@ -1,4 +1,4 @@
-﻿using KandaEu.Volejbal.Web.WebApiClients;
+﻿using KandaEu.Volejbal.Contracts.Nastenka;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
@@ -11,7 +11,7 @@ namespace KandaEu.Volejbal.Web.Components
 	public partial class Index
 	{
 		[Inject]
-		protected INastenkaWebApiClient NastenkaWebApiClient { get; set; }
+		protected INastenkaFacade NastenkaFacade { get; set; }
 		
 		[Inject]
 		protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
@@ -32,7 +32,7 @@ namespace KandaEu.Volejbal.Web.Components
 					lastVisit = await LocalStorageService.GetItemAsync<DateTime>("LastVisit");
 				}
 
-				if ((await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
+				if ((await NastenkaFacade.GetVzkazy()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
 				{
 					ShowNastenkaLink = true;
 					StateHasChanged();

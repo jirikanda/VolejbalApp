@@ -1,5 +1,6 @@
-﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
-using KandaEu.Volejbal.Web.WebApiClients;
+﻿using KandaEu.Volejbal.Contracts.Osoby;
+using KandaEu.Volejbal.Contracts.Osoby.Dto;
+using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 	public partial class ZalozeniNoveOsoby
 	{
 		[Inject]
-		protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
+		protected IOsobaFacade OsobaFacade { get; set; }
 
 		[Inject]
 		protected NavigationManager NavigationManager { get; set; }
@@ -32,7 +33,7 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 				Email = formData.Email
 			};
 
-			await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.VlozOsobuAsync(novaOsoba));
+			await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.VlozOsobu(novaOsoba));
 			Toaster.Success($"{novaOsoba.Prijmeni} {novaOsoba.Jmeno} založen(a).");
 			NavigationManager.NavigateTo("/");
 		}

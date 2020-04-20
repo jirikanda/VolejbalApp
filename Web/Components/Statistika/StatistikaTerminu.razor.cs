@@ -14,16 +14,16 @@ using ChartJs.Blazor.ChartJS.Common.Enums;
 using ChartJs.Blazor.ChartJS.Common.Axes;
 using ChartJs.Blazor.ChartJS.Common.Axes.Ticks;
 using ChartJs.Blazor.ChartJS.Common.Wrappers;
-using KandaEu.Volejbal.Web.WebApiClients;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using ChartJs.Blazor.ChartJS.Common.Handlers;
+using KandaEu.Volejbal.Contracts.Reporty;
 
 namespace KandaEu.Volejbal.Web.Components.Statistika
 {
 	public partial class StatistikaTerminu 
 	{
         [Inject]
-        protected IReportWebApiClient ReportWebApiClient { get; set; }
+        protected IReportTerminuFacade ReportTerminuFacade { get; set; }
 
         [CascadingParameter]
         protected Progress Progress { get; set; }
@@ -65,7 +65,7 @@ namespace KandaEu.Volejbal.Web.Components.Statistika
                 }
             };
 
-            var report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportTerminuAsync());
+            var report = await Progress.ExecuteInProgressAsync(() => ReportTerminuFacade.GetReport());
 
             
             barConfig.Data.Labels.AddRange(report.ObsazenostTerminu.Select(item => item.Datum.ToString("d.MMMM")).ToArray());

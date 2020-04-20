@@ -1,4 +1,7 @@
-﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Contracts.Nastenka;
+using KandaEu.Volejbal.Contracts.Nastenka.Dto;
+using KandaEu.Volejbal.Contracts.Osoby;
+using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
@@ -21,6 +24,12 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		[Inject]
 		protected IJSRuntime JSRuntime { get; set; }
 
+		[Inject]
+		private INastenkaFacade NastenkaFacade { get; set; }
+
+		[Inject]
+		private IOsobaFacade OsobaFacade { get; set; }
+
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
@@ -30,7 +39,7 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		private async Task OnValidSubmitAsync()
 		{
 			// TODO: Sdílení Contracts!		
-			await NastenkaWebApiClient.VlozVzkazAsync(new WebApiClients.VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
+			await NastenkaFacade.VlozVzkaz(new VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
 			formData.Zprava = ""; // vyčistit formulář
 			await LoadDataAsync();
 
@@ -44,8 +53,8 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 
 			await Progress.ExecuteInProgressAsync(async () =>
 			{
-				State.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
-				State.Vzkazy = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.ToList();
+				State.AktivniOsoby = (await OsobaFacade.GetAktivniOsoby()).Osoby.ToList();
+				State.Vzkazy = (await NastenkaFacade.GetVzkazy()).Vzkazy.ToList();
 			});
 		}
 

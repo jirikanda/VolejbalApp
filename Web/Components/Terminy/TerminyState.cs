@@ -1,4 +1,4 @@
-﻿using KandaEu.Volejbal.Web.WebApiClients;
+﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
