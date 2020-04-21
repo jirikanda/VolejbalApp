@@ -3,12 +3,12 @@
 
 @if (osoby != null)
 {
-	@if (osoby.Osoby.Count > 0)
+	@if (osoby.Count > 0)
 	{
 		<div>
 			<table class="bordered" cellspacing="0" style="border-collapse:collapse; width: inherit;">
 				<tbody>
-					@foreach (var osoba in osoby.Osoby)
+					@foreach (var osoba in osoby)
 					{
 						<tr>
 							<td>@osoba.PrijmeniJmeno</td>
