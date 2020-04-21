@@ -59,13 +59,13 @@ namespace KandaEu.Volejbal.Web
                 config.VisibleStateDuration = 4000;
             });
 
-            services.AddGrpcWebProxy<INastenkaFacade>();
-            services.AddGrpcWebProxy<ITerminFacade>();
-            services.AddGrpcWebProxy<IPrihlaskaFacade>();
-            services.AddGrpcWebProxy<IOsobaFacade>();
-            services.AddGrpcWebProxy<IReportOsobFacade>();
-            services.AddGrpcWebProxy<IReportTerminuFacade>();
-            services.AddGrpcWebProxy<IDataSeedFacade>();
+            services.AddGrpcWebProxy<INastenkaFacade>(Configuration);
+            services.AddGrpcWebProxy<ITerminFacade>(Configuration);
+            services.AddGrpcWebProxy<IPrihlaskaFacade>(Configuration);
+            services.AddGrpcWebProxy<IOsobaFacade>(Configuration);
+            services.AddGrpcWebProxy<IReportOsobFacade>(Configuration);
+            services.AddGrpcWebProxy<IReportTerminuFacade>(Configuration);
+            services.AddGrpcWebProxy<IDataSeedFacade>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
