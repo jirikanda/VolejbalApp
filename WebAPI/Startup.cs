@@ -33,6 +33,7 @@ using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.System;
+using KandaEu.Volejbal.Contracts.Reporty;
 
 [assembly: ApiControllerAttribute]
 
@@ -109,6 +110,8 @@ namespace KandaEu.Volejbal.WebAPI
                     endpoints.MapGrpcService<IPrihlaskaFacade>();
                     endpoints.MapGrpcService<INastenkaFacade>();
                     endpoints.MapGrpcService<IDataSeedFacade>();
+                    endpoints.MapGrpcService<IReportTerminuFacade>();
+                    endpoints.MapGrpcService<IReportOsobFacade>();
                 });               
 
                 app.UpgradeDatabaseSchemaAndData();
