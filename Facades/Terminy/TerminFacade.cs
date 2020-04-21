@@ -37,7 +37,7 @@ namespace KandaEu.Volejbal.Facades.Terminy
 			this.ensureTerminyService = ensureTerminyService;
 		}
 
-		public async Task<TerminListDto> GetTerminy()
+		public async Task<GetTerminyResponse> GetTerminy()
 		{
 			var terminy = await terminDataSource.Data
 				.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
@@ -47,7 +47,7 @@ namespace KandaEu.Volejbal.Facades.Terminy
 					Datum = item.Datum
 				}).ToListAsync();
 		
-			return new TerminListDto
+			return new GetTerminyResponse
 			{
 				Terminy = terminy
 			};
@@ -55,10 +55,10 @@ namespace KandaEu.Volejbal.Facades.Terminy
 
 	
 
-		public async Task<TerminDetailDto> GetDetailTerminu(int terminId)
+		public async Task<GetDetailTerminuResult> GetDetailTerminu(GetDetailTerminuRequest request)
 		{
 			List<Prihlaska> prihlasky = await prihlaskaDataSource.Data
-				.Where(prihlaska => prihlaska.TerminId == terminId)
+				.Where(prihlaska => prihlaska.TerminId == request.TerminId)
 				.Include(prihlaska => prihlaska.Osoba)
 				.OrderBy(prihlaska => prihlaska.DatumPrihlaseni)
 				.ToListAsync();
@@ -74,7 +74,7 @@ namespace KandaEu.Volejbal.Facades.Terminy
 				.OrderBy(item => item.PrijmeniJmeno)
 				.ToList();
 
-			return new TerminDetailDto
+			return new GetDetailTerminuResult
 			{
 				Prihlaseni = prihlasky.Select(prihlaska => prihlaska.ToOsobaDto()).ToList(),
 				Neprihlaseni = neprihlaseni.Select(osoba => osoba.ToOsobaDto()).ToList()

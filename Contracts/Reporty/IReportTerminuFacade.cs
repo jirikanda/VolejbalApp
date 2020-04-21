@@ -10,6 +10,6 @@ namespace KandaEu.Volejbal.Contracts.Reporty
 	[ServiceContract]
 	public interface IReportTerminuFacade
 	{
-		Task<ReportTerminu> GetReport();
+		Task<ReportTerminuResponse> GetReport();
 	}
 }

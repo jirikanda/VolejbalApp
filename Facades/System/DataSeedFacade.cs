@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Havit.Data.Patterns.DataSeeds;
 using Havit.Extensions.DependencyInjection.Abstractions;
 using KandaEu.Volejbal.Contracts.System;
+using KandaEu.Volejbal.Contracts.System.Dto;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
 using KandaEu.Volejbal.Services.Infrastructure;
 
@@ -26,14 +27,14 @@ namespace KandaEu.Volejbal.Facades.System
         /// Provede seedování dat daného profilu.
         /// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
         /// </summary>        
-        public Task SeedDataProfile(string profileName)
+        public Task SeedDataProfile(SeedDataProfileRequest request)
         {
-			string typeName = profileName + "Profile";
+			string typeName = request.ProfileName + "Profile";
 			Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
 
             if (type == null)
             {
-                throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
+                throw new OperationFailedException($"Profil {request.ProfileName} nebyl nalezen.");
             }
 
             dataSeedRunner.SeedData(type);

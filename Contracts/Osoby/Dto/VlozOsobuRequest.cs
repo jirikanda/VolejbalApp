@@ -6,7 +6,7 @@ using System.Text;
 namespace KandaEu.Volejbal.Contracts.Osoby.Dto
 {
 	[DataContract]
-	public class OsobaInputDto
+	public class VlozOsobuRequest
 	{
 		[DataMember(Order = 1)]
 		public string Jmeno { get; set; }

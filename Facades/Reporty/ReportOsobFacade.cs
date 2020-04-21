@@ -24,12 +24,12 @@ namespace KandaEu.Volejbal.Facades.Reporty
 			this.timeService = timeService;
 		}
 
-		public async Task<ReportOsob> GetReport()
+		public async Task<ReportOsobResponse> GetReport()
 		{
 			DateTime today = timeService.GetCurrentDate();
 			DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
-			return new ReportOsob
+			return new ReportOsobResponse
 			{
 				UcastHracu = (await osobaDataSource.Data.Select(osoba =>
 				new ReportOsobItem

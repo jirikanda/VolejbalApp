@@ -7,9 +7,9 @@ using System.Text;
 namespace KandaEu.Volejbal.Contracts.Terminy.Dto
 {
 	[DataContract]
-	public class TerminListDto
+	public class GetTerminyResponse
 	{
 		[DataMember(Order = 1)]
-		public List<TerminDto> Terminy { get; set; }
+		public List<TerminDto> Terminy { get; set; } = new List<TerminDto>();
 	}
 }

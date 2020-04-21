@@ -10,8 +10,8 @@ namespace KandaEu.Volejbal.Contracts.Nastenka
 	[ServiceContract]
 	public interface INastenkaFacade
 	{
-		Task<VzkazListDto> GetVzkazy();
+		Task<GetVzkazyResult> GetVzkazy();
 
-		Task VlozVzkaz(VzkazInputDto vzkaz);
+		Task VlozVzkaz(VlozVzkazRequest request);
 	}
 }

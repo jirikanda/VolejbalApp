@@ -2,6 +2,7 @@
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Prihlasky;
+using KandaEu.Volejbal.Contracts.Prihlasky.Dto;
 using KandaEu.Volejbal.DataLayer.DataSources;
 using KandaEu.Volejbal.DataLayer.Repositories;
 using KandaEu.Volejbal.Model;
@@ -29,16 +30,16 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 			this.prihlaskaRepository = prihlaskaRepository;
 		}
 
-		public async Task Prihlasit(int terminId, int osobaId)
+		public async Task Prihlasit(PrihlasitOdhlasitRequest prihlasitRequest)
 		{
 			// TODO: lock (_lock)
 			{
-				if (await prihlaskaRepository.GetPrihlaska(terminId, osobaId) == null)
+				if (await prihlaskaRepository.GetPrihlaska(prihlasitRequest.TerminId, prihlasitRequest.OsobaId) == null)
 				{
 					Prihlaska prihlaska = new Prihlaska
 					{
-						TerminId = terminId,
-						OsobaId = osobaId,
+						TerminId = prihlasitRequest.TerminId,
+						OsobaId = prihlasitRequest.OsobaId,
 						DatumPrihlaseni = timeService.GetCurrentTime(),
 					};
 
@@ -48,11 +49,11 @@ namespace KandaEu.Volejbal.Facades.Prihlasky
 			}
 		}
 
-		public async Task Odhlasit(int terminId, int osobaId)
+		public async Task Odhlasit(PrihlasitOdhlasitRequest odhlasitRequest)
 		{
 			// TODO: lock (_lock)
 			{
-				Prihlaska prihlaska = await prihlaskaRepository.GetPrihlaska(terminId, osobaId);
+				Prihlaska prihlaska = await prihlaskaRepository.GetPrihlaska(odhlasitRequest.TerminId, odhlasitRequest.OsobaId);
 				if (prihlaska != null)
 				{
 					unitOfWork.AddForDelete(prihlaska);

@@ -10,10 +10,10 @@ namespace KandaEu.Volejbal.Contracts.Osoby
 	[ServiceContract]
 	public interface IOsobaFacade
 	{
-		Task VlozOsobu(OsobaInputDto osobaInputDto);
-		Task SmazNeaktivniOsobu(int osobaId); // TODO GRPC: Request
-		Task AktivujNeaktivniOsobu(int osobaId);// TODO GRPC: Request
-		Task<OsobaListDto> GetNeaktivniOsoby();
-		Task<OsobaListDto> GetAktivniOsoby();
+		Task VlozOsobu(VlozOsobuRequest vlozOsobuRequest);
+		Task SmazNeaktivniOsobu(SmazNeaktivniOsobuRequest smazNeaktivniOsobuRequest);
+		Task AktivujNeaktivniOsobu(AktivujNeaktivniOsobuRequest aktivujNeaktivniOsobuRequest);
+		Task<GetOsobyResponse> GetNeaktivniOsoby();
+		Task<GetOsobyResponse> GetAktivniOsoby();
 	}
 }

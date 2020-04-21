@@ -31,12 +31,12 @@ namespace KandaEu.Volejbal.Facades.Nastenka
 			this.osobaRepository = osobaRepository;
 		}
 
-		public async Task<VzkazListDto> GetVzkazy()
+		public async Task<GetVzkazyResult> GetVzkazy()
 		{
 			DateTime today = timeService.GetCurrentDate();
 			DateTime prispevkyOd = today.AddDays(-14);
 
-			VzkazListDto result = new VzkazListDto
+			GetVzkazyResult result = new GetVzkazyResult
 			{
 				Vzkazy = await vzkazDataSource.Data
 					.Where(item => item.DatumVlozeni > prispevkyOd)
@@ -52,16 +52,16 @@ namespace KandaEu.Volejbal.Facades.Nastenka
 			return result;
 		}
 
-		public async Task VlozVzkaz(VzkazInputDto vzkazInputDto)
+		public async Task VlozVzkaz(VlozVzkazRequest vlozVzkazRequest)
 		{
-			Osoba autor = await osobaRepository.GetObjectAsync(vzkazInputDto.AutorId);
+			Osoba autor = await osobaRepository.GetObjectAsync(vlozVzkazRequest.AutorId);
 			autor.ThrowIfDeleted();
 			autor.ThrowIfNotAktivni();
 
 			Vzkaz vzkaz = new Vzkaz
 			{
-				AutorId = vzkazInputDto.AutorId,
-				Zprava = vzkazInputDto.Zprava,
+				AutorId = vlozVzkazRequest.AutorId,
+				Zprava = vlozVzkazRequest.Zprava,
 				DatumVlozeni = timeService.GetCurrentTime()
 			};
 

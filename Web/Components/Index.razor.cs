@@ -1,4 +1,5 @@
 ﻿using KandaEu.Volejbal.Contracts.Nastenka;
+using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
@@ -32,7 +33,8 @@ namespace KandaEu.Volejbal.Web.Components
 					lastVisit = await LocalStorageService.GetItemAsync<DateTime>("LastVisit");
 				}
 
-				if ((await NastenkaFacade.GetVzkazy()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
+				GetVzkazyResult getVzkazyResult = await NastenkaFacade.GetVzkazy();
+				if (getVzkazyResult.Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
 				{
 					ShowNastenkaLink = true;
 					StateHasChanged();

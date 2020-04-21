@@ -5,6 +5,8 @@ using System.Text;
 
 namespace KandaEu.Volejbal.Contracts.Nastenka.Dto
 {
+	// TODO: Nested class?
+
 	[DataContract]
 	public class VzkazDto
 	{

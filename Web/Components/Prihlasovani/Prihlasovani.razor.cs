@@ -1,5 +1,6 @@
 ﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Prihlasky;
+using KandaEu.Volejbal.Contracts.Prihlasky.Dto;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
@@ -62,10 +63,10 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			State.Neprihlaseni = null;
 			StateHasChanged();
 
-			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminFacade.GetDetailTerminu(terminId));
+			GetDetailTerminuResult getDetailTerminuResult = await Progress.ExecuteInProgressAsync(async () => await TerminFacade.GetDetailTerminu(new GetDetailTerminuRequest { TerminId = terminId }));
 
-			State.Prihlaseni = terminDetail.Prihlaseni.ToList();
-			State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
+			State.Prihlaseni = getDetailTerminuResult.Prihlaseni.ToList();
+			State.Neprihlaseni = getDetailTerminuResult.Neprihlaseni.ToList();
 
 			StateHasChanged();
 		}
@@ -88,7 +89,12 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			var prihlaseni = State.Prihlaseni;
 			var neprihlaseni = State.Neprihlaseni;
 
-			await Progress.ExecuteInProgressAsync(async () => await PrihlaskaFacade.Prihlasit(State.AktualniTerminId.Value, neprihlaseny.Id));
+			PrihlasitOdhlasitRequest prihlasitRequest = new PrihlasitOdhlasitRequest
+			{
+				TerminId = State.AktualniTerminId.Value,
+				OsobaId = neprihlaseny.Id
+			};
+			await Progress.ExecuteInProgressAsync(async () => await PrihlaskaFacade.Prihlasit(prihlasitRequest));
 
 			if (!prihlaseni.Contains(neprihlaseny))
 			{
@@ -107,7 +113,12 @@ namespace KandaEu.Volejbal.Web.Components.Prihlasovani
 			var prihlaseni = State.Prihlaseni;
 			var neprihlaseni = State.Neprihlaseni;
 
-			await Progress.ExecuteInProgressAsync(async () => await PrihlaskaFacade.Odhlasit(State.AktualniTerminId.Value, prihlaseny.Id));
+			PrihlasitOdhlasitRequest odhlasitRequest = new PrihlasitOdhlasitRequest
+			{
+				TerminId = State.AktualniTerminId.Value,
+				OsobaId = prihlaseny.Id
+			};
+			await Progress.ExecuteInProgressAsync(async () => await PrihlaskaFacade.Odhlasit(odhlasitRequest));
 
 			if (!neprihlaseni.Contains(prihlaseny)) // pokud došlo k doubleclicku, mohl se tam dostat
 			{

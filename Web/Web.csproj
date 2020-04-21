@@ -22,7 +22,10 @@
 	<PackageReference Include="Blazored.LocalStorage" Version="2.1.5" />
 	<PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
 	<PackageReference Include="EventAggregator.Blazor" Version="2.0.0" />
+	<PackageReference Include="Grpc.Net.Client" Version="2.28.0" />
+	<PackageReference Include="Grpc.Net.Client.Web" Version="2.28.0-pre2" />
 	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	<PackageReference Include="protobuf-net.Grpc" Version="1.0.37" />
 	<PackageReference Include="Sotsera.Blazor.Toaster" Version="3.0.0" />
   </ItemGroup>
 

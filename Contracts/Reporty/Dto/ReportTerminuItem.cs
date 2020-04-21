@@ -5,6 +5,8 @@ using System.Text;
 
 namespace KandaEu.Volejbal.Contracts.Reporty.Dto
 {
+	// TODO: Nested class?
+
 	[DataContract]
 	public class ReportTerminuItem
 	{

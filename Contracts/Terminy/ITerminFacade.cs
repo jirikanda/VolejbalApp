@@ -8,7 +8,7 @@ namespace KandaEu.Volejbal.Contracts.Terminy
 	[ServiceContract]
 	public interface ITerminFacade
 	{
-		Task<TerminListDto> GetTerminy();
-		Task<TerminDetailDto> GetDetailTerminu(int terminId); // TODO GRPC: Request
+		Task<GetTerminyResponse> GetTerminy();
+		Task<GetDetailTerminuResult> GetDetailTerminu(GetDetailTerminuRequest getDetailTerminuRequest);
 	}
 }

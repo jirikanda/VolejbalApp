@@ -12,6 +12,17 @@ using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using Blazored.LocalStorage;
 using Sotsera.Blazor.Toaster.Core.Models;
+using System.Net.Http;
+using KandaEu.Volejbal.Contracts.Terminy;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Text;
+using ProtoBuf.Grpc.Client;
+using KandaEu.Volejbal.Contracts.Nastenka;
+using KandaEu.Volejbal.Contracts.Prihlasky;
+using KandaEu.Volejbal.Contracts.Osoby;
+using KandaEu.Volejbal.Contracts.Reporty;
+using KandaEu.Volejbal.Contracts.System;
+using KandaEu.Volejbal.Web.Infrastructure;
 
 namespace KandaEu.Volejbal.Web
 {
@@ -28,10 +39,10 @@ namespace KandaEu.Volejbal.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-			services.AddScoped<EventAggregator.Blazor.IEventAggregator, EventAggregator.Blazor.EventAggregator>();
-			services.AddRazorPages();
+            services.AddScoped<EventAggregator.Blazor.IEventAggregator, EventAggregator.Blazor.EventAggregator>();
+            services.AddRazorPages();
             services.AddServerSideBlazor();
-			services.AddHttpClient();
+            services.AddHttpClient();
 
             services.AddBlazoredLocalStorage();
 
@@ -48,6 +59,13 @@ namespace KandaEu.Volejbal.Web
                 config.VisibleStateDuration = 4000;
             });
 
+            services.AddGrpcWebProxy<INastenkaFacade>();
+            services.AddGrpcWebProxy<ITerminFacade>();
+            services.AddGrpcWebProxy<IPrihlaskaFacade>();
+            services.AddGrpcWebProxy<IOsobaFacade>();
+            services.AddGrpcWebProxy<IReportOsobFacade>();
+            services.AddGrpcWebProxy<IReportTerminuFacade>();
+            services.AddGrpcWebProxy<IDataSeedFacade>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

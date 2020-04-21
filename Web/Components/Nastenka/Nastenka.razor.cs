@@ -39,7 +39,7 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		private async Task OnValidSubmitAsync()
 		{
 			// TODO: Sdílení Contracts!		
-			await NastenkaFacade.VlozVzkaz(new VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
+			await NastenkaFacade.VlozVzkaz(new VlozVzkazRequest { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
 			formData.Zprava = ""; // vyčistit formulář
 			await LoadDataAsync();
 

@@ -28,6 +28,11 @@ using KandaEu.Volejbal.Facades.Osoby;
 using KandaEu.Volejbal.Facades.Prihlasky;
 using KandaEu.Volejbal.Facades.Nastenka;
 using KandaEu.Volejbal.Facades.System;
+using KandaEu.Volejbal.Contracts.Terminy;
+using KandaEu.Volejbal.Contracts.Osoby;
+using KandaEu.Volejbal.Contracts.Prihlasky;
+using KandaEu.Volejbal.Contracts.Nastenka;
+using KandaEu.Volejbal.Contracts.System;
 
 [assembly: ApiControllerAttribute]
 
@@ -99,11 +104,11 @@ namespace KandaEu.Volejbal.WebAPI
                 app.UseGrpcWeb();
                 app.UseEndpoints(endpoints =>
                 {                    
-                    endpoints.MapGrpcService<TerminFacade>();
-                    endpoints.MapGrpcService<OsobaFacade>();
-                    endpoints.MapGrpcService<PrihlaskaFacade>();
-                    endpoints.MapGrpcService<NastenkaFacade>();
-                    endpoints.MapGrpcService<DataSeedFacade>();
+                    endpoints.MapGrpcService<ITerminFacade>();
+                    endpoints.MapGrpcService<IOsobaFacade>();
+                    endpoints.MapGrpcService<IPrihlaskaFacade>();
+                    endpoints.MapGrpcService<INastenkaFacade>();
+                    endpoints.MapGrpcService<IDataSeedFacade>();
                 });               
 
                 app.UpgradeDatabaseSchemaAndData();

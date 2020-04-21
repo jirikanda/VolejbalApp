@@ -7,12 +7,12 @@ using System.Text;
 namespace KandaEu.Volejbal.Contracts.Terminy.Dto
 {
 	[DataContract]
-	public class TerminDetailDto
+	public class GetDetailTerminuResult
 	{
 		[DataMember(Order = 1)]
-		public List<OsobaDto> Prihlaseni { get; set; }
+		public List<OsobaDto> Prihlaseni { get; set; } = new List<OsobaDto>();
 
 		[DataMember(Order = 2)]
-		public List<OsobaDto> Neprihlaseni { get; set; }
+		public List<OsobaDto> Neprihlaseni { get; set; } = new List<OsobaDto>();
 	}
 }

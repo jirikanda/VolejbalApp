@@ -26,15 +26,15 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 
 		protected async Task ValidSubmit()
 		{
-			OsobaInputDto novaOsoba = new OsobaInputDto()
+			VlozOsobuRequest request = new VlozOsobuRequest()
 			{
 				Jmeno = formData.Jmeno,
 				Prijmeni = formData.Prijmeni,
 				Email = formData.Email
 			};
 
-			await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.VlozOsobu(novaOsoba));
-			Toaster.Success($"{novaOsoba.Prijmeni} {novaOsoba.Jmeno} založen(a).");
+			await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.VlozOsobu(request));
+			Toaster.Success($"{request.Prijmeni} {request.Jmeno} založen(a).");
 			NavigationManager.NavigateTo("/");
 		}
 	}

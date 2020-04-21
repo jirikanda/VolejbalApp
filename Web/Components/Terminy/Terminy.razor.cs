@@ -28,9 +28,9 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 		{
 			await base.OnInitializedAsync();
 
-			TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminFacade.GetTerminy());
+			GetTerminyResponse terminList = await Progress.ExecuteInProgressAsync(async () => await TerminFacade.GetTerminy());
 
-			State.Terminy = terminList.Terminy.ToList();
+			State.Terminy = terminList.Terminy;
 			
 			StateHasChanged();
 

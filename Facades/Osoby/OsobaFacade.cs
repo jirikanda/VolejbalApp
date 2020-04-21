@@ -29,22 +29,22 @@ namespace KandaEu.Volejbal.Facades.Osoby
 			this.unitOfWork = unitOfWork;
 		}
 
-		public async Task VlozOsobu(OsobaInputDto osobaInputDto)
+		public async Task VlozOsobu(VlozOsobuRequest vlozOsobuRequest)
 		{
 			Osoba osoba = new Osoba
 			{
-				Jmeno = osobaInputDto.Jmeno,
-				Prijmeni = osobaInputDto.Prijmeni,
-				Email = osobaInputDto.Email
+				Jmeno = vlozOsobuRequest.Jmeno,
+				Prijmeni = vlozOsobuRequest.Prijmeni,
+				Email = vlozOsobuRequest.Email
 			};
 
 			unitOfWork.AddForInsert(osoba);
 			await unitOfWork.CommitAsync();
 		}
 
-		public async Task AktivujNeaktivniOsobu(int osobaId)
+		public async Task AktivujNeaktivniOsobu(AktivujNeaktivniOsobuRequest aktivujNeaktivniOsobuRequest)
 		{
-			Osoba osoba = await osobaRepository.GetObjectAsync(osobaId);
+			Osoba osoba = await osobaRepository.GetObjectAsync(aktivujNeaktivniOsobuRequest.OsobaId);
 
 			CheckNeaktivniNesmazana(osoba);
 			
@@ -54,9 +54,9 @@ namespace KandaEu.Volejbal.Facades.Osoby
 			await unitOfWork.CommitAsync();
 		}
 
-		public async Task SmazNeaktivniOsobu(int osobaId)
+		public async Task SmazNeaktivniOsobu(SmazNeaktivniOsobuRequest request)
 		{
-			Osoba osoba = await osobaRepository.GetObjectAsync(osobaId);
+			Osoba osoba = await osobaRepository.GetObjectAsync(request.OsobaId);
 
 			unitOfWork.AddForDelete(osoba);
 			await unitOfWork.CommitAsync();
@@ -69,19 +69,19 @@ namespace KandaEu.Volejbal.Facades.Osoby
 		}
 
 
-		public async Task<OsobaListDto> GetAktivniOsoby()
+		public async Task<GetOsobyResponse> GetAktivniOsoby()
 		{
 			return await GetOsobyByAktivni(true);
 		}
 
-		public async Task<OsobaListDto> GetNeaktivniOsoby()
+		public async Task<GetOsobyResponse> GetNeaktivniOsoby()
 		{
 			return await GetOsobyByAktivni(false);
 		}
 
-		public async Task<OsobaListDto> GetOsobyByAktivni(bool aktivni)
+		public async Task<GetOsobyResponse> GetOsobyByAktivni(bool aktivni)
 		{
-			var result = new OsobaListDto
+			var result = new GetOsobyResponse
 			{
 				Osoby = await osobaDataSource.Data.Where(osoba => osoba.Aktivni == aktivni)
 				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)

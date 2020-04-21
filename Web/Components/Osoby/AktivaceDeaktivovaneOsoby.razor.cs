@@ -20,7 +20,7 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 		[Inject]
 		protected IJSRuntime JSRuntime { get; set; }
 
-		protected OsobaListDto osoby;
+		protected List<OsobaDto> osoby;
 
 		[Inject]
 		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
@@ -28,13 +28,13 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
-			osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.GetAktivniOsoby());
+			osoby = (await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.GetAktivniOsoby())).Osoby;
 		}
 
 		protected async Task Aktivovat(OsobaDto osoba)
 		{
-			await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.AktivujNeaktivniOsobu(osoba.Id));
-			osoby.Osoby.Remove(osoba);
+			await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.AktivujNeaktivniOsobu(new AktivujNeaktivniOsobuRequest { OsobaId = osoba.Id }));
+			osoby.Remove(osoba);
 
 			Toaster.Success($"{osoba.PrijmeniJmeno} aktivován(a).");
 		}
@@ -44,8 +44,8 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 			bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Opravdu chceš smazat osobu \"{osoba.PrijmeniJmeno}\"?");
 			if (confirmed)
 			{
-				await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.SmazNeaktivniOsobu(osoba.Id));
-				osoby.Osoby.Remove(osoba);
+				await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.SmazNeaktivniOsobu(new SmazNeaktivniOsobuRequest { OsobaId = osoba.Id }));
+				osoby.Remove(osoba);
 				Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
 			}
 		}

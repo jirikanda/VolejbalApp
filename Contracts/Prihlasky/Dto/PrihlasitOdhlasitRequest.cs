@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace KandaEu.Volejbal.Contracts.Nastenka.Dto
+namespace KandaEu.Volejbal.Contracts.Prihlasky.Dto
 {
 	[DataContract]
-	public class VzkazInputDto
+	public class PrihlasitOdhlasitRequest
 	{
 		[DataMember(Order = 1)]
-		public int AutorId { get; set; }
-
+		public int TerminId { get; set; }
+		
 		[DataMember(Order = 2)]
-		public string Zprava { get; set; }
+		public int OsobaId { get; set; }
 	}
 }

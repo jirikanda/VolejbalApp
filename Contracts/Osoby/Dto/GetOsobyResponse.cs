@@ -7,9 +7,9 @@ using System.Text;
 namespace KandaEu.Volejbal.Contracts.Osoby.Dto
 {
 	[DataContract]
-	public class OsobaListDto
+	public class GetOsobyResponse
 	{
 		[DataMember(Order = 1)]
-		public List<OsobaDto> Osoby { get; set; }
+		public List<OsobaDto> Osoby { get; set; } = new List<OsobaDto>();
 	}
 }

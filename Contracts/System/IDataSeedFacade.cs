@@ -1,11 +1,12 @@
-﻿using System.ServiceModel;
+﻿using KandaEu.Volejbal.Contracts.System.Dto;
+using System.ServiceModel;
 using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Contracts.System
 {
-	[ServiceContract]
+    [ServiceContract]
     public interface IDataSeedFacade
     {
-        Task SeedDataProfile(string profileName); // TODO GRPC: Request?
+        Task SeedDataProfile(SeedDataProfileRequest seedDataProfileRequest);
     }
 }

@@ -24,12 +24,12 @@ namespace KandaEu.Volejbal.Facades.Reporty
 			this.timeService = timeService;
 		}
 
-		public async Task<ReportTerminu> GetReport()
+		public async Task<ReportTerminuResponse> GetReport()
 		{
 			DateTime today = timeService.GetCurrentDate();
 			DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
-			return new ReportTerminu
+			return new ReportTerminuResponse
 			{
 				ObsazenostTerminu = await terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
 				.OrderBy(item => item.Datum)
