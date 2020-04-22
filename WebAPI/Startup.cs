@@ -59,7 +59,7 @@ namespace KandaEu.Volejbal.WebAPI
             services.AddMemoryCache(); // ie. IClaimsCacheStorage
 
             services.AddCustomizedRequestLocalization();
-            services.AddAuthorization();
+            //services.AddAuthorization();
             services.AddCustomizedMailing(configuration);
 
             services.AddExceptionMonitoring(configuration);
@@ -95,8 +95,11 @@ namespace KandaEu.Volejbal.WebAPI
                 }
 
                 app.UseCustomizedCors(corsOptions);
+
+                app.UseDefaultFiles();
                 app.UseStaticFiles();
-                app.UseAuthentication();
+
+                //app.UseAuthentication();
 
                 app.UseRequestLocalization();
 
