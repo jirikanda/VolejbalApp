@@ -1,11 +1,10 @@
-﻿using System.Runtime.Serialization;
+﻿using ProtoBuf;
 
 namespace KandaEu.Volejbal.Contracts.Osoby.Dto
 {
-	[DataContract]
+	[ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
 	public class AktivujNeaktivniOsobuRequest
 	{
-		[DataMember(Order = 1)]
 		public int OsobaId { get; set; }
 	}
 }

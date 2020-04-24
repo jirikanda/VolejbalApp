@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using KandaEu.Volejbal.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProtoBuf.Grpc.Client;
+using ProtoBuf.Grpc.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +23,8 @@ namespace KandaEu.Volejbal.Web.Infrastructure
 			{ 
 				var handler = new Grpc.Net.Client.Web.GrpcWebHandler(Grpc.Net.Client.Web.GrpcWebMode.GrpcWebText, new HttpClientHandler());
 				var channel = Grpc.Net.Client.GrpcChannel.ForAddress(webAPIConnectionString, new Grpc.Net.Client.GrpcChannelOptions() { HttpClient = new HttpClient(handler) });
-				return channel.CreateGrpcService<TService>();
+
+				return channel.CreateGrpcService<TService>(ClientFactory.Create(BinderConfiguration.Create(null, new GrpcServiceBinder())));
 			});
 		}
 	}

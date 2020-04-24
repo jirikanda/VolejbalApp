@@ -1,11 +1,10 @@
-﻿using System.Runtime.Serialization;
+﻿using ProtoBuf;
 
 namespace KandaEu.Volejbal.Contracts.System.Dto
 {
-	[DataContract]
+	[ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
     public class SeedDataProfileRequest
     {
-        [DataMember(Order = 1)]
         public string ProfileName { get; set; }
     }
 }

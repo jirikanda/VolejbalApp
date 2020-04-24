@@ -34,6 +34,8 @@ using KandaEu.Volejbal.Contracts.Prihlasky;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.Contracts.Reporty;
+using ProtoBuf.Grpc.Configuration;
+using KandaEu.Volejbal.Contracts;
 
 [assembly: ApiControllerAttribute]
 
@@ -77,6 +79,7 @@ namespace KandaEu.Volejbal.WebAPI
 
             services.ConfigureForWebAPI(configuration);
 
+            services.AddSingleton(BinderConfiguration.Create(null, new GrpcServiceBinder()));
             services.AddCodeFirstGrpc();
             services.AddGrpcWeb(options => options.GrpcWebEnabled = true);
         }

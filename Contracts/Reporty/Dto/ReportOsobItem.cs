@@ -1,19 +1,17 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace KandaEu.Volejbal.Contracts.Reporty.Dto
 {
 	// TODO: Nested class?
 
-	[DataContract]
+	[ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
 	public class ReportOsobItem
 	{
-		[DataMember(Order = 1)]
 		public string PrijmeniJmeno { get; set; }
 		
-		[DataMember(Order = 2)]
 		public int PocetTerminu { get; set; }
 	}
 }

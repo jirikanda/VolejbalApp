@@ -1,11 +1,10 @@
-﻿using System.Runtime.Serialization;
+﻿using ProtoBuf;
 
 namespace KandaEu.Volejbal.Contracts.Terminy.Dto
 {
-	[DataContract]
+	[ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
 	public class GetDetailTerminuRequest
 	{
-		[DataMember(Order = 1)]
 		public int TerminId { get; set; }
 	}
 }
