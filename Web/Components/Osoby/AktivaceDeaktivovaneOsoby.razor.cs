@@ -28,7 +28,7 @@ namespace KandaEu.Volejbal.Web.Components.Osoby
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
-			osoby = (await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.GetAktivniOsoby())).Osoby;
+			osoby = (await Progress.ExecuteInProgressAsync(async () => await OsobaFacade.GetNeaktivniOsoby())).Osoby;
 		}
 
 		protected async Task Aktivovat(OsobaDto osoba)
