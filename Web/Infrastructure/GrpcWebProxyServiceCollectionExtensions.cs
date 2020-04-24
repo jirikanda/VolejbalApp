@@ -21,7 +21,7 @@ namespace KandaEu.Volejbal.Web.Infrastructure
 
 			services.AddSingleton<TService>(sp =>
 			{ 
-				var handler = new Grpc.Net.Client.Web.GrpcWebHandler(Grpc.Net.Client.Web.GrpcWebMode.GrpcWebText, new HttpClientHandler());
+				var handler = new Grpc.Net.Client.Web.GrpcWebHandler(Grpc.Net.Client.Web.GrpcWebMode.GrpcWeb, new HttpClientHandler());
 				var channel = Grpc.Net.Client.GrpcChannel.ForAddress(webAPIConnectionString, new Grpc.Net.Client.GrpcChannelOptions() { HttpClient = new HttpClient(handler) });
 
 				return channel.CreateGrpcService<TService>(ClientFactory.Create(BinderConfiguration.Create(null, new GrpcServiceBinder())));
