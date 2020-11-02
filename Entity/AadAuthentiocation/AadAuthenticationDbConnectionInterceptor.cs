@@ -19,40 +19,67 @@ namespace KandaEu.Volejbal.Entity
     /// </summary>
     public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
     {
-        private bool? useAadAuthentication = null;
 
-        public override async Task<InterceptionResult> ConnectionOpeningAsync(
+		public override InterceptionResult ConnectionOpening(DbConnection connection, ConnectionEventData eventData, InterceptionResult result)
+		{
+			if (ShouldUseAadAuthnetication(connection))
+			{
+				((SqlConnection)connection).AccessToken = GetAzureSqlAccessToken();
+			}
+
+			return base.ConnectionOpening(connection, eventData, result);
+		}
+
+		public override async Task<InterceptionResult> ConnectionOpeningAsync(
             DbConnection connection,
             ConnectionEventData eventData,
             InterceptionResult result,
             CancellationToken cancellationToken)
         {
-            if (connection is SqlConnection sqlConnection)
-            {
-                if (useAadAuthentication == null)
-                {
-                    lock (typeof(AadAuthenticationDbConnectionInterceptor))
-                    {
-                        if (useAadAuthentication == null)
-                        {
-                            var connectionStringBuilder = new SqlConnectionStringBuilder(sqlConnection.ConnectionString);
-                            useAadAuthentication = connectionStringBuilder.DataSource.Contains("database.windows.net", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(connectionStringBuilder.UserID);
-                        }
-                    }
-                }
+			if (ShouldUseAadAuthnetication(connection))
+			{
+				((SqlConnection)connection).AccessToken = await GetAzureSqlAccessTokenAsync(cancellationToken);
+			}
 
-                if (useAadAuthentication.Value)
-                {
-                    sqlConnection.AccessToken = await GetAzureSqlAccessToken(cancellationToken);
-                }
-            }
-
-            return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
+			return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
         }
 
-        private static async Task<string> GetAzureSqlAccessToken(CancellationToken cancellationToken)
+		private bool ShouldUseAadAuthnetication(DbConnection connection)
+		{
+			if (_shouldUseAadAuthentication == null)
+			{
+				lock (typeof(AadAuthenticationDbConnectionInterceptor))
+				{
+					if (_shouldUseAadAuthentication == null)
+					{
+						if (connection is SqlConnection sqlConnection)
+						{
+							var connectionStringBuilder = new SqlConnectionStringBuilder(sqlConnection.ConnectionString);
+							_shouldUseAadAuthentication = connectionStringBuilder.DataSource.Contains("database.windows.net", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(connectionStringBuilder.UserID);
+						}
+						else
+						{
+							_shouldUseAadAuthentication = false;
+						}
+					}
+				}
+			}
+
+			return _shouldUseAadAuthentication.Value;
+		}
+		private bool? _shouldUseAadAuthentication = null;
+
+		// See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
+		private static string GetAzureSqlAccessToken()
+		{
+			var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net//.default" });
+			var tokenRequestResult = new DefaultAzureCredential().GetTokenAsync(tokenRequestContext).GetAwaiter().GetResult();
+
+			return tokenRequestResult.Token;
+		}
+
+		private static async Task<string> GetAzureSqlAccessTokenAsync(CancellationToken cancellationToken)
         {
-            // See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
             var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net//.default" });
             var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, cancellationToken);
 
