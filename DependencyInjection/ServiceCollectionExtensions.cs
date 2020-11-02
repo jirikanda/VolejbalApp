@@ -71,7 +71,7 @@ namespace KandaEu.Volejbal.DependencyInjection
 		{
 			DbContextOptions options = configuration.UseInMemoryDb
 				? new DbContextOptionsBuilder<VolejbalDbContext>().UseInMemoryDatabase(nameof(VolejbalDbContext)).Options
-				: new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30)).Options;
+				: new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30)).UseSqlServerAadAuthentication().Options;
 
 			services.WithEntityPatternsInstaller()
 				.AddEntityPatterns()

@@ -6,10 +6,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace KandaEu.Volejbal.Tests.Entity
 {
 	[TestClass]
-	public class VolejbalAppDbContextTests
+	public class VolejbalDbContextTests
 	{
 		[TestMethod]
-		public void VolejbalAppDbContext_CheckModelConventions()
+		public void VolejbalDbContext_CheckModelConventions()
 		{
 			// Arrange
 			DbContextOptions<VolejbalDbContext> options = new DbContextOptionsBuilder<VolejbalDbContext>()
