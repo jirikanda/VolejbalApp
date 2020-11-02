@@ -16,6 +16,7 @@ using KandaEu.Volejbal.DataLayer.DataSources;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
+using KandaEu.Volejbal.Entity.AadAuthentication;
 
 namespace KandaEu.Volejbal.DependencyInjection
 {

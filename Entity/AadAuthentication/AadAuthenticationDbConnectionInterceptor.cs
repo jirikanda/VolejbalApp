@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Entity
+namespace KandaEu.Volejbal.Entity.AadAuthentication
 {
     // inspirace: https://mderriey.com/2020/07/17/connect-to-azure-sql-with-aad-and-managed-identities/
 

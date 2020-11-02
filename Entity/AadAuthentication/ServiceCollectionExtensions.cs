@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Entity
+namespace KandaEu.Volejbal.Entity.AadAuthentication
 {
     public static class ServiceCollectionExtensions
 	{
