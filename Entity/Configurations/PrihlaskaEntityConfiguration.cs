@@ -17,7 +17,7 @@ namespace KandaEu.Volejbal.Entity.Configurations
 				prihlaska.OsobaId,
 				prihlaska.Deleted
 			})
-			.HasName("UIDX_Prihlaska_TerminId_OsobaId_Deleted")
+			.HasDatabaseName("UIDX_Prihlaska_TerminId_OsobaId_Deleted")
 			.IsUnique()
 			.HasFilter(null);
 		}

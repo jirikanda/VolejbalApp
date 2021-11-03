@@ -16,7 +16,6 @@ using KandaEu.Volejbal.DataLayer.DataSources;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
-using KandaEu.Volejbal.Entity.AadAuthentication;
 
 namespace KandaEu.Volejbal.DependencyInjection
 {
@@ -72,7 +71,7 @@ namespace KandaEu.Volejbal.DependencyInjection
 		{
 			DbContextOptions options = configuration.UseInMemoryDb
 				? new DbContextOptionsBuilder<VolejbalDbContext>().UseInMemoryDatabase(nameof(VolejbalDbContext)).Options
-				: new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30)).UseSqlServerAadAuthentication().Options;
+				: new DbContextOptionsBuilder<VolejbalDbContext>().UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30)).Options;
 
 			services.WithEntityPatternsInstaller()
 				.AddEntityPatterns()

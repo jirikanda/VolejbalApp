@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using Havit.AspNetCore.Mvc.ErrorToJson.Configuration;
-using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.Services.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;

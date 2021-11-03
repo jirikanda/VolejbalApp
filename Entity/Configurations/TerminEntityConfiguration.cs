@@ -12,7 +12,7 @@ namespace KandaEu.Volejbal.Entity.Configurations
 		public void Configure(EntityTypeBuilder<Termin> builder)
 		{
 			builder.HasIndex(termin => new { termin.Datum, termin.Deleted })
-				.HasName("UIDX_Termin_Datum_Deleted")
+				.HasDatabaseName("UIDX_Termin_Datum_Deleted")
 				.IsUnique()
 				.HasFilter(null);
 		}

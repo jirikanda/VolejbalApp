@@ -32,7 +32,6 @@ namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
 					//options.Filters.Add(new AuthorizeFilter(defaultPolicy));
 					options.Filters.Add(new ValidateModelAttribute { ResultSelector = ValidationErrorModel.FromModelState() });
 				})
-				.SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
 				.AddDataAnnotationsLocalization()
 				.ConfigureApiBehaviorOptions(options =>
 				{

@@ -32,7 +32,7 @@ namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy
 
 				if (budouciTerminyPocet < 3)
 				{
-					DateTime posledniDatum = terminDataSource.DataWithDeleted.OrderByDescending(item => item.Datum).Select(item => item.Datum).FirstOrDefault();
+					DateTime posledniDatum = terminDataSource.DataIncludingDeleted.OrderByDescending(item => item.Datum).Select(item => item.Datum).FirstOrDefault();
 
 					DateTime datum;
 					if (posledniDatum == default(DateTime))

@@ -21,7 +21,7 @@ using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
-using Havit.AspNetCore.Mvc.ExceptionMonitoring.Services;
+using Havit.AspNetCore.ExceptionMonitoring.Services;
 
 [assembly: ApiControllerAttribute]
 
