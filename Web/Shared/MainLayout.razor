@@ -14,8 +14,15 @@
 
 <div class="page-region">
 	<div class="page-region-content">
-		<ProgressOverlay>
-			@Body
-		</ProgressOverlay>
+		<ErrorBoundary>
+			<ChildContent>
+				<ProgressOverlay>
+					@Body
+				</ProgressOverlay>
+			</ChildContent>
+			 <ErrorContent>
+				 <KandaEu.Volejbal.Web.Components.Error />
+			 </ErrorContent>
+		</ErrorBoundary>
 	</div>
 </div>
