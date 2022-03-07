@@ -7,6 +7,7 @@
 		@foreach (var termin in State.Terminy)
 		{
 			<a class="button @((termin.Id == this.State.CurrentTerminId) ? "bg-color-blue fg-color-white" : "bg-color-blueDark fg-color-white")" @onclick="@(_ => TerminClickAsync(termin))"><span class="box"><span>@termin.Datum.ToString("d. MMMM")</span></span></a>
+			<span></span>			
 		}
 
 		@if (State.Terminy.Count == 0)
