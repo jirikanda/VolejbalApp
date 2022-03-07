@@ -1,5 +1,6 @@
 ﻿@page "/"
 @namespace KandaEu.Volejbal.Web.Pages
+@using Microsoft.AspNetCore.Components.Web
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="cs">
@@ -15,6 +16,7 @@
 @*	<link rel="stylesheet" href="KandaEu.Volejbal.Web.styles.css"  />*@
 	<link rel="manifest" href="manifest.json" />
 	<meta name="description" content="Volejbal - Přihlašování" />
+	<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body class="modern-ui">
 	<div class="page secondary">
@@ -33,7 +35,6 @@
 		<a href="" class="reload">Reload</a>.
 	</div>
 
-	<script src="/javascript/setWindowTitle.js"></script>
 	<script src="/_framework/blazor.server.js"></script>
 
 	<!-- Reference the included moment.js javascript file. -->

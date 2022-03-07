@@ -18,9 +18,6 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		[Inject]
 		protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
 
-		[Inject]
-		protected IJSRuntime JSRuntime { get; set; }
-
 		protected override async Task OnInitializedAsync()
 		{
 			await base.OnInitializedAsync();
@@ -47,15 +44,6 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 				State.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
 				State.Vzkazy = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.ToList();
 			});
-		}
-
-		protected override async Task OnAfterRenderAsync(bool firstRender)
-		{
-			await base.OnAfterRenderAsync(firstRender);
-			if (firstRender)
-			{
-				await JSRuntime.InvokeVoidAsync("setTitle", "Volejbal - Nástěnka");
-			}
 		}
 	}
 }

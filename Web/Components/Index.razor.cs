@@ -16,9 +16,6 @@ namespace KandaEu.Volejbal.Web.Components
 		[Inject]
 		protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
 
-		[Inject]
-		protected IJSRuntime JSRuntime { get; set; }
-
 		protected bool ShowNastenkaLink { get; set; }
 
 		protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -39,8 +36,6 @@ namespace KandaEu.Volejbal.Web.Components
 				}
 
 				await LocalStorageService.SetItemAsync("LastVisit", DateTime.Now);
-
-				await JSRuntime.InvokeVoidAsync("setTitle", "Volejbal - Přihlašování");
 			}
 		}
 	}
