@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Havit.Data.Patterns.DataSeeds.Profiles;
-
-namespace KandaEu.Volejbal.DataLayer.Seeds.Core;
+﻿namespace KandaEu.Volejbal.DataLayer.Seeds.Core;
 
 /// <summary>
 /// Profil pro seedování základních systémových dat. Spouštěno v produkci.
 /// </summary>
-public class CoreProfile : DataSeedProfile
+public class CoreProfile : Havit.Data.Patterns.DataSeeds.Profiles.DataSeedProfile
 {
 }

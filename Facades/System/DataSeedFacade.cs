@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Havit.Data.Patterns.DataSeeds;
-using Havit.Extensions.DependencyInjection.Abstractions;
+﻿using Havit.Data.Patterns.DataSeeds;
 using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
 using KandaEu.Volejbal.Services.Infrastructure;

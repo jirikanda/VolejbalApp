@@ -1,5 +1,4 @@
 ﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
-using KandaEu.Volejbal.Model;
 
 namespace KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
 

@@ -1,12 +1,4 @@
-﻿using Havit.Data.Patterns.UnitOfWorks;
-using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.Services.TimeServices;
-using KandaEu.Volejbal.DataLayer.DataSources;
-using KandaEu.Volejbal.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Havit.Services.TimeServices;
 
 namespace KandaEu.Volejbal.Services.DeaktivaceOsob;
 

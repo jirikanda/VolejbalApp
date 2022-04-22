@@ -1,11 +1,4 @@
-﻿using KandaEu.Volejbal.Model;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KandaEu.Volejbal.Entity.Configurations;
+﻿namespace KandaEu.Volejbal.Entity.Configurations;
 
 public class TerminEntityConfiguration : IEntityTypeConfiguration<Termin>
 {

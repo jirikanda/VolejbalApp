@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KandaEu.Volejbal.Services.Mailing;
+﻿namespace KandaEu.Volejbal.Services.Mailing;
 
 public class MailingOptions
 {

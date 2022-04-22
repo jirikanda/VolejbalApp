@@ -5,6 +5,7 @@
 		<AssemblyName>KandaEu.Volejbal.Entity</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Entity</RootNamespace>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<ImplicitUsings>true</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>

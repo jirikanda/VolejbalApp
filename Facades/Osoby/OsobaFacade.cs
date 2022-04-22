@@ -1,17 +1,6 @@
-﻿using Havit.Data.Patterns.UnitOfWorks;
-using Havit.Extensions.DependencyInjection.Abstractions;
-using KandaEu.Volejbal.Contracts.Osoby;
+﻿using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
-using KandaEu.Volejbal.DataLayer.DataSources;
-using KandaEu.Volejbal.DataLayer.Repositories;
-using KandaEu.Volejbal.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Osoby;
 

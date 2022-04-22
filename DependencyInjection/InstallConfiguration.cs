@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KandaEu.Volejbal.DependencyInjection;
+﻿namespace KandaEu.Volejbal.DependencyInjection;
 
 internal class InstallConfiguration
 {

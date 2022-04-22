@@ -4,6 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.Facades</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Facades</RootNamespace>
+		<ImplicitUsings>true</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>

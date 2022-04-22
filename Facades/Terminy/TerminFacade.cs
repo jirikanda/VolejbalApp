@@ -1,19 +1,9 @@
-﻿using Havit.Data.Patterns.UnitOfWorks;
-using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.Services.TimeServices;
+﻿using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
-using KandaEu.Volejbal.DataLayer.DataSources;
-using KandaEu.Volejbal.Facades.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
-using KandaEu.Volejbal.Model;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Terminy;
 
@@ -24,7 +14,7 @@ public class TerminFacade : ITerminFacade
     private readonly IPrihlaskaDataSource prihlaskaDataSource;
     private readonly IOsobaDataSource osobaDataSource;
     private readonly ITimeService timeService;
-    private readonly IUnitOfWork unitOfWork;
+    private readonly IUnitOfWork unitOfWork; // TODO: Odstranit nepoužívané
     private readonly IEnsureTerminyService ensureTerminyService;
 
     public TerminFacade(ITerminDataSource terminDataSource, IPrihlaskaDataSource prihlaskaDataSource, IOsobaDataSource osobaDataSource, ITimeService timeService, IUnitOfWork unitOfWork, IEnsureTerminyService ensureTerminyService)

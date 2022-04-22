@@ -1,7 +1,4 @@
 ﻿using Havit.Services.TimeServices;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 

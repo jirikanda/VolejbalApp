@@ -1,14 +1,7 @@
-﻿using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.Services.TimeServices;
+﻿using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
-using KandaEu.Volejbal.DataLayer.DataSources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 

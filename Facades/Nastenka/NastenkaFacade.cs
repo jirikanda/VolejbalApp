@@ -1,17 +1,7 @@
-﻿using Havit.Data.Patterns.UnitOfWorks;
-using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.Services.TimeServices;
+﻿using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;
-using KandaEu.Volejbal.DataLayer.DataSources;
-using KandaEu.Volejbal.DataLayer.Repositories;
-using KandaEu.Volejbal.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Facades.Nastenka;
 

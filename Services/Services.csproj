@@ -4,6 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.Services</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Services</RootNamespace>
+		<ImplicitUsings>true</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
