@@ -1,11 +1,8 @@
 ﻿using EventAggregator.Blazor;
+using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Terminy
@@ -27,7 +24,7 @@ namespace KandaEu.Volejbal.Web.Components.Terminy
 		{
 			await base.OnInitializedAsync();
 
-			KandaEu.Volejbal.Web.WebApiClients.TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetTerminyAsync());
+			TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetTerminyAsync());
 
 			State.Terminy = terminList.Terminy.ToList();
 			

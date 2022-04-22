@@ -1,8 +1,5 @@
-﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
+﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KandaEu.Volejbal.Facades.Terminy.Dto.Extensions
 {

@@ -10,7 +10,7 @@
 	  <OpenApiProjectReference Include="..\WebAPI\WebAPI.csproj" CodeGenerator="NSwagCSharp" Link="OpenAPIs\WebAPI.csproj">
 		  <ClassName>{controller}WebApiClient</ClassName>
 		  <Namespace>KandaEu.Volejbal.Web.WebApiClients</Namespace>
-		  <Options>/UseBaseUrl:false /GenerateClientInterfaces:true</Options>
+		  <Options>/UseBaseUrl:false /GenerateClientInterfaces:true /GenerateDtoTypes:false /AdditionalNamespaceUsages:KandaEu.Volejbal.Contracts.Nastenka.Dto,KandaEu.Volejbal.Contracts.Osoby.Dto,KandaEu.Volejbal.Contracts.Reporty.Dto,KandaEu.Volejbal.Contracts.Terminy.Dto</Options>
 	  </OpenApiProjectReference>
   </ItemGroup>
 

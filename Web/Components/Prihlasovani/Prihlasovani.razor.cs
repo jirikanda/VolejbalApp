@@ -1,10 +1,10 @@
-﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
+using KandaEu.Volejbal.Contracts.Terminy.Dto;
+using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using KandaEu.Volejbal.Web.Components.Terminy;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Prihlasovani

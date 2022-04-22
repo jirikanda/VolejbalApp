@@ -15,15 +15,14 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 		[Required(ErrorMessage = "Zadej zprávu.")]
 		public string Zprava { get; set; }
 
-		// TODO: Reuse Contractů.
-		//public VzkazInputDto ToVzkazInputDto()
-		//{
-		//	return new VzkazInputDto
-		//	{
-		//		AutorId = this.AutorId.Value,
-		//		Zprava = this.Zprava
-		//	};
-		//}
+		public VzkazInputDto ToVzkazInputDto()
+		{
+			return new VzkazInputDto
+			{
+				AutorId = this.AutorId.Value,
+				Zprava = this.Zprava
+			};
+		}
 
 		public override string ToString()
 		{

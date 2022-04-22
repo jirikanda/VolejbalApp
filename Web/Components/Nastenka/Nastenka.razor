@@ -19,7 +19,7 @@
 		foreach (var vzkaz in State.Vzkazy)
 		{
 			<blockquote>
-				<small>@vzkaz.Author dne @vzkaz.DatumVlozeni.DateTime.ToShortDateString() v @vzkaz.DatumVlozeni.DateTime.ToShortTimeString()</small>
+				<small>@vzkaz.Author dne @vzkaz.DatumVlozeni.ToShortDateString() v @vzkaz.DatumVlozeni.ToShortTimeString()</small>
 				<p>@vzkaz.Zprava</p>
 			</blockquote>
 			<div>&nbsp;</div>

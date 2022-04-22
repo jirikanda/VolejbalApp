@@ -1,7 +1,6 @@
-﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Contracts.Nastenka.Dto;
+using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,8 +25,7 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka
 
 		private async Task OnValidSubmitAsync()
 		{
-			// TODO: Sdílení Contracts!		
-			await NastenkaWebApiClient.VlozVzkazAsync(new WebApiClients.VzkazInputDto { AutorId = formData.AutorId.Value, Zprava = formData.Zprava });
+			await NastenkaWebApiClient.VlozVzkazAsync(formData.ToVzkazInputDto());
 			formData.Zprava = ""; // vyčistit formulář
 			await LoadDataAsync();
 

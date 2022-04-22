@@ -1,8 +1,5 @@
-﻿using KandaEu.Volejbal.Web.WebApiClients;
-using System;
+﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Terminy
 {
