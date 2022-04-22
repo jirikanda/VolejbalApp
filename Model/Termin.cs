@@ -2,16 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace KandaEu.Volejbal.Model
+namespace KandaEu.Volejbal.Model;
+
+public class Termin
 {
-	public class Termin
-	{
-		public int Id { get; set; }
+    public int Id { get; set; }
 
-		public DateTime Datum { get; set; }
+    public DateTime Datum { get; set; }
 
-		public DateTime? Deleted { get; set; }
+    public DateTime? Deleted { get; set; }
 
-		public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
-	}
+    public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
 }

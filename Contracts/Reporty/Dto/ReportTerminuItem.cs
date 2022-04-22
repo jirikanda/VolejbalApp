@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Contracts.Reporty.Dto
+namespace KandaEu.Volejbal.Contracts.Reporty.Dto;
+
+public class ReportTerminuItem
 {
-	public class ReportTerminuItem
-	{
-		public DateTime Datum { get; set; }
-		public int PocetHracu { get; set; }
-	}
+    public DateTime Datum { get; set; }
+    public int PocetHracu { get; set; }
 }

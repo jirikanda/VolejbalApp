@@ -3,10 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Contracts.Osoby.Dto
+namespace KandaEu.Volejbal.Contracts.Osoby.Dto;
+
+public class OsobaListDto
 {
-	public class OsobaListDto
-	{
-		public List<OsobaDto> Osoby { get; set; }
-	}
+    public List<OsobaDto> Osoby { get; set; }
 }

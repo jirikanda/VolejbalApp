@@ -10,38 +10,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Facades.Reporty
+namespace KandaEu.Volejbal.Facades.Reporty;
+
+[Service]
+public class ReportOsobFacade : IReportOsobFacade
 {
-	[Service]
-	public class ReportOsobFacade : IReportOsobFacade
-	{
-		private readonly IOsobaDataSource osobaDataSource;
-		private readonly ITimeService timeService;
+    private readonly IOsobaDataSource osobaDataSource;
+    private readonly ITimeService timeService;
 
-		public ReportOsobFacade(IOsobaDataSource osobaDataSource, ITimeService timeService)
-		{
-			this.osobaDataSource = osobaDataSource;
-			this.timeService = timeService;
-		}
+    public ReportOsobFacade(IOsobaDataSource osobaDataSource, ITimeService timeService)
+    {
+        this.osobaDataSource = osobaDataSource;
+        this.timeService = timeService;
+    }
 
-		public async Task<ReportOsob> GetReport()
-		{
-			DateTime today = timeService.GetCurrentDate();
-			DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
+    public async Task<ReportOsob> GetReport()
+    {
+        DateTime today = timeService.GetCurrentDate();
+        DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
-			return new ReportOsob
-			{
-				UcastHracu = (await osobaDataSource.Data.Select(osoba =>
-				new ReportOsobItem
-				{
-					PrijmeniJmeno = osoba.PrijmeniJmeno,
-					PocetTerminu = osoba.Prihlasky.Where(prihlaska => (prihlaska.Termin.Datum >= datumOdInclusive) && (prihlaska.Termin.Datum < today) && (prihlaska.Termin.Deleted == null) && (prihlaska.Deleted == null)).Count()
-				})
-				.ToListAsync())
-				.Where(item => item.PocetTerminu > 0) // in memory
-				.OrderBy(item => item.PrijmeniJmeno)
-				.ToList()
-			};
-		}
-	}
+        return new ReportOsob
+        {
+            UcastHracu = (await osobaDataSource.Data.Select(osoba =>
+            new ReportOsobItem
+            {
+                PrijmeniJmeno = osoba.PrijmeniJmeno,
+                PocetTerminu = osoba.Prihlasky.Where(prihlaska => (prihlaska.Termin.Datum >= datumOdInclusive) && (prihlaska.Termin.Datum < today) && (prihlaska.Termin.Deleted == null) && (prihlaska.Deleted == null)).Count()
+            })
+            .ToListAsync())
+            .Where(item => item.PocetTerminu > 0) // in memory
+            .OrderBy(item => item.PrijmeniJmeno)
+            .ToList()
+        };
+    }
 }

@@ -8,23 +8,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 
-namespace KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation
+namespace KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation;
+
+public class ValidationResultModel
 {
-	public class ValidationResultModel
-	{
-		public int StatusCode { get; }
+    public int StatusCode { get; }
 
-		public ReadOnlyCollection<FieldValidationError> Errors { get; }
+    public ReadOnlyCollection<FieldValidationError> Errors { get; }
 
-		public ValidationResultModel(int statusCode, ModelStateDictionary modelState)
-		{
-			this.StatusCode = statusCode;
-			this.Errors = FieldValidationError.FromModelState(modelState);
-		}
+    public ValidationResultModel(int statusCode, ModelStateDictionary modelState)
+    {
+        this.StatusCode = statusCode;
+        this.Errors = FieldValidationError.FromModelState(modelState);
+    }
 
-		public static object FromModelState(int statusCode, ModelStateDictionary modelState)
-		{
-			return new ValidationResultModel(statusCode, modelState);
-		}
-	}
+    public static object FromModelState(int statusCode, ModelStateDictionary modelState)
+    {
+        return new ValidationResultModel(statusCode, modelState);
+    }
 }

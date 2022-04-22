@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Contracts.Terminy.Dto
+namespace KandaEu.Volejbal.Contracts.Terminy.Dto;
+
+public class TerminDetailDto
 {
-	public class TerminDetailDto
-	{
-		public List<OsobaDto> Prihlaseni { get; set; }
-		public List<OsobaDto> Neprihlaseni { get; set; }
-	}
+    public List<OsobaDto> Prihlaseni { get; set; }
+    public List<OsobaDto> Neprihlaseni { get; set; }
 }

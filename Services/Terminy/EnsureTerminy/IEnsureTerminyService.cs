@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy
+namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+
+public interface IEnsureTerminyService
 {
-	public interface IEnsureTerminyService
-	{
-		public void EnsureTerminy();
-	}
+    public void EnsureTerminy();
 }

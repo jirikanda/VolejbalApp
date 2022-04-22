@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Contracts.Osoby.Dto
+namespace KandaEu.Volejbal.Contracts.Osoby.Dto;
+
+public class OsobaDto
 {
-	public class OsobaDto
-	{
-		public int Id { get; set; }
-		public string PrijmeniJmeno { get; set; }
-	}
+    public int Id { get; set; }
+    public string PrijmeniJmeno { get; set; }
 }

@@ -7,38 +7,37 @@ using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
 using KandaEu.Volejbal.Services.Infrastructure;
 
-namespace KandaEu.Volejbal.Facades.System
+namespace KandaEu.Volejbal.Facades.System;
+
+/// <summary>
+/// Fasáda k seedování dat.
+/// </summary>
+[Service]
+public class DataSeedFacade : IDataSeedFacade
 {
-    /// <summary>
-    /// Fasáda k seedování dat.
-    /// </summary>
-    [Service]
-    public class DataSeedFacade : IDataSeedFacade
+    private readonly IDataSeedRunner dataSeedRunner;
+
+    public DataSeedFacade(IDataSeedRunner dataSeedRunner)
     {
-        private readonly IDataSeedRunner dataSeedRunner;
+        this.dataSeedRunner = dataSeedRunner;
+    }
 
-        public DataSeedFacade(IDataSeedRunner dataSeedRunner)
+    /// <summary>
+    /// Provede seedování dat daného profilu.
+    /// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
+    /// </summary>        
+    public Task SeedDataProfile(string profileName)
+    {
+        string typeName = profileName + "Profile";
+        Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
+
+        if (type == null)
         {
-            this.dataSeedRunner = dataSeedRunner;
+            throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
         }
 
-        /// <summary>
-        /// Provede seedování dat daného profilu.
-        /// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
-        /// </summary>        
-        public Task SeedDataProfile(string profileName)
-        {
-			string typeName = profileName + "Profile";
-			Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
+        dataSeedRunner.SeedData(type);
 
-            if (type == null)
-            {
-                throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
-            }
-
-            dataSeedRunner.SeedData(type);
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

@@ -10,10 +10,9 @@ using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataLoaders;
 using KandaEu.Volejbal.Model;
 
-namespace KandaEu.Volejbal.DataLayer.Repositories
+namespace KandaEu.Volejbal.DataLayer.Repositories;
+
+public partial class VzkazDbRepository : IVzkazRepository
 {
-	public partial class VzkazDbRepository : IVzkazRepository
-	{
-		
-	}
+
 }

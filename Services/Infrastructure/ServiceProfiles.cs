@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Services.Infrastructure
+namespace KandaEu.Volejbal.Services.Infrastructure;
+
+public static class ServiceProfiles
 {
-    public static class ServiceProfiles
-    {
-        public const string WebAPI = "WebAPI";
-    }
+    public const string WebAPI = "WebAPI";
 }

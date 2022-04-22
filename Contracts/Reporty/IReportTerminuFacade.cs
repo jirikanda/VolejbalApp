@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Contracts.Reporty
+namespace KandaEu.Volejbal.Contracts.Reporty;
+
+public interface IReportTerminuFacade
 {
-	public interface IReportTerminuFacade
-	{
-		Task<ReportTerminu> GetReport();
-	}
+    Task<ReportTerminu> GetReport();
 }

@@ -18,69 +18,68 @@ using KandaEu.Volejbal.Web.WebApiClients;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using ChartJs.Blazor.ChartJS.Common.Handlers;
 
-namespace KandaEu.Volejbal.Web.Components.Statistika
+namespace KandaEu.Volejbal.Web.Components.Statistika;
+
+public partial class StatistikaOsob
 {
-	public partial class StatistikaOsob
-	{
-        [Inject]
-        protected IReportWebApiClient ReportWebApiClient { get; set; }
+    [Inject]
+    protected IReportWebApiClient ReportWebApiClient { get; set; }
 
-        [CascadingParameter]
-        protected Progress Progress { get; set; }
+    [CascadingParameter]
+    protected Progress Progress { get; set; }
 
-        private BarConfig barConfig;
-        private int reportHeight = 300;
-        private bool isLoaded = false;
-        
-        protected override async Task OnInitializedAsync()
+    private BarConfig barConfig;
+    private int reportHeight = 300;
+    private bool isLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        barConfig = new BarConfig(ChartType.HorizontalBar)
         {
-            barConfig = new BarConfig(ChartType.HorizontalBar)
+            Options = new BarOptions
             {
-                Options = new BarOptions
+                Title = new OptionsTitle
                 {
-                    Title = new OptionsTitle
+                    Display = false,
+                },
+                Responsive = false,
+                Scales = new BarScales
+                {
+                    XAxes = new List<CartesianAxis>
                     {
-                        Display = false,
-                    },
-                    Responsive = false,
-                    Scales = new BarScales
-                    {
-                        XAxes = new List<CartesianAxis>
+                        new LinearCartesianAxis
                         {
-                            new LinearCartesianAxis
+                            Ticks = new LinearCartesianTicks
                             {
-                                Ticks = new LinearCartesianTicks
-                                {
-                                    AutoSkip = false,
-                                    Min = 0,
-                                    StepSize = 1
-                                },                                
-                            }
+                                AutoSkip = false,
+                                Min = 0,
+                                StepSize = 1
+                            },
                         }
-                    },
-                    Legend = new Legend
-                    {
-                        Display = false,
                     }
+                },
+                Legend = new Legend
+                {
+                    Display = false,
                 }
-            };
+            }
+        };
 
-            var report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
+        var report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
 
-            
-            barConfig.Data.Labels.AddRange(report.UcastHracu.Select(item => item.PrijmeniJmeno).ToArray());
-            
-            BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
-            {                
-                BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - (i * 15) % 200))).ToArray()
-            };
 
-            barDataSet.AddRange(report.UcastHracu.Select(item => item.PocetTerminu).ToArray().Wrap());
-            barConfig.Data.Datasets.Add(barDataSet);
+        barConfig.Data.Labels.AddRange(report.UcastHracu.Select(item => item.PrijmeniJmeno).ToArray());
 
-            reportHeight = report.UcastHracu.Count * 40 + 60; // prostě naházeno vidlemi
-            isLoaded = true;
-            StateHasChanged();
-        }
+        BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
+        {
+            BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - (i * 15) % 200))).ToArray()
+        };
+
+        barDataSet.AddRange(report.UcastHracu.Select(item => item.PocetTerminu).ToArray().Wrap());
+        barConfig.Data.Datasets.Add(barDataSet);
+
+        reportHeight = report.UcastHracu.Count * 40 + 60; // prostě naházeno vidlemi
+        isLoaded = true;
+        StateHasChanged();
     }
 }

@@ -3,10 +3,9 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Havit.VolejbalApp.Tests")]
 
-namespace KandaEu.Volejbal.Facades.Properties
-{
-    public class AssemblyInfo
-    {
+namespace KandaEu.Volejbal.Facades.Properties;
 
-    }
+public class AssemblyInfo
+{
+
 }

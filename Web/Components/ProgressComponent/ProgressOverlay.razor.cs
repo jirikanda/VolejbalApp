@@ -4,21 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Web.Components.ProgressComponent
+namespace KandaEu.Volejbal.Web.Components.ProgressComponent;
+
+public partial class ProgressOverlay : ComponentBase
 {
-	public partial class ProgressOverlay : ComponentBase
-	{
-		[Parameter]
-		public RenderFragment ChildContent { get; set; } 
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 
-		protected ProgressState ProgressState { get; }
-		protected Progress Progress { get; }
+    protected ProgressState ProgressState { get; }
+    protected Progress Progress { get; }
 
-		public ProgressOverlay()
-		{			
-			ProgressState = new ProgressState();
-			Progress = new Progress(ProgressState, () => this.StateHasChanged());
-		}
-	}
+    public ProgressOverlay()
+    {
+        ProgressState = new ProgressState();
+        Progress = new Progress(ProgressState, () => this.StateHasChanged());
+    }
 }
 

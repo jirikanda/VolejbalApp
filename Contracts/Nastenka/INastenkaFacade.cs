@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Contracts.Nastenka
-{
-	public interface INastenkaFacade
-	{
-		Task<VzkazListDto> GetVzkazy();
+namespace KandaEu.Volejbal.Contracts.Nastenka;
 
-		Task VlozVzkaz(VzkazInputDto vzkaz);
-	}
+public interface INastenkaFacade
+{
+    Task<VzkazListDto> GetVzkazy();
+
+    Task VlozVzkaz(VzkazInputDto vzkaz);
 }

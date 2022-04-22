@@ -5,46 +5,45 @@ using Microsoft.AspNetCore.Components;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Web.Components.Terminy
+namespace KandaEu.Volejbal.Web.Components.Terminy;
+
+public partial class Terminy
 {
-	public partial class Terminy
-	{
-		[Inject]
-		protected ITerminWebApiClient TerminWebApiClient { get; set; }
-		
-		[Inject]
-		protected IEventAggregator EventAggregator { get; set; }
+    [Inject]
+    protected ITerminWebApiClient TerminWebApiClient { get; set; }
 
-		protected TerminyState State { get; } = new TerminyState();
+    [Inject]
+    protected IEventAggregator EventAggregator { get; set; }
 
-		[CascadingParameter]
-		protected ProgressComponent.Progress Progress { get; set; }
+    protected TerminyState State { get; } = new TerminyState();
 
-		protected override async Task OnInitializedAsync()
-		{
-			await base.OnInitializedAsync();
+    [CascadingParameter]
+    protected ProgressComponent.Progress Progress { get; set; }
 
-			TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetTerminyAsync());
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
 
-			State.Terminy = terminList.Terminy.ToList();
-			
-			StateHasChanged();
+        TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetTerminyAsync());
 
-			if (State.Terminy.Count > 0)
-			{
-				await SetCurrentTerminAsync(State.Terminy[0]);
-			}
-		}
+        State.Terminy = terminList.Terminy.ToList();
 
-		protected async Task TerminClickAsync(TerminDto termin)
-		{
-			await SetCurrentTerminAsync(termin);
-		}
+        StateHasChanged();
 
-		private async Task SetCurrentTerminAsync(TerminDto termin)
-		{
-			State.CurrentTerminId = termin.Id;
-			await EventAggregator.PublishAsync(new CurrentTerminChanged(termin.Id));
-		}
-	}
+        if (State.Terminy.Count > 0)
+        {
+            await SetCurrentTerminAsync(State.Terminy[0]);
+        }
+    }
+
+    protected async Task TerminClickAsync(TerminDto termin)
+    {
+        await SetCurrentTerminAsync(termin);
+    }
+
+    private async Task SetCurrentTerminAsync(TerminDto termin)
+    {
+        State.CurrentTerminId = termin.Id;
+        await EventAggregator.PublishAsync(new CurrentTerminChanged(termin.Id));
+    }
 }

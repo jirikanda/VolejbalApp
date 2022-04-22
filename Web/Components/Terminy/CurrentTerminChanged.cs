@@ -1,12 +1,11 @@
-﻿namespace KandaEu.Volejbal.Web.Components.Terminy
-{
-	public class CurrentTerminChanged
-	{
-		public CurrentTerminChanged(int terminId)
-		{
-			TerminId = terminId;
-		}
+﻿namespace KandaEu.Volejbal.Web.Components.Terminy;
 
-		public int TerminId { get; }
-	}
+public class CurrentTerminChanged
+{
+    public CurrentTerminChanged(int terminId)
+    {
+        TerminId = terminId;
+    }
+
+    public int TerminId { get; }
 }

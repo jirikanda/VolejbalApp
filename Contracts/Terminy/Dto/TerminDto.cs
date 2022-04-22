@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace KandaEu.Volejbal.Contracts.Terminy.Dto
+namespace KandaEu.Volejbal.Contracts.Terminy.Dto;
+
+public class TerminDto
 {
-	public class TerminDto
-	{
-		public int Id { get; set; }
-		public DateTime Datum { get; set; }
-	}
+    public int Id { get; set; }
+    public DateTime Datum { get; set; }
 }

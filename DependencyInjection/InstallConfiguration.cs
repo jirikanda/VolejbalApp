@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace KandaEu.Volejbal.DependencyInjection
+namespace KandaEu.Volejbal.DependencyInjection;
+
+internal class InstallConfiguration
 {
-	internal class InstallConfiguration
-	{
-		public string DatabaseConnectionString { get; set; }
-		public string[] ServiceProfiles { get; set; }
-		public bool UseInMemoryDb { get; internal set; }
-	}
+    public string DatabaseConnectionString { get; set; }
+    public string[] ServiceProfiles { get; set; }
+    public bool UseInMemoryDb { get; internal set; }
 }

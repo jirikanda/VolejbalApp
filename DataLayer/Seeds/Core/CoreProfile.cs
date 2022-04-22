@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Havit.Data.Patterns.DataSeeds.Profiles;
 
-namespace KandaEu.Volejbal.DataLayer.Seeds.Core
+namespace KandaEu.Volejbal.DataLayer.Seeds.Core;
+
+/// <summary>
+/// Profil pro seedování základních systémových dat. Spouštěno v produkci.
+/// </summary>
+public class CoreProfile : DataSeedProfile
 {
-    /// <summary>
-    /// Profil pro seedování základních systémových dat. Spouštěno v produkci.
-    /// </summary>
-    public class CoreProfile : DataSeedProfile
-    {
-    }
 }

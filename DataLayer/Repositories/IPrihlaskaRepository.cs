@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Havit.Data.Patterns.Repositories;
 using KandaEu.Volejbal.Model;
 
-namespace KandaEu.Volejbal.DataLayer.Repositories
+namespace KandaEu.Volejbal.DataLayer.Repositories;
+
+public partial interface IPrihlaskaRepository
 {
-	public partial interface IPrihlaskaRepository
-	{
-		Task<Prihlaska> GetPrihlaska(int terminId, int osobaId);
-	}
+    Task<Prihlaska> GetPrihlaska(int terminId, int osobaId);
 }

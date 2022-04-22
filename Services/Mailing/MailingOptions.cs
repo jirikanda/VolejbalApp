@@ -1,20 +1,19 @@
 ﻿using System;
 
-namespace KandaEu.Volejbal.Services.Mailing
+namespace KandaEu.Volejbal.Services.Mailing;
+
+public class MailingOptions
 {
-	public class MailingOptions
-	{
-		public string SmtpServer { get; set; }
-		public int? SmtpPort { get; set; }
-		public bool UseSsl { get; set; }
+    public string SmtpServer { get; set; }
+    public int? SmtpPort { get; set; }
+    public bool UseSsl { get; set; }
 
-		public string SmtpUsername { get; set; }
-		public string SmtpPassword { get; set; }
-		public string From { get; set; }
+    public string SmtpUsername { get; set; }
+    public string SmtpPassword { get; set; }
+    public string From { get; set; }
 
-		public bool HasCredentials()
-		{
-			return !String.IsNullOrEmpty(SmtpUsername);
-		}
-	}
+    public bool HasCredentials()
+    {
+        return !String.IsNullOrEmpty(SmtpUsername);
+    }
 }

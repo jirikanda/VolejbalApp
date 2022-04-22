@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Havit.Data.Patterns.Repositories;
 using KandaEu.Volejbal.Model;
 
-namespace KandaEu.Volejbal.DataLayer.Repositories
-{
-	public partial interface IVzkazRepository
-	{
+namespace KandaEu.Volejbal.DataLayer.Repositories;
 
-	}
+public partial interface IVzkazRepository
+{
+
 }

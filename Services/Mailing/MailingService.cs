@@ -9,42 +9,41 @@ using System.Threading.Tasks;
 using Havit.Extensions.DependencyInjection.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace KandaEu.Volejbal.Services.Mailing
+namespace KandaEu.Volejbal.Services.Mailing;
+
+[Service]
+public class MailingService : IMailingService
 {
-	[Service]
-	public class MailingService : IMailingService
-	{
-		private readonly MailingOptions options;
+    private readonly MailingOptions options;
 
-		public MailingService(
-			IOptions<MailingOptions> options)
-		{
-			this.options = options.Value;
-		}
+    public MailingService(
+        IOptions<MailingOptions> options)
+    {
+        this.options = options.Value;
+    }
 
-		public void Send(MailMessage mailMessage)
-		{
-			using (SmtpClient smtpClient = new SmtpClient())
-			{
-				smtpClient.Host = options.SmtpServer;
-				if (options.SmtpPort != null)
-				{
-					smtpClient.Port = options.SmtpPort.Value;
-				}
-				smtpClient.EnableSsl = options.UseSsl;
-				if (options.HasCredentials())
-				{
-					smtpClient.Credentials = new NetworkCredential(options.SmtpUsername, options.SmtpPassword);
-				}
-				
-				if ((mailMessage.From == null)
-					|| String.IsNullOrWhiteSpace(mailMessage.From.Address))
-				{
-					mailMessage.From = new MailAddress(options.From);
-				}
+    public void Send(MailMessage mailMessage)
+    {
+        using (SmtpClient smtpClient = new SmtpClient())
+        {
+            smtpClient.Host = options.SmtpServer;
+            if (options.SmtpPort != null)
+            {
+                smtpClient.Port = options.SmtpPort.Value;
+            }
+            smtpClient.EnableSsl = options.UseSsl;
+            if (options.HasCredentials())
+            {
+                smtpClient.Credentials = new NetworkCredential(options.SmtpUsername, options.SmtpPassword);
+            }
 
-				smtpClient.Send(mailMessage);
-			}
-		}
-	}
+            if ((mailMessage.From == null)
+                || String.IsNullOrWhiteSpace(mailMessage.From.Address))
+            {
+                mailMessage.From = new MailAddress(options.From);
+            }
+
+            smtpClient.Send(mailMessage);
+        }
+    }
 }

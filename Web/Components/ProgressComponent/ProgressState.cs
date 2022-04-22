@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Web.Components.ProgressComponent
+namespace KandaEu.Volejbal.Web.Components.ProgressComponent;
+
+public class ProgressState
 {
-	public class ProgressState
-	{
-		public bool InProgress { get; set; } = false;
-	}
+    public bool InProgress { get; set; } = false;
 }

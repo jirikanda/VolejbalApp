@@ -6,13 +6,12 @@ using KandaEu.Volejbal.Services.Mailing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions
+namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
+
+public static class MailingConfig
 {
-    public static class MailingConfig
+    public static void AddCustomizedMailing(this IServiceCollection services, IConfiguration configuration)
     {
-	    public static void AddCustomizedMailing(this IServiceCollection services, IConfiguration configuration)
-	    {
-			services.Configure<MailingOptions>(configuration.GetSection("AppSettings:MailingOptions"));
-		}
-	}
+        services.Configure<MailingOptions>(configuration.GetSection("AppSettings:MailingOptions"));
+    }
 }

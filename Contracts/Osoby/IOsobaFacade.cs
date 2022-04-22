@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KandaEu.Volejbal.Contracts.Osoby
+namespace KandaEu.Volejbal.Contracts.Osoby;
+
+public interface IOsobaFacade
 {
-	public interface IOsobaFacade
-	{
-		Task VlozOsobu(OsobaInputDto osobaInputDto);
-		Task SmazNeaktivniOsobu(int osobaId);
-		Task AktivujNeaktivniOsobu(int osobaId);
-		Task<OsobaListDto> GetNeaktivniOsoby();
-		Task<OsobaListDto> GetAktivniOsoby();
-	}
+    Task VlozOsobu(OsobaInputDto osobaInputDto);
+    Task SmazNeaktivniOsobu(int osobaId);
+    Task AktivujNeaktivniOsobu(int osobaId);
+    Task<OsobaListDto> GetNeaktivniOsoby();
+    Task<OsobaListDto> GetAktivniOsoby();
 }
