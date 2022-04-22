@@ -1,6 +1,4 @@
 ﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Contracts.Terminy;
 

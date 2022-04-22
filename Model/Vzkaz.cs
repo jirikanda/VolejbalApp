@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace KandaEu.Volejbal.Model;
+﻿namespace KandaEu.Volejbal.Model;
 
 public class Vzkaz
 {

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace KandaEu.Volejbal.Contracts.Prihlasky;
+﻿namespace KandaEu.Volejbal.Contracts.Prihlasky;
 
 public interface IPrihlaskaFacade
 {

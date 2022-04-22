@@ -1,7 +1,4 @@
 ﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KandaEu.Volejbal.Contracts.Terminy.Dto;
 

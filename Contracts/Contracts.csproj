@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>KandaEu.Volejbal.Contracts</AssemblyName>
     <RootNamespace>KandaEu.Volejbal.Contracts</RootNamespace>
+	<ImplicitUsings>true</ImplicitUsings>
   </PropertyGroup>
 
 </Project>

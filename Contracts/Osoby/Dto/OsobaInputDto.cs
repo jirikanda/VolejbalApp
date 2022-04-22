@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KandaEu.Volejbal.Contracts.Osoby.Dto;
+﻿namespace KandaEu.Volejbal.Contracts.Osoby.Dto;
 
 public class OsobaInputDto
 {

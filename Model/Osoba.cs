@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace KandaEu.Volejbal.Model;
+﻿namespace KandaEu.Volejbal.Model;
 
 public class Osoba
 {

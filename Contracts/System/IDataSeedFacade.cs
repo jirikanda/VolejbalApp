@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace KandaEu.Volejbal.Contracts.System;
+﻿namespace KandaEu.Volejbal.Contracts.System;
 
 public interface IDataSeedFacade
 {
