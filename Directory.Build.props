@@ -1,8 +1,8 @@
 ﻿<Project>
 
   <PropertyGroup>
-	<Company>HAVIT, s.r.o.</Company>
-	<Copyright>Copyright HAVIT, s.r.o. 2019</Copyright>
+	<Company>Jiří Kanda</Company>
+	<Copyright>Copyright Jiří Kanda, s.r.o. 2023</Copyright>
 	<FileVersion>1.0.0.0</FileVersion>
 	<AssemblyVersion>1.0.0.0</AssemblyVersion>
 	<Product>VolejbalApp</Product>
