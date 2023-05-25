@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+appSettings*.local.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -258,3 +259,5 @@ paket-files/
 Web/.vscode/launch.json
 .vscode
 /WebAPI/App_Data
+.DS_Store
+/Utility/appsettings.Utility.Development.local.json
