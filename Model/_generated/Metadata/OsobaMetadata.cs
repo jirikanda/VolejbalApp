@@ -5,19 +5,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace KandaEu.Volejbal.Model.Metadata;
 
-namespace KandaEu.Volejbal.Model.Metadata
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public static class OsobaMetadata
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public static class OsobaMetadata
-	{
-		public const int EmailMaxLength = 50;
-		public const int JmenoMaxLength = 50;
-		public const int PrijmeniMaxLength = 50;
-	}
+	public const int EmailMaxLength = 50;
+	public const int JmenoMaxLength = 50;
+	public const int PrijmeniMaxLength = 50;
 }

@@ -5,29 +5,23 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Havit.Data.EntityFrameworkCore.Patterns.DataSources.Fakes;
 using Havit.Data.EntityFrameworkCore.Patterns.SoftDeletes;
 using Havit.Data.Patterns.Attributes;
 
-namespace KandaEu.Volejbal.DataLayer.DataSources.Fakes
-{
-	[Fake]
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public class FakeVzkazDataSource : FakeDataSource<KandaEu.Volejbal.Model.Vzkaz>, KandaEu.Volejbal.DataLayer.DataSources.IVzkazDataSource
-	{
-		public FakeVzkazDataSource(params KandaEu.Volejbal.Model.Vzkaz[] data)
-			: this((IEnumerable<KandaEu.Volejbal.Model.Vzkaz>)data)
-		{			
-		}
+namespace KandaEu.Volejbal.DataLayer.DataSources.Fakes;
 
-		public FakeVzkazDataSource(IEnumerable<KandaEu.Volejbal.Model.Vzkaz> data, ISoftDeleteManager softDeleteManager = null)
-			: base(data, softDeleteManager)
-		{
-		}
+[Fake]
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public class FakeVzkazDataSource : FakeDataSource<KandaEu.Volejbal.Model.Vzkaz>, KandaEu.Volejbal.DataLayer.DataSources.IVzkazDataSource
+{
+	public FakeVzkazDataSource(params KandaEu.Volejbal.Model.Vzkaz[] data)
+		: this((IEnumerable<KandaEu.Volejbal.Model.Vzkaz>)data)
+	{			
+	}
+
+	public FakeVzkazDataSource(IEnumerable<KandaEu.Volejbal.Model.Vzkaz> data, ISoftDeleteManager softDeleteManager = null)
+		: base(data, softDeleteManager)
+	{
 	}
 }

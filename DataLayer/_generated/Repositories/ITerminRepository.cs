@@ -5,17 +5,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Havit.Data.Patterns.Repositories;
 
-namespace KandaEu.Volejbal.DataLayer.Repositories
+namespace KandaEu.Volejbal.DataLayer.Repositories;
+
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public partial interface ITerminRepository : IRepository<KandaEu.Volejbal.Model.Termin>
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public partial interface ITerminRepository : IRepository<KandaEu.Volejbal.Model.Termin>
-	{
-	}
 }

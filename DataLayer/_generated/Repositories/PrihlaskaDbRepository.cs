@@ -5,11 +5,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Havit.Data.EntityFrameworkCore;
 using Havit.Data.EntityFrameworkCore.Patterns.Caching;
 using Havit.Data.EntityFrameworkCore.Patterns.Repositories;
@@ -18,14 +13,13 @@ using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataLoaders;
 using Havit.Data.Patterns.Infrastructure;
 
-namespace KandaEu.Volejbal.DataLayer.Repositories
+namespace KandaEu.Volejbal.DataLayer.Repositories;
+
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public partial class PrihlaskaDbRepository : PrihlaskaDbRepositoryBase, IPrihlaskaRepository
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public partial class PrihlaskaDbRepository : PrihlaskaDbRepositoryBase, IPrihlaskaRepository
+	public PrihlaskaDbRepository(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.IPrihlaskaDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
+		: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
 	{
-		public PrihlaskaDbRepository(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.IPrihlaskaDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
-			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
-		{
-		}
 	}
 }

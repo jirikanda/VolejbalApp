@@ -5,17 +5,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Havit.Data.Patterns.DataSources;
 
-namespace KandaEu.Volejbal.DataLayer.DataSources
+namespace KandaEu.Volejbal.DataLayer.DataSources;
+
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public interface IPrihlaskaDataSource : IDataSource<KandaEu.Volejbal.Model.Prihlaska>
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public interface IPrihlaskaDataSource : IDataSource<KandaEu.Volejbal.Model.Prihlaska>
-	{
-	}
 }

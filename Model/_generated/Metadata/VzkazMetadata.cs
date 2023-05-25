@@ -5,17 +5,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace KandaEu.Volejbal.Model.Metadata;
 
-namespace KandaEu.Volejbal.Model.Metadata
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public static class VzkazMetadata
 {
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public static class VzkazMetadata
-	{
-		public const int ZpravaMaxLength = 0;
-	}
+	public const int ZpravaMaxLength = Int32.MaxValue;
 }

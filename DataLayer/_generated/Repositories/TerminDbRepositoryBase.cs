@@ -5,11 +5,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Havit.Data.EntityFrameworkCore;
 using Havit.Data.EntityFrameworkCore.Patterns.Caching;
 using Havit.Data.EntityFrameworkCore.Patterns.Repositories;
@@ -18,15 +13,14 @@ using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataLoaders;
 using Havit.Data.Patterns.Infrastructure;
 
-namespace KandaEu.Volejbal.DataLayer.Repositories
-{
-	[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-	public abstract class TerminDbRepositoryBase : DbRepository<KandaEu.Volejbal.Model.Termin>
-	{
-		protected TerminDbRepositoryBase(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.ITerminDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
-			: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
-		{
-		}
+namespace KandaEu.Volejbal.DataLayer.Repositories;
 
+[System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
+public abstract class TerminDbRepositoryBase : DbRepository<KandaEu.Volejbal.Model.Termin>
+{
+	protected TerminDbRepositoryBase(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.ITerminDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
+		: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
+	{
 	}
+
 }
