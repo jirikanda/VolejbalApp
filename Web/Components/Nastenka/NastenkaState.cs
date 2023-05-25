@@ -6,6 +6,6 @@ namespace KandaEu.Volejbal.Web.Components.Nastenka;
 
 public class NastenkaState
 {
-    public List<VzkazDto> Vzkazy { get; set; }
-    public List<OsobaDto> AktivniOsoby { get; set; }
+	public List<VzkazDto> Vzkazy { get; set; }
+	public List<OsobaDto> AktivniOsoby { get; set; }
 }

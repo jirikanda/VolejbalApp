@@ -10,65 +10,65 @@ namespace KandaEu.Volejbal.Facades.Terminy;
 [Service]
 public class TerminFacade : ITerminFacade
 {
-    private readonly ITerminDataSource terminDataSource;
-    private readonly IPrihlaskaDataSource prihlaskaDataSource;
-    private readonly IOsobaDataSource osobaDataSource;
-    private readonly ITimeService timeService;
-    private readonly IUnitOfWork unitOfWork; // TODO: Odstranit nepoužívané
-    private readonly IEnsureTerminyService ensureTerminyService;
+	private readonly ITerminDataSource terminDataSource;
+	private readonly IPrihlaskaDataSource prihlaskaDataSource;
+	private readonly IOsobaDataSource osobaDataSource;
+	private readonly ITimeService timeService;
+	private readonly IUnitOfWork unitOfWork; // TODO: Odstranit nepoužívané
+	private readonly IEnsureTerminyService ensureTerminyService;
 
-    public TerminFacade(ITerminDataSource terminDataSource, IPrihlaskaDataSource prihlaskaDataSource, IOsobaDataSource osobaDataSource, ITimeService timeService, IUnitOfWork unitOfWork, IEnsureTerminyService ensureTerminyService)
-    {
-        this.terminDataSource = terminDataSource;
-        this.prihlaskaDataSource = prihlaskaDataSource;
-        this.osobaDataSource = osobaDataSource;
-        this.timeService = timeService;
-        this.unitOfWork = unitOfWork;
-        this.ensureTerminyService = ensureTerminyService;
-    }
+	public TerminFacade(ITerminDataSource terminDataSource, IPrihlaskaDataSource prihlaskaDataSource, IOsobaDataSource osobaDataSource, ITimeService timeService, IUnitOfWork unitOfWork, IEnsureTerminyService ensureTerminyService)
+	{
+		this.terminDataSource = terminDataSource;
+		this.prihlaskaDataSource = prihlaskaDataSource;
+		this.osobaDataSource = osobaDataSource;
+		this.timeService = timeService;
+		this.unitOfWork = unitOfWork;
+		this.ensureTerminyService = ensureTerminyService;
+	}
 
-    public async Task<TerminListDto> GetTerminy()
-    {
-        var terminy = await terminDataSource.Data
-            .Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
-            .Select(item => new TerminDto
-            {
-                Id = item.Id,
-                Datum = item.Datum
-            }).ToListAsync();
+	public async Task<TerminListDto> GetTerminy()
+	{
+		var terminy = await terminDataSource.Data
+			.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
+			.Select(item => new TerminDto
+			{
+				Id = item.Id,
+				Datum = item.Datum
+			}).ToListAsync();
 
-        return new TerminListDto
-        {
-            Terminy = terminy
-        };
-    }
+		return new TerminListDto
+		{
+			Terminy = terminy
+		};
+	}
 
 
 
-    public async Task<TerminDetailDto> GetDetailTerminu(int terminId)
-    {
-        List<Prihlaska> prihlasky = await prihlaskaDataSource.Data
-            .Where(prihlaska => prihlaska.TerminId == terminId)
-            .Include(prihlaska => prihlaska.Osoba)
-            .OrderBy(prihlaska => prihlaska.DatumPrihlaseni)
-            .ToListAsync();
+	public async Task<TerminDetailDto> GetDetailTerminu(int terminId)
+	{
+		List<Prihlaska> prihlasky = await prihlaskaDataSource.Data
+			.Where(prihlaska => prihlaska.TerminId == terminId)
+			.Include(prihlaska => prihlaska.Osoba)
+			.OrderBy(prihlaska => prihlaska.DatumPrihlaseni)
+			.ToListAsync();
 
-        List<Osoba> prihlaseni = prihlasky
-            .Select(item => item.Osoba)
-            .ToList();
+		List<Osoba> prihlaseni = prihlasky
+			.Select(item => item.Osoba)
+			.ToList();
 
-        List<Osoba> neprihlaseni = (await osobaDataSource.Data
-            .Where(osoba => osoba.Aktivni)
-            .ToListAsync())
-            .Except(prihlaseni /* in memory */)
-            .OrderBy(item => item.PrijmeniJmeno)
-            .ToList();
+		List<Osoba> neprihlaseni = (await osobaDataSource.Data
+			.Where(osoba => osoba.Aktivni)
+			.ToListAsync())
+			.Except(prihlaseni /* in memory */)
+			.OrderBy(item => item.PrijmeniJmeno)
+			.ToList();
 
-        return new TerminDetailDto
-        {
-            Prihlaseni = prihlasky.Select(prihlaska => prihlaska.ToOsobaDto()).ToList(),
-            Neprihlaseni = neprihlaseni.Select(osoba => osoba.ToOsobaDto()).ToList()
-        };
-    }
+		return new TerminDetailDto
+		{
+			Prihlaseni = prihlasky.Select(prihlaska => prihlaska.ToOsobaDto()).ToList(),
+			Neprihlaseni = neprihlaseni.Select(osoba => osoba.ToOsobaDto()).ToList()
+		};
+	}
 
 }

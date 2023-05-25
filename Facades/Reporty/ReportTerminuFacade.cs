@@ -8,29 +8,29 @@ namespace KandaEu.Volejbal.Facades.Reporty;
 [Service]
 public class ReportTerminuFacade : IReportTerminuFacade
 {
-    private readonly ITerminDataSource terminDataSource;
-    private readonly ITimeService timeService;
+	private readonly ITerminDataSource terminDataSource;
+	private readonly ITimeService timeService;
 
-    public ReportTerminuFacade(ITerminDataSource terminDataSource, ITimeService timeService)
-    {
-        this.terminDataSource = terminDataSource;
-        this.timeService = timeService;
-    }
+	public ReportTerminuFacade(ITerminDataSource terminDataSource, ITimeService timeService)
+	{
+		this.terminDataSource = terminDataSource;
+		this.timeService = timeService;
+	}
 
-    public async Task<ReportTerminu> GetReport()
-    {
-        DateTime today = timeService.GetCurrentDate();
-        DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
+	public async Task<ReportTerminu> GetReport()
+	{
+		DateTime today = timeService.GetCurrentDate();
+		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
-        return new ReportTerminu
-        {
-            ObsazenostTerminu = await terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
-            .OrderBy(item => item.Datum)
-            .Select(termin => new ReportTerminuItem
-            {
-                Datum = termin.Datum,
-                PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
-            }).ToListAsync()
-        };
-    }
+		return new ReportTerminu
+		{
+			ObsazenostTerminu = await terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
+			.OrderBy(item => item.Datum)
+			.Select(termin => new ReportTerminuItem
+			{
+				Datum = termin.Datum,
+				PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
+			}).ToListAsync()
+		};
+	}
 }

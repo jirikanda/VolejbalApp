@@ -4,10 +4,10 @@ namespace KandaEu.Volejbal.Web.Components;
 
 public partial class Error
 {
-    [Inject] public NavigationManager NavigationManager { get; set; }
+	[Inject] public NavigationManager NavigationManager { get; set; }
 
-    private void HandleRestartClick()
-    {
-        NavigationManager.NavigateTo("/", forceLoad: true);
-    }
+	private void HandleRestartClick()
+	{
+		NavigationManager.NavigateTo("/", forceLoad: true);
+	}
 }

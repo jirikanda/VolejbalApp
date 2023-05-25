@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("KandaEu.Volejbal.Tests")] 
+[assembly: InternalsVisibleTo("KandaEu.Volejbal.Tests")]

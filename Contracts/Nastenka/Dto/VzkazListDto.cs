@@ -2,5 +2,5 @@
 
 public class VzkazListDto
 {
-    public List<VzkazDto> Vzkazy { get; set; }
+	public List<VzkazDto> Vzkazy { get; set; }
 }

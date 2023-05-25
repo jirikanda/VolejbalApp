@@ -9,42 +9,42 @@ namespace KandaEu.Volejbal.Web.Components.Osoby;
 
 public partial class AktivaceDeaktivovaneOsoby
 {
-    [Inject]
-    protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
+	[Inject]
+	protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
 
-    [CascadingParameter]
-    protected Progress Progress { get; set; }
+	[CascadingParameter]
+	protected Progress Progress { get; set; }
 
-    [Inject]
-    protected IJSRuntime JSRuntime { get; set; }
+	[Inject]
+	protected IJSRuntime JSRuntime { get; set; }
 
-    protected OsobaListDto osoby;
+	protected OsobaListDto osoby;
 
-    [Inject]
-    protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
+	[Inject]
+	protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetNeaktivniOsobyAsync());
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetNeaktivniOsobyAsync());
+	}
 
-    protected async Task Aktivovat(OsobaDto osoba)
-    {
-        await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
-        osoby.Osoby.Remove(osoba);
+	protected async Task Aktivovat(OsobaDto osoba)
+	{
+		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
+		osoby.Osoby.Remove(osoba);
 
-        Toaster.Success($"{osoba.PrijmeniJmeno} aktivován(a).");
-    }
+		Toaster.Success($"{osoba.PrijmeniJmeno} aktivován(a).");
+	}
 
-    protected async Task Smazat(OsobaDto osoba)
-    {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Opravdu chceš smazat osobu \"{osoba.PrijmeniJmeno}\"?");
-        if (confirmed)
-        {
-            await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
-            osoby.Osoby.Remove(osoba);
-            Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
-        }
-    }
+	protected async Task Smazat(OsobaDto osoba)
+	{
+		bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Opravdu chceš smazat osobu \"{osoba.PrijmeniJmeno}\"?");
+		if (confirmed)
+		{
+			await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
+			osoby.Osoby.Remove(osoba);
+			Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
+		}
+	}
 }

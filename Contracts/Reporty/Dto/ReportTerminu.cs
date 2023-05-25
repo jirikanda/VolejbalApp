@@ -2,5 +2,5 @@
 
 public class ReportTerminu
 {
-    public List<ReportTerminuItem> ObsazenostTerminu { get; set; }
+	public List<ReportTerminuItem> ObsazenostTerminu { get; set; }
 }

@@ -2,6 +2,6 @@
 
 public class VzkazInputDto
 {
-    public int AutorId { get; set; }
-    public string Zprava { get; set; }
+	public int AutorId { get; set; }
+	public string Zprava { get; set; }
 }

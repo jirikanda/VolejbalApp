@@ -29,79 +29,79 @@ namespace KandaEu.Volejbal.WebAPI;
 
 public class Startup
 {
-    private readonly IConfiguration configuration;
+	private readonly IConfiguration configuration;
 
-    public Startup(IConfiguration configuration)
-    {
-        this.configuration = configuration;
-    }
+	public Startup(IConfiguration configuration)
+	{
+		this.configuration = configuration;
+	}
 
-    /// <summary>
-    /// Configure services.
-    /// </summary>
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+	/// <summary>
+	/// Configure services.
+	/// </summary>
+	public void ConfigureServices(IServiceCollection services)
+	{
+		services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-        services.AddOptions(); // Adds services required for using options.
-        services.AddMemoryCache(); // ie. IClaimsCacheStorage
+		services.AddOptions(); // Adds services required for using options.
+		services.AddMemoryCache(); // ie. IClaimsCacheStorage
 
-        services.AddCustomizedRequestLocalization();
-        services.AddCustomizedMvc(configuration);
-        services.AddAuthorization();
-        services.AddCustomizedMailing(configuration);
+		services.AddCustomizedRequestLocalization();
+		services.AddCustomizedMvc(configuration);
+		services.AddAuthorization();
+		services.AddCustomizedMailing(configuration);
 
-        services.AddExceptionMonitoring(configuration);
-        services.AddCustomizedErrorToJson();
+		services.AddExceptionMonitoring(configuration);
+		services.AddCustomizedErrorToJson();
 
-        services.AddCustomizedCors(configuration);
-        services.AddCustomizedOpenApi();
+		services.AddCustomizedCors(configuration);
+		services.AddCustomizedOpenApi();
 
-        services.AddApplicationInsightsTelemetry(configuration);
+		services.AddApplicationInsightsTelemetry(configuration);
 
-        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        services.AddTransient<ErrorMonitoringFilter>();
+		services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+		services.AddTransient<ErrorMonitoringFilter>();
 
-        // background jobs
-        services.AddHostedService<DeaktivaceOsobBackgroundService>();
-        services.AddHostedService<EnsureTerminyBackgroundService>();
+		// background jobs
+		services.AddHostedService<DeaktivaceOsobBackgroundService>();
+		services.AddHostedService<EnsureTerminyBackgroundService>();
 
-        services.ConfigureForWebAPI(configuration);
-    }
+		services.ConfigureForWebAPI(configuration);
+	}
 
-    /// <summary>
-    /// Configure middleware.
-    /// </summary>
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions, IExceptionMonitoringService exceptionMonitoringService)
-    {
-        try
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseMiddleware<DelayRequestMiddleware>();
-            }
+	/// <summary>
+	/// Configure middleware.
+	/// </summary>
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions, IExceptionMonitoringService exceptionMonitoringService)
+	{
+		try
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+				app.UseMiddleware<DelayRequestMiddleware>();
+			}
 
-            app.UseCustomizedCors(corsOptions);
-            app.UseStaticFiles();
-            app.UseAuthentication();
+			app.UseCustomizedCors(corsOptions);
+			app.UseStaticFiles();
+			app.UseAuthentication();
 
-            app.UseRequestLocalization();
+			app.UseRequestLocalization();
 
-            app.UseExceptionMonitoring();
-            app.UseErrorToJson();
-            app.UseRouting();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+			app.UseExceptionMonitoring();
+			app.UseErrorToJson();
+			app.UseRouting();
+			app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-            app.UseCustomizedOpenApiSwaggerUI();
+			app.UseCustomizedOpenApiSwaggerUI();
 
-            app.UpgradeDatabaseSchemaAndData();
-        }
-        catch (Exception exception)
-        {
-            exceptionMonitoringService.HandleException(exception);
-            throw;
-        }
-    }
+			app.UpgradeDatabaseSchemaAndData();
+		}
+		catch (Exception exception)
+		{
+			exceptionMonitoringService.HandleException(exception);
+			throw;
+		}
+	}
 
 }

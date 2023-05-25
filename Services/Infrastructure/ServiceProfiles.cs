@@ -2,5 +2,5 @@
 
 public static class ServiceProfiles
 {
-    public const string WebAPI = "WebAPI";
+	public const string WebAPI = "WebAPI";
 }

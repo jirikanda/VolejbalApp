@@ -2,5 +2,5 @@
 
 public partial interface IPrihlaskaRepository
 {
-    Task<Prihlaska> GetPrihlaska(int terminId, int osobaId);
+	Task<Prihlaska> GetPrihlaska(int terminId, int osobaId);
 }

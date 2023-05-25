@@ -11,9 +11,9 @@ namespace KandaEu.Volejbal.WebAPI.Controllers;
 [ApiExplorerSettings(IgnoreApi = true)] // schováme ze Swaggeru
 public class HomeController : ControllerBase
 {
-    [HttpGet("")]
-    public IActionResult Get()
-    {
-        return this.Redirect("swagger");
-    }
+	[HttpGet("")]
+	public IActionResult Get()
+	{
+		return this.Redirect("swagger");
+	}
 }

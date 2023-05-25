@@ -4,5 +4,5 @@ namespace KandaEu.Volejbal.Contracts.Reporty;
 
 public interface IReportTerminuFacade
 {
-    Task<ReportTerminu> GetReport();
+	Task<ReportTerminu> GetReport();
 }

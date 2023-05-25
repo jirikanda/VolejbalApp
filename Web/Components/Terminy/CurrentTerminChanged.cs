@@ -2,10 +2,10 @@
 
 public class CurrentTerminChanged
 {
-    public CurrentTerminChanged(int terminId)
-    {
-        TerminId = terminId;
-    }
+	public CurrentTerminChanged(int terminId)
+	{
+		TerminId = terminId;
+	}
 
-    public int TerminId { get; }
+	public int TerminId { get; }
 }

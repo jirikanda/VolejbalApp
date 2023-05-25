@@ -2,5 +2,5 @@
 
 public interface IEnsureTerminyService
 {
-    public void EnsureTerminy();
+	public void EnsureTerminy();
 }

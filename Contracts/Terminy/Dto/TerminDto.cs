@@ -2,6 +2,6 @@
 
 public class TerminDto
 {
-    public int Id { get; set; }
-    public DateTime Datum { get; set; }
+	public int Id { get; set; }
+	public DateTime Datum { get; set; }
 }

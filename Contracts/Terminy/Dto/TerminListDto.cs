@@ -2,5 +2,5 @@
 
 public class TerminListDto
 {
-    public List<TerminDto> Terminy { get; set; }
+	public List<TerminDto> Terminy { get; set; }
 }

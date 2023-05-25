@@ -2,6 +2,6 @@
 
 public class ReportTerminuItem
 {
-    public DateTime Datum { get; set; }
-    public int PocetHracu { get; set; }
+	public DateTime Datum { get; set; }
+	public int PocetHracu { get; set; }
 }

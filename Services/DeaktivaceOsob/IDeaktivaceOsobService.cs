@@ -2,5 +2,5 @@
 
 public interface IDeaktivaceOsobService
 {
-    public void DeaktivujOsoby();
+	public void DeaktivujOsoby();
 }

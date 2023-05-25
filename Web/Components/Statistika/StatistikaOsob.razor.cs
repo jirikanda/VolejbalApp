@@ -22,64 +22,64 @@ namespace KandaEu.Volejbal.Web.Components.Statistika;
 
 public partial class StatistikaOsob
 {
-    [Inject]
-    protected IReportWebApiClient ReportWebApiClient { get; set; }
+	[Inject]
+	protected IReportWebApiClient ReportWebApiClient { get; set; }
 
-    [CascadingParameter]
-    protected Progress Progress { get; set; }
+	[CascadingParameter]
+	protected Progress Progress { get; set; }
 
-    private BarConfig barConfig;
-    private int reportHeight = 300;
-    private bool isLoaded = false;
+	private BarConfig barConfig;
+	private int reportHeight = 300;
+	private bool isLoaded = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        barConfig = new BarConfig(ChartType.HorizontalBar)
-        {
-            Options = new BarOptions
-            {
-                Title = new OptionsTitle
-                {
-                    Display = false,
-                },
-                Responsive = false,
-                Scales = new BarScales
-                {
-                    XAxes = new List<CartesianAxis>
-                    {
-                        new LinearCartesianAxis
-                        {
-                            Ticks = new LinearCartesianTicks
-                            {
-                                AutoSkip = false,
-                                Min = 0,
-                                StepSize = 1
-                            },
-                        }
-                    }
-                },
-                Legend = new Legend
-                {
-                    Display = false,
-                }
-            }
-        };
+	protected override async Task OnInitializedAsync()
+	{
+		barConfig = new BarConfig(ChartType.HorizontalBar)
+		{
+			Options = new BarOptions
+			{
+				Title = new OptionsTitle
+				{
+					Display = false,
+				},
+				Responsive = false,
+				Scales = new BarScales
+				{
+					XAxes = new List<CartesianAxis>
+					{
+						new LinearCartesianAxis
+						{
+							Ticks = new LinearCartesianTicks
+							{
+								AutoSkip = false,
+								Min = 0,
+								StepSize = 1
+							},
+						}
+					}
+				},
+				Legend = new Legend
+				{
+					Display = false,
+				}
+			}
+		};
 
-        var report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
+		var report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
 
 
-        barConfig.Data.Labels.AddRange(report.UcastHracu.Select(item => item.PrijmeniJmeno).ToArray());
+		barConfig.Data.Labels.AddRange(report.UcastHracu.Select(item => item.PrijmeniJmeno).ToArray());
 
-        BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
-        {
-            BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - (i * 15) % 200))).ToArray()
-        };
+		BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
+		{
+			BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - (i * 15) % 200))).ToArray()
+		};
 
-        barDataSet.AddRange(report.UcastHracu.Select(item => item.PocetTerminu).ToArray().Wrap());
-        barConfig.Data.Datasets.Add(barDataSet);
+		barDataSet.AddRange(report.UcastHracu.Select(item => item.PocetTerminu).ToArray().Wrap());
+		barConfig.Data.Datasets.Add(barDataSet);
 
-        reportHeight = report.UcastHracu.Count * 40 + 60; // prostě naházeno vidlemi
-        isLoaded = true;
-        StateHasChanged();
-    }
+		reportHeight = report.UcastHracu.Count * 40 + 60; // prostě naházeno vidlemi
+		isLoaded = true;
+		StateHasChanged();
+	}
 }

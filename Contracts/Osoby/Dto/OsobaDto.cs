@@ -2,6 +2,6 @@
 
 public class OsobaDto
 {
-    public int Id { get; set; }
-    public string PrijmeniJmeno { get; set; }
+	public int Id { get; set; }
+	public string PrijmeniJmeno { get; set; }
 }

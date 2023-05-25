@@ -2,5 +2,5 @@
 
 public class ReportOsob
 {
-    public List<ReportOsobItem> UcastHracu { get; set; }
+	public List<ReportOsobItem> UcastHracu { get; set; }
 }

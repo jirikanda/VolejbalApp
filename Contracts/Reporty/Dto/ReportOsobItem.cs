@@ -2,6 +2,6 @@
 
 public class ReportOsobItem
 {
-    public string PrijmeniJmeno { get; set; }
-    public int PocetTerminu { get; set; }
+	public string PrijmeniJmeno { get; set; }
+	public int PocetTerminu { get; set; }
 }

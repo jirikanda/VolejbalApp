@@ -11,29 +11,29 @@ namespace KandaEu.Volejbal.Facades.System;
 [Service]
 public class DataSeedFacade : IDataSeedFacade
 {
-    private readonly IDataSeedRunner dataSeedRunner;
+	private readonly IDataSeedRunner dataSeedRunner;
 
-    public DataSeedFacade(IDataSeedRunner dataSeedRunner)
-    {
-        this.dataSeedRunner = dataSeedRunner;
-    }
+	public DataSeedFacade(IDataSeedRunner dataSeedRunner)
+	{
+		this.dataSeedRunner = dataSeedRunner;
+	}
 
-    /// <summary>
-    /// Provede seedování dat daného profilu.
-    /// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
-    /// </summary>        
-    public Task SeedDataProfile(string profileName)
-    {
-        string typeName = profileName + "Profile";
-        Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
+	/// <summary>
+	/// Provede seedování dat daného profilu.
+	/// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
+	/// </summary>        
+	public Task SeedDataProfile(string profileName)
+	{
+		string typeName = profileName + "Profile";
+		Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
 
-        if (type == null)
-        {
-            throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
-        }
+		if (type == null)
+		{
+			throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
+		}
 
-        dataSeedRunner.SeedData(type);
+		dataSeedRunner.SeedData(type);
 
-        return Task.CompletedTask;
-    }
+		return Task.CompletedTask;
+	}
 }
