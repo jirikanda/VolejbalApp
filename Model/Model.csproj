@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.Model</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Model</RootNamespace>
 		<ImplicitUsings>true</ImplicitUsings>
@@ -10,7 +10,6 @@
 	<ItemGroup>
 		<PackageReference Include="Havit.Data.EntityFrameworkCore.Abstractions" Version="2.1.0" />
 		<PackageReference Include="Havit.Model" Version="2.0.4" />
-		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 	</ItemGroup>
 
 </Project>

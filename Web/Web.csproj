@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
     <RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
   </PropertyGroup>
@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
+	<PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
 	<PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
 	<PackageReference Include="EventAggregator.Blazor" Version="2.0.0" />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	<PackageReference Include="NSwag.ApiDescription.Client" Version="13.15.10">
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="NSwag.ApiDescription.Client" Version="13.19.0">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
