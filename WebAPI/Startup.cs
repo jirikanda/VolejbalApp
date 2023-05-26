@@ -65,6 +65,7 @@ public class Startup
 		services.AddTransient<ErrorMonitoringFilter>();
 
 		// background jobs
+		services.AddHostedService<DatabaseMigrationHostedService>();
 		services.AddHostedService<DeaktivaceOsobBackgroundService>();
 		services.AddHostedService<EnsureTerminyBackgroundService>();
 
@@ -104,8 +105,6 @@ public class Startup
 			app.UseEndpoints(endpoints => endpoints.MapControllers().RequireRateLimiting("DefaultAPI"));
 
 			app.UseCustomizedOpenApiSwaggerUI();
-
-			app.UpgradeDatabaseSchemaAndData();
 		}
 		catch (Exception exception)
 		{
