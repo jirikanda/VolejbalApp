@@ -1,7 +1,7 @@
 ﻿# ALL FILES
 [*]
 
-end_of_line = CRLF
+end_of_line = crlf
 indent_style = tab
 indent_size = 4
 trim_trailing_whitespace = true
@@ -66,6 +66,14 @@ csharp_indent_block_contents = true:warning
 ####################################
 
 #Default rules apply! (IDE1006 severity makes them mandatory) https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/naming-rules#default-naming-styles
+
+####################################
+# Spell checking                   #
+####################################
+
+spelling_languages = en-us,cs-cz
+spelling_checkable_types = strings,identifiers,comments
+spelling_error_severity = warning
 
 ###############################
 #### IDE analyzers options ####

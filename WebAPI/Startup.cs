@@ -22,6 +22,8 @@ using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 [assembly: ApiControllerAttribute]
 
@@ -91,7 +93,15 @@ public class Startup
 			app.UseExceptionMonitoring();
 			app.UseErrorToJson();
 			app.UseRouting();
-			app.UseEndpoints(endpoints => endpoints.MapControllers());
+			app.UseRateLimiter(new RateLimiterOptions().AddFixedWindowLimiter("DefaultAPI", c =>
+			{
+				c.Window = TimeSpan.FromSeconds(5); // v pětisekundovém okně
+				c.PermitLimit = 10; // umožníme zpracovat 10 requestů
+				c.QueueLimit = 10; // a dalších 10 umožníme nechat ve frontě ke zpracování
+				c.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+			}));
+
+			app.UseEndpoints(endpoints => endpoints.MapControllers().RequireRateLimiting("DefaultAPI"));
 
 			app.UseCustomizedOpenApiSwaggerUI();
 
