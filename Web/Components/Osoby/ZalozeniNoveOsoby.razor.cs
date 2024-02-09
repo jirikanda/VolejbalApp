@@ -2,7 +2,6 @@
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Osoby;
 

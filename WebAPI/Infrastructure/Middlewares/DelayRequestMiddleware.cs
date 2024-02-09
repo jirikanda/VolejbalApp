@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-
-namespace KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
+﻿namespace KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 
 public class DelayRequestMiddleware
 {

@@ -1,11 +1,4 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
-using KandaEu.Volejbal.DependencyInjection;
-
+﻿
 namespace KandaEu.Volejbal.WebAPI;
 
 public static class Program
@@ -21,10 +14,6 @@ public static class Program
 			.ConfigureWebHostDefaults(webBuilder =>
 			{
 				webBuilder.UseStartup<Startup>();
-#if DEBUG
-				webBuilder.UseEnvironment("Development"); // pro Red-Gate ANTS Performance Profiler
-				webBuilder.UseUrls("http://localhost:9901"); // pro Red-Gate ANTS Performance Profiler
-#endif
 			})
 			.ConfigureAppConfiguration((hostContext, config) =>
 			{

@@ -1,21 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security;
-using System.Threading.Tasks;
-using Havit.AspNetCore.Mvc.ErrorToJson.Configuration;
+﻿using System.Security;
 using KandaEu.Volejbal.Services.Infrastructure;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 

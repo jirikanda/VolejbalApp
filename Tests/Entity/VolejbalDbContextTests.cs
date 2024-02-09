@@ -1,5 +1,4 @@
-﻿using System;
-using KandaEu.Volejbal.Entity;
+﻿using KandaEu.Volejbal.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

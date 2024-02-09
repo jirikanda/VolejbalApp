@@ -1,5 +1,4 @@
 ﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
-using System.Collections.Generic;
 
 namespace KandaEu.Volejbal.Web.Components.Prihlasovani;
 

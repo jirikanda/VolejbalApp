@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using KandaEu.Volejbal.Services.Mailing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using KandaEu.Volejbal.Services.Mailing;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 

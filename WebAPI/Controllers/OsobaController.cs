@@ -1,11 +1,6 @@
 ﻿using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
-using KandaEu.Volejbal.Facades.Osoby;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.WebAPI.Controllers;
 

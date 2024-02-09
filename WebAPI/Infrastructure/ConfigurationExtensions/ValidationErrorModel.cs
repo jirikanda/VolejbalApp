@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation;
-using Microsoft.AspNetCore.Http;
+﻿using KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
-using TypeLite;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 
 /// <summary>
 /// Třída popisuje validační chybu WebAPI.
 /// </summary>
-[TsClass(Module = "ValidationErrors", Name = "ValidationError")]
 public class ValidationErrorModel
 {
 	/// <summary>
@@ -32,7 +27,6 @@ public class ValidationErrorModel
 	/// Stack trace výjimky. Použito pro chyby vyhozené "ručně" výjimkou OperationFailedException (ev. jiné). Jen pro aplikaci kompilovanou v DEBUGu!
 	/// </summary>
 	[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-	[TsIgnore]
 	public string StackTrace { get; private set; }
 #endif
 

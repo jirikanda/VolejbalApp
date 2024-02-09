@@ -1,10 +1,6 @@
 ﻿using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.WebAPI.Controllers;
 

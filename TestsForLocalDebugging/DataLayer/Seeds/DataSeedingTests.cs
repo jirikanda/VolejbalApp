@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Havit.Data.Patterns.DataSeeds;
+﻿using Havit.Data.Patterns.DataSeeds;
 using Havit.Data.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

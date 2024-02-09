@@ -1,8 +1,5 @@
-﻿using KandaEu.Volejbal.Contracts.Nastenka.Dto;
-using KandaEu.Volejbal.Web.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using Microsoft.AspNetCore.Components;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Nastenka;
 

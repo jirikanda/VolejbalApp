@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using ChartJs.Blazor;
-using ChartJs.Blazor.Charts;
-using ChartJs.Blazor.ChartJS.PieChart;
-using ChartJs.Blazor.ChartJS.Common.Properties;
+﻿using ChartJs.Blazor.ChartJS.Common.Properties;
 using ChartJs.Blazor.Util;
 using Microsoft.AspNetCore.Components;
 using ChartJs.Blazor.ChartJS.BarChart;

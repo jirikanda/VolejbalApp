@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Havit.Data.EntityFrameworkCore;
+﻿using Havit.Data.EntityFrameworkCore;
 using Havit.Data.Patterns.DataSeeds;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
 using KandaEu.Volejbal.DependencyInjection;

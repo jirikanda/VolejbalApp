@@ -1,11 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace KandaEu.Volejbal.Web.App_Start;
+﻿namespace KandaEu.Volejbal.Web.App_Start;
 
 public static class WebApiClientConfig
 {

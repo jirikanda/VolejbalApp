@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.Services</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Services</RootNamespace>
 		<ImplicitUsings>true</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.5" />
-		<PackageReference Include="Havit.Services" Version="2.0.37" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.6" />
+		<PackageReference Include="Havit.Services" Version="2.0.40" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

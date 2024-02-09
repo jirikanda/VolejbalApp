@@ -2,8 +2,6 @@
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KandaEu.Volejbal.Web.Components.Terminy;
 

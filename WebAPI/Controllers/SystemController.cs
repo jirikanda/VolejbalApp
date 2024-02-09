@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Havit.Data.Patterns.DataSeeds;
-using KandaEu.Volejbal.Contracts.System;
-using KandaEu.Volejbal.Facades.System;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using KandaEu.Volejbal.Contracts.System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 
 namespace Havit.VolejbalApp.WebAPI.Controllers;
 

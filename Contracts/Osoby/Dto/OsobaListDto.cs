@@ -1,6 +1,4 @@
-﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
-
-namespace KandaEu.Volejbal.Contracts.Osoby.Dto;
+﻿namespace KandaEu.Volejbal.Contracts.Osoby.Dto;
 
 public class OsobaListDto
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
+﻿namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 
 public static class OpenApiConfig
 {
@@ -20,6 +15,6 @@ public static class OpenApiConfig
 	public static void UseCustomizedOpenApiSwaggerUI(this IApplicationBuilder app)
 	{
 		app.UseOpenApi();
-		app.UseSwaggerUi3();
+		app.UseSwaggerUi();
 	}
 }

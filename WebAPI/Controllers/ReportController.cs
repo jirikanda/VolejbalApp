@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using KandaEu.Volejbal.Contracts.Reporty;
+﻿using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
-using KandaEu.Volejbal.Facades.Reporty;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KandaEu.Volejbal.WebAPI.Controllers;

@@ -1,29 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Security;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc;
-using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
-using KandaEu.Volejbal.WebAPI.Infrastructure;
-using KandaEu.Volejbal.WebAPI.Infrastructure.Tools;
-using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
-using Microsoft.Extensions.Hosting;
+﻿using System.Threading.RateLimiting;
+using Havit.AspNetCore.ExceptionMonitoring.Services;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
-using Havit.AspNetCore.ExceptionMonitoring.Services;
-using System.Threading.RateLimiting;
+using KandaEu.Volejbal.WebAPI.Infrastructure;
+using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
+using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 [assembly: ApiControllerAttribute]
 
@@ -51,6 +38,14 @@ public class Startup
 		services.AddCustomizedRequestLocalization();
 		services.AddCustomizedMvc(configuration);
 		services.AddAuthorization();
+		services.AddRateLimiter(c => c.AddFixedWindowLimiter("DefaultAPI", options =>
+		{
+			options.Window = TimeSpan.FromSeconds(5); // v pětisekundovém okně
+			options.PermitLimit = 10; // umožníme zpracovat 10 requestů
+			options.QueueLimit = 10; // a dalších 10 umožníme nechat ve frontě ke zpracování
+			options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+		}));
+
 		services.AddCustomizedMailing(configuration);
 
 		services.AddExceptionMonitoring(configuration);
@@ -94,13 +89,7 @@ public class Startup
 			app.UseExceptionMonitoring();
 			app.UseErrorToJson();
 			app.UseRouting();
-			app.UseRateLimiter(new RateLimiterOptions().AddFixedWindowLimiter("DefaultAPI", c =>
-			{
-				c.Window = TimeSpan.FromSeconds(5); // v pětisekundovém okně
-				c.PermitLimit = 10; // umožníme zpracovat 10 requestů
-				c.QueueLimit = 10; // a dalších 10 umožníme nechat ve frontě ke zpracování
-				c.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-			}));
+			app.UseRateLimiter();
 
 			app.UseEndpoints(endpoints => endpoints.MapControllers().RequireRateLimiting("DefaultAPI"));
 
