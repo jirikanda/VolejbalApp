@@ -1,10 +1,7 @@
-﻿using Havit.Data.EntityFrameworkCore;
-using Havit.Services.TimeServices;
+﻿using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
-using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
-using Microsoft.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Facades.Terminy;
 

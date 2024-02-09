@@ -1,7 +1,5 @@
-﻿using Havit.Data.EntityFrameworkCore;
-using KandaEu.Volejbal.Contracts.Osoby;
+﻿using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
-using Microsoft.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Facades.Osoby;
 

@@ -1,8 +1,6 @@
-﻿using Havit.Data.EntityFrameworkCore;
-using Havit.Services.TimeServices;
+﻿using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
-using Microsoft.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 

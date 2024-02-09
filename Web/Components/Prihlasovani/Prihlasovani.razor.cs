@@ -1,7 +1,6 @@
 ﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
-using KandaEu.Volejbal.Web.Components.Terminy;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 

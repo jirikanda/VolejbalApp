@@ -1,8 +1,6 @@
-﻿using Havit.Data.EntityFrameworkCore;
-using Havit.Services.TimeServices;
+﻿using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;
-using Microsoft.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Facades.Nastenka;
 
