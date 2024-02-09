@@ -28,7 +28,7 @@ public class DeaktivaceOsobService(
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyKDeaktivaciAsync)))
 			.Where(item => item.Datum > twoMonthsAgo)
 			.SelectMany(item => item.Prihlasky)
-			.Where(prihlaska => prihlaska.Deleted == null)
+			//.Where(prihlaska => prihlaska.Deleted == null) // pokud se osoba v posledních měsících přihlásila a odhlásila, neuvažujme ji do deaktivace
 			.Select(prihlaska => prihlaska.Osoba)
 			.Distinct();
 
