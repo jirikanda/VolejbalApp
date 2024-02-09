@@ -2,8 +2,10 @@
 using Havit.Data.Patterns.DataSeeds;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-namespace KandaEu.Volejbal.WebAPI.Infrastructure;
+namespace KandaEu.Volejbal.Services.Infrastructure;
 
 public class DatabaseMigrationHostedService : IHostedService
 {

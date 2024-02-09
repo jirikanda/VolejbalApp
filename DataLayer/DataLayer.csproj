@@ -4,7 +4,6 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.DataLayer</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.DataLayer</RootNamespace>
-		<ImplicitUsings>true</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -3,8 +3,8 @@ using Havit.AspNetCore.ExceptionMonitoring.Services;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
+using KandaEu.Volejbal.Services.Infrastructure;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
-using KandaEu.Volejbal.WebAPI.Infrastructure;
 using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Mvc;
@@ -59,10 +59,6 @@ public class Startup
 		services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 		services.AddTransient<ErrorMonitoringFilter>();
 
-		// background jobs
-		services.AddHostedService<DatabaseMigrationHostedService>();
-		services.AddHostedService<DeaktivaceOsobBackgroundService>();
-		services.AddHostedService<EnsureTerminyBackgroundService>();
 
 		services.ConfigureForWebAPI(configuration);
 	}

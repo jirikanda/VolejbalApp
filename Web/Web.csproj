@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
     <RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
-	<ImplicitUsings>true</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

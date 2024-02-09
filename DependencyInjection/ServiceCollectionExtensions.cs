@@ -10,6 +10,8 @@ using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
+using KandaEu.Volejbal.Services.DeaktivaceOsob;
+using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -24,7 +26,17 @@ public static class ServiceCollectionExtensions
 			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile, ServiceProfiles.WebAPI }
 		};
 
-		return services.ConfigureForAll(installConfiguration);
+		services.ConfigureForAll(installConfiguration);
+
+		// background jobs
+		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString))
+		{
+			services.AddHostedService<DatabaseMigrationHostedService>();
+		}
+			services.AddHostedService<DeaktivaceOsobBackgroundService>();
+			services.AddHostedService<EnsureTerminyBackgroundService>();
+
+		return services;
 	}
 
 	[MethodImpl(MethodImplOptions.NoInlining)]

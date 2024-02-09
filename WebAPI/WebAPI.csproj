@@ -7,7 +7,6 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
 	<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
-    <ImplicitUsings>true</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
