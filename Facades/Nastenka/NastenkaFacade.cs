@@ -1,4 +1,5 @@
-﻿using Havit.Services.TimeServices;
+﻿using Havit.Data.EntityFrameworkCore;
+using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ public class NastenkaFacade : INastenkaFacade
 		this.osobaRepository = osobaRepository;
 	}
 
-	public async Task<VzkazListDto> GetVzkazy()
+	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken)
 	{
 		DateTime today = timeService.GetCurrentDate();
 		DateTime prispevkyOd = today.AddDays(-14);
@@ -29,6 +30,7 @@ public class NastenkaFacade : INastenkaFacade
 		VzkazListDto result = new VzkazListDto
 		{
 			Vzkazy = await vzkazDataSource.Data
+				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetVzkazyAsync)))
 				.Where(item => item.DatumVlozeni > prispevkyOd)
 				.OrderByDescending(item => item.DatumVlozeni)
 				.Select(vzkaz => new VzkazDto
@@ -36,15 +38,16 @@ public class NastenkaFacade : INastenkaFacade
 					Author = vzkaz.Autor.PrijmeniJmeno,
 					Zprava = vzkaz.Zprava,
 					DatumVlozeni = vzkaz.DatumVlozeni
-				}).ToListAsync()
+				})
+				.ToListAsync(cancellationToken)
 		};
 
 		return result;
 	}
 
-	public async Task VlozVzkaz(VzkazInputDto vzkazInputDto)
+	public async Task VlozVzkazAsync(VzkazInputDto vzkazInputDto, CancellationToken cancellationToken)
 	{
-		Osoba autor = await osobaRepository.GetObjectAsync(vzkazInputDto.AutorId);
+		Osoba autor = await osobaRepository.GetObjectAsync(vzkazInputDto.AutorId, cancellationToken);
 		autor.ThrowIfDeleted();
 		autor.ThrowIfNotAktivni();
 
@@ -56,6 +59,6 @@ public class NastenkaFacade : INastenkaFacade
 		};
 
 		unitOfWork.AddForInsert(vzkaz);
-		await unitOfWork.CommitAsync();
+		await unitOfWork.CommitAsync(cancellationToken);
 	}
 }

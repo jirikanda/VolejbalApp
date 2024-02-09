@@ -15,7 +15,7 @@
 				</div>
 				<div class="data">
 					<h4 class="@(prihlaseny.Id == PrefferedOsobaId ? "strong" : "")">@prihlaseny.PrijmeniJmeno</h4>
-					<a @onclick="@(_ => Odhlasit(prihlaseny))">odhlásit z termínu</a>
+					<a @onclick="@(async _ => await OdhlasitAsync(prihlaseny))">odhlásit z termínu</a>
 				</div>
 			</li>
 		}
@@ -40,7 +40,7 @@
 				</div>
 				<div class="data">
 					<h4 class="@(neprihlaseny.Id == PrefferedOsobaId ? "strong" : "")">@neprihlaseny.PrijmeniJmeno</h4>
-					<a @onclick="@(_ => Prihlasit(neprihlaseny))" CssClass="fg-color-orange " runat="server">přihlásit na termín</a>
+					<a @onclick="@(_ => PrihlasitAsync(neprihlaseny))" CssClass="fg-color-orange " runat="server">přihlásit na termín</a>
 				</div>
 			</li>
 		}

@@ -2,6 +2,7 @@
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
 using KandaEu.Volejbal.Contracts.Reporty;
 using Microsoft.EntityFrameworkCore;
+using Havit.Data.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 
@@ -17,20 +18,23 @@ public class ReportTerminuFacade : IReportTerminuFacade
 		this.timeService = timeService;
 	}
 
-	public async Task<ReportTerminu> GetReport()
+	public async Task<ReportTerminu> GetReportAsync(CancellationToken cancellationToken)
 	{
 		DateTime today = timeService.GetCurrentDate();
 		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
 		return new ReportTerminu
 		{
-			ObsazenostTerminu = await terminDataSource.Data.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
-			.OrderBy(item => item.Datum)
-			.Select(termin => new ReportTerminuItem
-			{
-				Datum = termin.Datum,
-				PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
-			}).ToListAsync()
+			ObsazenostTerminu = await terminDataSource.Data
+				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetReportAsync)))
+				.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
+				.OrderBy(item => item.Datum)
+				.Select(termin => new ReportTerminuItem
+				{
+					Datum = termin.Datum,
+					PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
+				})
+				.ToListAsync(cancellationToken)
 		};
 	}
 }

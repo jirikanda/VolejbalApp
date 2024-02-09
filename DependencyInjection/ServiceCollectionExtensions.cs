@@ -29,12 +29,12 @@ public static class ServiceCollectionExtensions
 		services.ConfigureForAll(installConfiguration);
 
 		// background jobs
-		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString))
+		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
 		{
 			services.AddHostedService<DatabaseMigrationHostedService>();
 		}
-			services.AddHostedService<DeaktivaceOsobBackgroundService>();
-			services.AddHostedService<EnsureTerminyBackgroundService>();
+		services.AddHostedService<DeaktivaceOsobBackgroundService>();
+		services.AddHostedService<EnsureTerminyBackgroundService>();
 
 		return services;
 	}

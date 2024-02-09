@@ -1,4 +1,5 @@
-﻿using KandaEu.Volejbal.Contracts.Prihlasky;
+﻿using System.Threading;
+using KandaEu.Volejbal.Contracts.Prihlasky;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,14 @@ public class TerminController
 	}
 
 	[HttpGet("/api/terminy")]
-	public async Task<TerminListDto> GetTerminy() => await terminFacade.GetTerminy();
+	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken) => await terminFacade.GetTerminyAsync(cancellationToken);
 
 	[HttpGet("/api/terminy/{terminId}")]
-	public async Task<TerminDetailDto> GetDetailTerminu(int terminId) => await terminFacade.GetDetailTerminu(terminId);
+	public async Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken) => await terminFacade.GetDetailTerminuAsync(terminId, cancellationToken);
 
 	[HttpPost("/api/terminy/{terminId}/osoby/{osobaId}/prihlasit")]
-	public Task Prihlasit(int terminId, int osobaId) => prihlaskaFacade.Prihlasit(terminId, osobaId);
+	public async Task PrihlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken) => await prihlaskaFacade.PrihlasitAsync(terminId, osobaId, cancellationToken);
 
 	[HttpPost("/api/terminy/{terminId}/osoby/{osobaId}/odhlasit")]
-	public Task Odhlasit(int terminId, int osobaId) => prihlaskaFacade.Odhlasit(terminId, osobaId);
+	public async Task OdhlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken) => await prihlaskaFacade.OdhlasitAsync(terminId, osobaId, cancellationToken);
 }

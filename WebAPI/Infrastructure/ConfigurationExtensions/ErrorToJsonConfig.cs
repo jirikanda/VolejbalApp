@@ -1,5 +1,5 @@
 ﻿using System.Security;
-using KandaEu.Volejbal.Services.Infrastructure;
+using Havit;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 

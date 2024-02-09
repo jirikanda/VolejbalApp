@@ -1,13 +1,26 @@
 ﻿<Project>
 
-  <PropertyGroup>
-	<Company>Jiří Kanda</Company>
-	<Copyright>Copyright Jiří Kanda, s.r.o. 2023</Copyright>
-	<FileVersion>1.0.0.0</FileVersion>
-	<AssemblyVersion>1.0.0.0</AssemblyVersion>
-	<Product>VolejbalApp</Product>
-	<LangVersion>latest</LangVersion>
-	<ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-  
+	<PropertyGroup>
+		<Company>Jiří Kanda</Company>
+		<Copyright>Copyright Jiří Kanda, s.r.o. 2023</Copyright>
+		<FileVersion>1.0.0.0</FileVersion>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<Product>VolejbalApp</Product>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="Exists($([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../')))"/>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 </Project>

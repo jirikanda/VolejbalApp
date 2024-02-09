@@ -1,4 +1,6 @@
-﻿using Havit.Services.TimeServices;
+﻿using Havit.Data.EntityFrameworkCore;
+using Havit.Services.TimeServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace KandaEu.Volejbal.Services.DeaktivaceOsob;
 
@@ -18,23 +20,32 @@ public class DeaktivaceOsobService : IDeaktivaceOsobService
 		this.timeService = timeService;
 	}
 
-	public void DeaktivujOsoby()
+	public async Task DeaktivujOsobyAsync(CancellationToken cancellationToken)
 	{
-		var osobyKDeaktivaci = GetOsobyKDeaktivaci();
+		var osobyKDeaktivaci = await GetOsobyKDeaktivaciAsync(cancellationToken);
 		if (osobyKDeaktivaci.Any())
 		{
 			osobyKDeaktivaci.ForEach(osoba => osoba.Aktivni = false);
-			unitOfWork.Commit();
+			await unitOfWork.CommitAsync(cancellationToken);
 		}
 	}
 
-	private List<Osoba> GetOsobyKDeaktivaci()
+	private async Task<List<Osoba>> GetOsobyKDeaktivaciAsync(CancellationToken cancellationToken)
 	{
 		DateTime twoMonthsAgo = timeService.GetCurrentDate().AddMonths(-2);
-		IQueryable<Osoba> osobySAktivitou = terminDataSource.Data.Where(item => item.Datum > twoMonthsAgo).SelectMany(item => item.Prihlasky).Where(prihlaska => prihlaska.Deleted == null).Select(prihlaska => prihlaska.Osoba).Distinct();
-		IQueryable<Osoba> aktivniOsoby = osobaDataSource.Data.Where(item => item.Aktivni);
+		IQueryable<Osoba> osobySAktivitou = terminDataSource.Data
+			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyKDeaktivaciAsync)))
+			.Where(item => item.Datum > twoMonthsAgo)
+			.SelectMany(item => item.Prihlasky)
+			.Where(prihlaska => prihlaska.Deleted == null)
+			.Select(prihlaska => prihlaska.Osoba)
+			.Distinct();
+
+		IQueryable<Osoba> aktivniOsoby = osobaDataSource.Data
+			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyKDeaktivaciAsync)))
+			.Where(item => item.Aktivni);
 
 		// osoby k deaktivaci jsou ty aktivní osoby, které nemají žádnou aktivitu
-		return aktivniOsoby.Except(osobySAktivitou).ToList();
+		return await aktivniOsoby.Except(osobySAktivitou).ToListAsync(cancellationToken);
 	}
 }

@@ -1,7 +1,7 @@
-﻿using Havit.Data.Patterns.DataSeeds;
+﻿using Havit;
+using Havit.Data.Patterns.DataSeeds;
 using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.DataLayer.Seeds.Core;
-using KandaEu.Volejbal.Services.Infrastructure;
 
 namespace KandaEu.Volejbal.Facades.System;
 
@@ -22,7 +22,7 @@ public class DataSeedFacade : IDataSeedFacade
 	/// Provede seedování dat daného profilu.
 	/// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
 	/// </summary>        
-	public Task SeedDataProfile(string profileName)
+	public async Task SeedDataProfileAsync(string profileName, CancellationToken cancellationToken)
 	{
 		string typeName = profileName + "Profile";
 		Type type = typeof(CoreProfile).Assembly.GetTypes().FirstOrDefault(item => String.Equals(item.Name, typeName, StringComparison.InvariantCultureIgnoreCase));
@@ -32,8 +32,6 @@ public class DataSeedFacade : IDataSeedFacade
 			throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
 		}
 
-		dataSeedRunner.SeedData(type);
-
-		return Task.CompletedTask;
+		await dataSeedRunner.SeedDataAsync(type, cancellationToken: cancellationToken);
 	}
 }

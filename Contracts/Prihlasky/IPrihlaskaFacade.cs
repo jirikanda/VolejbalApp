@@ -2,6 +2,6 @@
 
 public interface IPrihlaskaFacade
 {
-	Task Prihlasit(int terminId, int osobaId);
-	Task Odhlasit(int terminId, int osobaId);
+	Task PrihlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken = default);
+	Task OdhlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken = default);
 }

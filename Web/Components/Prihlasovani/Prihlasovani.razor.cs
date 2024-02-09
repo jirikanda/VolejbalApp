@@ -46,7 +46,7 @@ public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandl
 		}
 	}
 
-	protected async Task SetCurrentTermin(int terminId)
+	protected async Task SetCurrentTerminAsync(int terminId)
 	{
 		State.AktualniTerminId = terminId;
 
@@ -64,10 +64,10 @@ public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandl
 
 	async Task EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>.HandleAsync(CurrentTerminChanged message)
 	{
-		await SetCurrentTermin(message.TerminId);
+		await SetCurrentTerminAsync(message.TerminId);
 	}
 
-	private async Task Prihlasit(OsobaDto neprihlaseny)
+	private async Task PrihlasitAsync(OsobaDto neprihlaseny)
 	{
 		// pokud kliknu na přihlášení a následně na změnu termínu, dojde
 		// - ke spuštění volání API pro přihlášení
@@ -94,7 +94,7 @@ public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandl
 		PrefferedOsobaId = neprihlaseny.Id;
 	}
 
-	private async Task Odhlasit(OsobaDto prihlaseny)
+	private async Task OdhlasitAsync(OsobaDto prihlaseny)
 	{
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;

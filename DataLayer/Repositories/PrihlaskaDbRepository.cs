@@ -1,9 +1,13 @@
-﻿namespace KandaEu.Volejbal.DataLayer.Repositories;
+﻿using Havit.Data.EntityFrameworkCore;
+
+namespace KandaEu.Volejbal.DataLayer.Repositories;
 
 public partial class PrihlaskaDbRepository : IPrihlaskaRepository
 {
-	public async Task<Prihlaska> GetPrihlaska(int terminId, int osobaId)
+	public async Task<Prihlaska> GetPrihlaskaAsync(int terminId, int osobaId, CancellationToken cancellationToken)
 	{
-		return await Data.Where(item => (item.TerminId == terminId) && (item.OsobaId == osobaId)).SingleOrDefaultAsync();
+		return await Data
+			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetPrihlaskaAsync)))
+			.Where(item => (item.TerminId == terminId) && (item.OsobaId == osobaId)).SingleOrDefaultAsync(cancellationToken);
 	}
 }

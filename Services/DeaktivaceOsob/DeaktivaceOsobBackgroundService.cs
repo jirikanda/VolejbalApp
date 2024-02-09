@@ -20,7 +20,7 @@ public class DeaktivaceOsobBackgroundService : BackgroundService
 			using (var scope = serviceProvider.CreateScope())
 			{
 				var deaktivaceOsobService = scope.ServiceProvider.GetRequiredService<IDeaktivaceOsobService>();
-				deaktivaceOsobService.DeaktivujOsoby();
+				await deaktivaceOsobService.DeaktivujOsobyAsync(stoppingToken);
 			}
 
 			await Task.Delay(1000 * 60 * 60 * 6 /* 6 hodiny */, stoppingToken);

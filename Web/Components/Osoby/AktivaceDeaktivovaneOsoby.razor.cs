@@ -28,7 +28,7 @@ public partial class AktivaceDeaktivovaneOsoby
 		osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetNeaktivniOsobyAsync());
 	}
 
-	protected async Task Aktivovat(OsobaDto osoba)
+	protected async Task AktivovatAsync(OsobaDto osoba)
 	{
 		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
 		osoby.Osoby.Remove(osoba);
@@ -36,7 +36,7 @@ public partial class AktivaceDeaktivovaneOsoby
 		Toaster.Success($"{osoba.PrijmeniJmeno} aktivován(a).");
 	}
 
-	protected async Task Smazat(OsobaDto osoba)
+	protected async Task SmazatAsync(OsobaDto osoba)
 	{
 		bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Opravdu chceš smazat osobu \"{osoba.PrijmeniJmeno}\"?");
 		if (confirmed)

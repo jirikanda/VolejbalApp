@@ -4,9 +4,9 @@ namespace KandaEu.Volejbal.Contracts.Osoby;
 
 public interface IOsobaFacade
 {
-	Task VlozOsobu(OsobaInputDto osobaInputDto);
-	Task SmazNeaktivniOsobu(int osobaId);
-	Task AktivujNeaktivniOsobu(int osobaId);
-	Task<OsobaListDto> GetNeaktivniOsoby();
-	Task<OsobaListDto> GetAktivniOsoby();
+	Task VlozOsobuAsync(OsobaInputDto osobaInputDto, CancellationToken cancellationToken = default);
+	Task SmazNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken = default);
+	Task AktivujNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken = default);
+	Task<OsobaListDto> GetNeaktivniOsobyAsync(CancellationToken cancellationToken = default);
+	Task<OsobaListDto> GetAktivniOsobyAsync(CancellationToken cancellationToken = default);
 }

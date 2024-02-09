@@ -4,7 +4,6 @@ namespace KandaEu.Volejbal.Contracts.Nastenka;
 
 public interface INastenkaFacade
 {
-	Task<VzkazListDto> GetVzkazy();
-
-	Task VlozVzkaz(VzkazInputDto vzkaz);
+	Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken = default);
+	Task VlozVzkazAsync(VzkazInputDto vzkaz, CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,5 @@
-﻿using Havit.Services.TimeServices;
+﻿using Havit.Data.EntityFrameworkCore;
+using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -17,23 +18,25 @@ public class ReportOsobFacade : IReportOsobFacade
 		this.timeService = timeService;
 	}
 
-	public async Task<ReportOsob> GetReport()
+	public async Task<ReportOsob> GetReportAsync(CancellationToken cancellationToken)
 	{
 		DateTime today = timeService.GetCurrentDate();
 		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
 
 		return new ReportOsob
 		{
-			UcastHracu = (await osobaDataSource.Data.Select(osoba =>
-			new ReportOsobItem
-			{
-				PrijmeniJmeno = osoba.PrijmeniJmeno,
-				PocetTerminu = osoba.Prihlasky.Where(prihlaska => (prihlaska.Termin.Datum >= datumOdInclusive) && (prihlaska.Termin.Datum < today) && (prihlaska.Termin.Deleted == null) && (prihlaska.Deleted == null)).Count()
-			})
-			.ToListAsync())
-			.Where(item => item.PocetTerminu > 0) // in memory
-			.OrderBy(item => item.PrijmeniJmeno)
-			.ToList()
+			UcastHracu = (await osobaDataSource.Data
+				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetReportAsync)))
+				.Select(osoba =>
+				new ReportOsobItem
+				{
+					PrijmeniJmeno = osoba.PrijmeniJmeno,
+					PocetTerminu = osoba.Prihlasky.Where(prihlaska => (prihlaska.Termin.Datum >= datumOdInclusive) && (prihlaska.Termin.Datum < today) && (prihlaska.Termin.Deleted == null) && (prihlaska.Deleted == null)).Count()
+				})
+				.ToListAsync(cancellationToken))
+				.Where(item => item.PocetTerminu > 0) // in memory
+				.OrderBy(item => item.PrijmeniJmeno)
+				.ToList()
 		};
 	}
 }

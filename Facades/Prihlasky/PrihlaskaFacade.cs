@@ -19,11 +19,11 @@ public class PrihlaskaFacade : IPrihlaskaFacade
 		this.prihlaskaRepository = prihlaskaRepository;
 	}
 
-	public async Task Prihlasit(int terminId, int osobaId)
+	public async Task PrihlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken)
 	{
 		// TODO: lock (_lock)
 		{
-			if (await prihlaskaRepository.GetPrihlaska(terminId, osobaId) == null)
+			if (await prihlaskaRepository.GetPrihlaskaAsync(terminId, osobaId, cancellationToken) == null)
 			{
 				Prihlaska prihlaska = new Prihlaska
 				{
@@ -33,20 +33,20 @@ public class PrihlaskaFacade : IPrihlaskaFacade
 				};
 
 				unitOfWork.AddForInsert(prihlaska);
-				await unitOfWork.CommitAsync();
+				await unitOfWork.CommitAsync(cancellationToken);
 			}
 		}
 	}
 
-	public async Task Odhlasit(int terminId, int osobaId)
+	public async Task OdhlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken)
 	{
 		// TODO: lock (_lock)
 		{
-			Prihlaska prihlaska = await prihlaskaRepository.GetPrihlaska(terminId, osobaId);
+			Prihlaska prihlaska = await prihlaskaRepository.GetPrihlaskaAsync(terminId, osobaId, cancellationToken);
 			if (prihlaska != null)
 			{
 				unitOfWork.AddForDelete(prihlaska);
-				await unitOfWork.CommitAsync();
+				await unitOfWork.CommitAsync(cancellationToken);
 			}
 		}
 	}

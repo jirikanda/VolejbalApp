@@ -70,7 +70,7 @@ public partial class StatistikaTerminu
 		barDataSet.AddRange(report.ObsazenostTerminu.Select(item => item.PocetHracu).ToArray().Wrap());
 		barConfig.Data.Datasets.Add(barDataSet);
 
-		reportHeight = report.ObsazenostTerminu.Count * 40 + 60; // prostě naházeno vidlemi
+		reportHeight = (report.ObsazenostTerminu.Count * 40) + 60;
 		isLoaded = true;
 		StateHasChanged();
 	}

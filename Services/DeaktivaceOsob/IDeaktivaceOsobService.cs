@@ -2,5 +2,5 @@
 
 public interface IDeaktivaceOsobService
 {
-	public void DeaktivujOsoby();
+	public Task DeaktivujOsobyAsync(CancellationToken cancellationToken = default);
 }

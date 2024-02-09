@@ -64,13 +64,13 @@ public partial class StatistikaOsob
 
 		BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
 		{
-			BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - (i * 15) % 200))).ToArray()
+			BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - ((i * 15) % 200)))).ToArray()
 		};
 
 		barDataSet.AddRange(report.UcastHracu.Select(item => item.PocetTerminu).ToArray().Wrap());
 		barConfig.Data.Datasets.Add(barDataSet);
 
-		reportHeight = report.UcastHracu.Count * 40 + 60; // prostě naházeno vidlemi
+		reportHeight = (report.UcastHracu.Count * 40) + 60;
 		isLoaded = true;
 		StateHasChanged();
 	}

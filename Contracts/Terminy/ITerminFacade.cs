@@ -4,6 +4,6 @@ namespace KandaEu.Volejbal.Contracts.Terminy;
 
 public interface ITerminFacade
 {
-	Task<TerminListDto> GetTerminy();
-	Task<TerminDetailDto> GetDetailTerminu(int terminId);
+	Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken = default);
+	Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default);
 }

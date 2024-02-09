@@ -16,8 +16,8 @@ public class ReportController
 	}
 
 	[HttpGet("/reporty/terminy")]
-	public async Task<ReportTerminu> GetReportTerminu() => await reportTerminuFacade.GetReport();
+	public async Task<ReportTerminu> GetReportTerminuAsync(CancellationToken cancellationToken) => await reportTerminuFacade.GetReportAsync(cancellationToken);
 
 	[HttpGet("/reporty/osoby")]
-	public async Task<ReportOsob> GetReportOsob() => await reportOsobFacade.GetReport();
+	public async Task<ReportOsob> GetReportOsobAsync(CancellationToken cancellationToken) => await reportOsobFacade.GetReportAsync(cancellationToken);
 }

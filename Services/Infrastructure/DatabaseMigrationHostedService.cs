@@ -16,17 +16,16 @@ public class DatabaseMigrationHostedService : IHostedService
 		this.serviceScopeFactory = serviceScopeFactory;
 	}
 
-	public Task StartAsync(CancellationToken cancellationToken)
+	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		using (IServiceScope serviceScope = serviceScopeFactory.CreateScope())
 		{
 			var context = serviceScope.ServiceProvider.GetService<IDbContext>();
-			context.Database.Migrate();
+			await context.Database.MigrateAsync(cancellationToken);
 
 			var dataSeedRunner = serviceScope.ServiceProvider.GetService<IDataSeedRunner>();
-			dataSeedRunner.SeedData<CoreProfile>();
+			await dataSeedRunner.SeedDataAsync<CoreProfile>(cancellationToken: cancellationToken);
 		}
-		return Task.CompletedTask;
 	}
 
 	public Task StopAsync(CancellationToken cancellationToken)

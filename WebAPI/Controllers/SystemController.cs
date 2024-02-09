@@ -20,9 +20,10 @@ public class SystemController : ControllerBase
 	/// Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
 	/// </summary>
 	/// <param name="profile">Název profilu k seedování.</param>
+	/// <param name="cancellationToken">Stopping token.</param>
 	[HttpPost("api/system/seed/{profile}")]
-	public void SeedData(string profile)
+	public async Task SeedDataAsync(string profile, CancellationToken cancellationToken)
 	{
-		dataSeedFacade.SeedDataProfile(profile);
+		await dataSeedFacade.SeedDataProfileAsync(profile, cancellationToken);
 	}
 }

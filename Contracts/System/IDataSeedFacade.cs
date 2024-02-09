@@ -2,5 +2,5 @@
 
 public interface IDataSeedFacade
 {
-	Task SeedDataProfile(string profileName);
+	Task SeedDataProfileAsync(string profileName, CancellationToken cancellationToken = default);
 }

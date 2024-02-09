@@ -14,9 +14,9 @@ public class NastenkaController
 	}
 
 	[HttpGet("/api/nastenka")]
-	public async Task<VzkazListDto> GetVzkazy() => await nastenkaFacade.GetVzkazy();
+	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken) => await nastenkaFacade.GetVzkazyAsync(cancellationToken);
 
 	[HttpPost("/api/nastenka")]
-	public async Task VlozVzkaz(VzkazInputDto vzkaz) => await nastenkaFacade.VlozVzkaz(vzkaz);
+	public async Task VlozVzkazAsync(VzkazInputDto vzkaz, CancellationToken cancellationToken) => await nastenkaFacade.VlozVzkazAsync(vzkaz, cancellationToken);
 }
 

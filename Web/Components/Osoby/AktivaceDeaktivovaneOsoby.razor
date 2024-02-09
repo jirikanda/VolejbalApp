@@ -13,10 +13,10 @@
 						<tr>
 							<td>@osoba.PrijmeniJmeno</td>
 							<td>
-								<a class="fg-color-green" @onclick="@(() => Aktivovat(osoba))">aktivovat</a>
+								<a class="fg-color-green" @onclick="@(async () => await AktivovatAsync(osoba))">aktivovat</a>
 							</td>
 							<td>
-								<a class="fg-color-red" @onclick="@(() => Smazat(osoba))">smazat</a>
+								<a class="fg-color-red" @onclick="@(async () => await SmazatAsync(osoba))">smazat</a>
 							</td>
 						</tr>
 					}

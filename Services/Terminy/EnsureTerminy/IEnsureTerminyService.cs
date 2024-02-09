@@ -2,5 +2,5 @@
 
 public interface IEnsureTerminyService
 {
-	public void EnsureTerminy();
+	public Task EnsureTerminyAsync(CancellationToken cancellationToken);
 }

@@ -20,7 +20,7 @@ public class EnsureTerminyBackgroundService : BackgroundService
 			using (var scope = serviceProvider.CreateScope())
 			{
 				var ensureTerminyService = scope.ServiceProvider.GetRequiredService<IEnsureTerminyService>();
-				ensureTerminyService.EnsureTerminy();
+				await ensureTerminyService.EnsureTerminyAsync(stoppingToken);
 			}
 
 			await Task.Delay(1000 * 60 * 60 /* 1 hodina */, stoppingToken);

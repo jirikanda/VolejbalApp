@@ -21,7 +21,7 @@ public partial class ZalozeniNoveOsoby
 
 	protected NovaOsobaFormData formData = new NovaOsobaFormData();
 
-	protected async Task ValidSubmit()
+	protected async Task ValidSubmitAsync()
 	{
 		OsobaInputDto novaOsoba = new OsobaInputDto()
 		{
