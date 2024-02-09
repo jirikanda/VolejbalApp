@@ -4,19 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KandaEu.Volejbal.WebAPI.Controllers;
 
-public class NastenkaController
+public class NastenkaController(INastenkaFacade _nastenkaFacade)
 {
-	private readonly INastenkaFacade nastenkaFacade;
-
-	public NastenkaController(INastenkaFacade nastenkaFacade)
-	{
-		this.nastenkaFacade = nastenkaFacade;
-	}
-
 	[HttpGet("/api/nastenka")]
-	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken) => await nastenkaFacade.GetVzkazyAsync(cancellationToken);
+	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken) => await _nastenkaFacade.GetVzkazyAsync(cancellationToken);
 
 	[HttpPost("/api/nastenka")]
-	public async Task VlozVzkazAsync(VzkazInputDto vzkaz, CancellationToken cancellationToken) => await nastenkaFacade.VlozVzkazAsync(vzkaz, cancellationToken);
+	public async Task VlozVzkazAsync(VzkazInputDto vzkaz, CancellationToken cancellationToken) => await _nastenkaFacade.VlozVzkazAsync(vzkaz, cancellationToken);
 }
 

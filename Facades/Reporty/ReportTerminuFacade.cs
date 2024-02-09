@@ -7,25 +7,18 @@ using Havit.Data.EntityFrameworkCore;
 namespace KandaEu.Volejbal.Facades.Reporty;
 
 [Service]
-public class ReportTerminuFacade : IReportTerminuFacade
+public class ReportTerminuFacade(
+	ITerminDataSource _terminDataSource,
+	ITimeService _timeService) : IReportTerminuFacade
 {
-	private readonly ITerminDataSource terminDataSource;
-	private readonly ITimeService timeService;
-
-	public ReportTerminuFacade(ITerminDataSource terminDataSource, ITimeService timeService)
-	{
-		this.terminDataSource = terminDataSource;
-		this.timeService = timeService;
-	}
-
 	public async Task<ReportTerminu> GetReportAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = timeService.GetCurrentDate();
-		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
+		DateTime today = _timeService.GetCurrentDate();
+		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(_timeService);
 
 		return new ReportTerminu
 		{
-			ObsazenostTerminu = await terminDataSource.Data
+			ObsazenostTerminu = await _terminDataSource.Data
 				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetReportAsync)))
 				.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
 				.OrderBy(item => item.Datum)

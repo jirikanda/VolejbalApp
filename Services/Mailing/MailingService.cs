@@ -5,35 +5,29 @@ using Microsoft.Extensions.Options;
 namespace KandaEu.Volejbal.Services.Mailing;
 
 [Service]
-public class MailingService : IMailingService
+public class MailingService(IOptions<MailingOptions> _mailingOptions) : IMailingService
 {
-	private readonly MailingOptions options;
-
-	public MailingService(
-		IOptions<MailingOptions> options)
-	{
-		this.options = options.Value;
-	}
+	private MailingOptions _mailingOptionsValue = _mailingOptions.Value;
 
 	public void Send(MailMessage mailMessage)
 	{
 		using (SmtpClient smtpClient = new SmtpClient())
 		{
-			smtpClient.Host = options.SmtpServer;
-			if (options.SmtpPort != null)
+			smtpClient.Host = _mailingOptionsValue.SmtpServer;
+			if (_mailingOptionsValue.SmtpPort != null)
 			{
-				smtpClient.Port = options.SmtpPort.Value;
+				smtpClient.Port = _mailingOptionsValue.SmtpPort.Value;
 			}
-			smtpClient.EnableSsl = options.UseSsl;
-			if (options.HasCredentials())
+			smtpClient.EnableSsl = _mailingOptionsValue.UseSsl;
+			if (_mailingOptionsValue.HasCredentials())
 			{
-				smtpClient.Credentials = new NetworkCredential(options.SmtpUsername, options.SmtpPassword);
+				smtpClient.Credentials = new NetworkCredential(_mailingOptionsValue.SmtpUsername, _mailingOptionsValue.SmtpPassword);
 			}
 
 			if ((mailMessage.From == null)
 				|| String.IsNullOrWhiteSpace(mailMessage.From.Address))
 			{
-				mailMessage.From = new MailAddress(options.From);
+				mailMessage.From = new MailAddress(_mailingOptionsValue.From);
 			}
 
 			smtpClient.Send(mailMessage);

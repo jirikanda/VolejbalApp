@@ -1,14 +1,7 @@
 ﻿namespace KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
 
-public class DelayRequestMiddleware
+public class DelayRequestMiddleware(RequestDelegate _next)
 {
-	private readonly RequestDelegate _next;
-
-	public DelayRequestMiddleware(RequestDelegate next)
-	{
-		_next = next;
-	}
-
 	public async Task InvokeAsync(HttpContext context)
 	{
 		await Task.Delay(500);

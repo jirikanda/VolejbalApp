@@ -9,15 +9,9 @@ namespace KandaEu.Volejbal.Facades.System;
 /// Fasáda k seedování dat.
 /// </summary>
 [Service]
-public class DataSeedFacade : IDataSeedFacade
+public class DataSeedFacade(
+	IDataSeedRunner _dataSeedRunner) : IDataSeedFacade
 {
-	private readonly IDataSeedRunner dataSeedRunner;
-
-	public DataSeedFacade(IDataSeedRunner dataSeedRunner)
-	{
-		this.dataSeedRunner = dataSeedRunner;
-	}
-
 	/// <summary>
 	/// Provede seedování dat daného profilu.
 	/// Pokud jde produkční prostředí a profil není pro produkční prostředí povolen, vrací BadRequest.
@@ -32,6 +26,6 @@ public class DataSeedFacade : IDataSeedFacade
 			throw new OperationFailedException($"Profil {profileName} nebyl nalezen.");
 		}
 
-		await dataSeedRunner.SeedDataAsync(type, cancellationToken: cancellationToken);
+		await _dataSeedRunner.SeedDataAsync(type, cancellationToken: cancellationToken);
 	}
 }

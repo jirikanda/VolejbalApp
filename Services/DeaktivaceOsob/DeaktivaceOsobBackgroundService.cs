@@ -3,21 +3,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace KandaEu.Volejbal.Services.DeaktivaceOsob;
 
-public class DeaktivaceOsobBackgroundService : BackgroundService
-{
-	private readonly IServiceProvider serviceProvider;
-
-	public DeaktivaceOsobBackgroundService(IServiceProvider serviceProvider)
-	{
-		this.serviceProvider = serviceProvider;
-	}
-
+public class DeaktivaceOsobBackgroundService (IServiceProvider _serviceProvider) : BackgroundService
+{ 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		await Task.Delay(15000, stoppingToken); // workaround: necháme aplikaci nastartovat a spustit migrace
 		while (!stoppingToken.IsCancellationRequested)
 		{
-			using (var scope = serviceProvider.CreateScope())
+			using (var scope = _serviceProvider.CreateScope())
 			{
 				var deaktivaceOsobService = scope.ServiceProvider.GetRequiredService<IDeaktivaceOsobService>();
 				await deaktivaceOsobService.DeaktivujOsobyAsync(stoppingToken);

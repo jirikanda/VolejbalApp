@@ -9,30 +9,17 @@ using Microsoft.EntityFrameworkCore;
 namespace KandaEu.Volejbal.Facades.Terminy;
 
 [Service]
-public class TerminFacade : ITerminFacade
+public class TerminFacade(
+	ITerminDataSource _terminDataSource,
+	IPrihlaskaDataSource _prihlaskaDataSource,
+	IOsobaDataSource _osobaDataSource,
+	ITimeService _timeService) : ITerminFacade
 {
-	private readonly ITerminDataSource terminDataSource;
-	private readonly IPrihlaskaDataSource prihlaskaDataSource;
-	private readonly IOsobaDataSource osobaDataSource;
-	private readonly ITimeService timeService;
-	private readonly IUnitOfWork unitOfWork; // TODO: Odstranit nepoužívané
-	private readonly IEnsureTerminyService ensureTerminyService;
-
-	public TerminFacade(ITerminDataSource terminDataSource, IPrihlaskaDataSource prihlaskaDataSource, IOsobaDataSource osobaDataSource, ITimeService timeService, IUnitOfWork unitOfWork, IEnsureTerminyService ensureTerminyService)
-	{
-		this.terminDataSource = terminDataSource;
-		this.prihlaskaDataSource = prihlaskaDataSource;
-		this.osobaDataSource = osobaDataSource;
-		this.timeService = timeService;
-		this.unitOfWork = unitOfWork;
-		this.ensureTerminyService = ensureTerminyService;
-	}
-
 	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken)
 	{
-		var terminy = await terminDataSource.Data
+		var terminy = await _terminDataSource.Data
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetTerminyAsync)))
-			.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
+			.Where(termin => termin.Datum.Date >= _timeService.GetCurrentDate())
 			.Select(item => new TerminDto
 			{
 				Id = item.Id,
@@ -49,7 +36,7 @@ public class TerminFacade : ITerminFacade
 
 	public async Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default)
 	{
-		List<Prihlaska> prihlasky = await prihlaskaDataSource.Data
+		List<Prihlaska> prihlasky = await _prihlaskaDataSource.Data
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
 			.Where(prihlaska => prihlaska.TerminId == terminId)
 			.Include(prihlaska => prihlaska.Osoba)
@@ -60,7 +47,7 @@ public class TerminFacade : ITerminFacade
 			.Select(item => item.Osoba)
 			.ToList();
 
-		List<Osoba> neprihlaseni = (await osobaDataSource.Data
+		List<Osoba> neprihlaseni = (await _osobaDataSource.Data
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
 			.Where(osoba => osoba.Aktivni)
 			.ToListAsync(cancellationToken))

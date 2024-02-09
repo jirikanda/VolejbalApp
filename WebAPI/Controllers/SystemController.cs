@@ -6,15 +6,8 @@ namespace Havit.VolejbalApp.WebAPI.Controllers;
 /// <summary>
 /// Controller pro systémové akce.
 /// </summary>
-public class SystemController : ControllerBase
+public class SystemController(IDataSeedFacade _dataSeedFacade) : ControllerBase
 {
-	private readonly IDataSeedFacade dataSeedFacade;
-
-	public SystemController(IDataSeedFacade dataSeedFacade)
-	{
-		this.dataSeedFacade = dataSeedFacade;
-	}
-
 	/// <summary>
 	/// Provede seedování dat zadaného profilu.
 	/// Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
@@ -24,6 +17,6 @@ public class SystemController : ControllerBase
 	[HttpPost("api/system/seed/{profile}")]
 	public async Task SeedDataAsync(string profile, CancellationToken cancellationToken)
 	{
-		await dataSeedFacade.SeedDataProfileAsync(profile, cancellationToken);
+		await _dataSeedFacade.SeedDataProfileAsync(profile, cancellationToken);
 	}
 }

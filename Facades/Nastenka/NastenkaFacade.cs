@@ -7,29 +7,20 @@ using Microsoft.EntityFrameworkCore;
 namespace KandaEu.Volejbal.Facades.Nastenka;
 
 [Service]
-public class NastenkaFacade : INastenkaFacade
+public class NastenkaFacade(
+	IVzkazDataSource _vzkazDataSource,
+	ITimeService _timeService,
+	IUnitOfWork _unitOfWork,
+	IOsobaRepository _osobaRepository) : INastenkaFacade
 {
-	private readonly IVzkazDataSource vzkazDataSource;
-	private readonly ITimeService timeService;
-	private readonly IUnitOfWork unitOfWork;
-	private readonly IOsobaRepository osobaRepository;
-
-	public NastenkaFacade(IVzkazDataSource vzkazDataSource, ITimeService timeService, IUnitOfWork unitOfWork, IOsobaRepository osobaRepository)
-	{
-		this.vzkazDataSource = vzkazDataSource;
-		this.timeService = timeService;
-		this.unitOfWork = unitOfWork;
-		this.osobaRepository = osobaRepository;
-	}
-
 	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = timeService.GetCurrentDate();
+		DateTime today = _timeService.GetCurrentDate();
 		DateTime prispevkyOd = today.AddDays(-14);
 
 		VzkazListDto result = new VzkazListDto
 		{
-			Vzkazy = await vzkazDataSource.Data
+			Vzkazy = await _vzkazDataSource.Data
 				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetVzkazyAsync)))
 				.Where(item => item.DatumVlozeni > prispevkyOd)
 				.OrderByDescending(item => item.DatumVlozeni)
@@ -47,7 +38,7 @@ public class NastenkaFacade : INastenkaFacade
 
 	public async Task VlozVzkazAsync(VzkazInputDto vzkazInputDto, CancellationToken cancellationToken)
 	{
-		Osoba autor = await osobaRepository.GetObjectAsync(vzkazInputDto.AutorId, cancellationToken);
+		Osoba autor = await _osobaRepository.GetObjectAsync(vzkazInputDto.AutorId, cancellationToken);
 		autor.ThrowIfDeleted();
 		autor.ThrowIfNotAktivni();
 
@@ -55,10 +46,10 @@ public class NastenkaFacade : INastenkaFacade
 		{
 			AutorId = vzkazInputDto.AutorId,
 			Zprava = vzkazInputDto.Zprava,
-			DatumVlozeni = timeService.GetCurrentTime()
+			DatumVlozeni = _timeService.GetCurrentTime()
 		};
 
-		unitOfWork.AddForInsert(vzkaz);
-		await unitOfWork.CommitAsync(cancellationToken);
+		_unitOfWork.AddForInsert(vzkaz);
+		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 }

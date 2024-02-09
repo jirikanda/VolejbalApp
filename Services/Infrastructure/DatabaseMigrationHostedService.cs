@@ -7,18 +7,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace KandaEu.Volejbal.Services.Infrastructure;
 
-public class DatabaseMigrationHostedService : IHostedService
-{
-	private readonly IServiceScopeFactory serviceScopeFactory;
-
-	public DatabaseMigrationHostedService(IServiceScopeFactory serviceScopeFactory)
-	{
-		this.serviceScopeFactory = serviceScopeFactory;
-	}
-
+public class DatabaseMigrationHostedService(
+	IServiceScopeFactory _serviceScopeFactory) : IHostedService
+{ 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		using (IServiceScope serviceScope = serviceScopeFactory.CreateScope())
+		using (IServiceScope serviceScope = _serviceScopeFactory.CreateScope())
 		{
 			var context = serviceScope.ServiceProvider.GetService<IDbContext>();
 			await context.Database.MigrateAsync(cancellationToken);

@@ -7,25 +7,18 @@ using Microsoft.EntityFrameworkCore;
 namespace KandaEu.Volejbal.Facades.Reporty;
 
 [Service]
-public class ReportOsobFacade : IReportOsobFacade
+public class ReportOsobFacade(
+	IOsobaDataSource _osobaDataSource,
+	ITimeService _timeService) : IReportOsobFacade
 {
-	private readonly IOsobaDataSource osobaDataSource;
-	private readonly ITimeService timeService;
-
-	public ReportOsobFacade(IOsobaDataSource osobaDataSource, ITimeService timeService)
-	{
-		this.osobaDataSource = osobaDataSource;
-		this.timeService = timeService;
-	}
-
 	public async Task<ReportOsob> GetReportAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = timeService.GetCurrentDate();
-		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(timeService);
+		DateTime today = _timeService.GetCurrentDate();
+		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(_timeService);
 
 		return new ReportOsob
 		{
-			UcastHracu = (await osobaDataSource.Data
+			UcastHracu = (await _osobaDataSource.Data
 				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetReportAsync)))
 				.Select(osoba =>
 				new ReportOsobItem

@@ -6,19 +6,11 @@ using Microsoft.EntityFrameworkCore;
 namespace KandaEu.Volejbal.Facades.Osoby;
 
 [Service]
-public class OsobaFacade : IOsobaFacade
-{
-	private readonly IOsobaRepository osobaRepository;
-	private readonly IOsobaDataSource osobaDataSource;
-	private readonly IUnitOfWork unitOfWork;
-
-	public OsobaFacade(IOsobaRepository osobaRepository, IOsobaDataSource osobaDataSource, IUnitOfWork unitOfWork)
-	{
-		this.osobaRepository = osobaRepository;
-		this.osobaDataSource = osobaDataSource;
-		this.unitOfWork = unitOfWork;
-	}
-
+public class OsobaFacade(
+	IOsobaRepository _osobaRepository,
+	IOsobaDataSource _osobaDataSource,
+	IUnitOfWork _unitOfWork) : IOsobaFacade
+{ 
 	public async Task VlozOsobuAsync(OsobaInputDto osobaInputDto, CancellationToken cancellationToken)
 	{
 		Osoba osoba = new Osoba
@@ -28,28 +20,28 @@ public class OsobaFacade : IOsobaFacade
 			Email = osobaInputDto.Email
 		};
 
-		unitOfWork.AddForInsert(osoba);
-		await unitOfWork.CommitAsync(cancellationToken);
+		_unitOfWork.AddForInsert(osoba);
+		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 
 	public async Task AktivujNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken)
 	{
-		Osoba osoba = await osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
 
 		CheckNeaktivniNesmazana(osoba);
 
 		osoba.Aktivni = true;
 
-		unitOfWork.AddForUpdate(osoba);
-		await unitOfWork.CommitAsync(cancellationToken);
+		_unitOfWork.AddForUpdate(osoba);
+		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 
 	public async Task SmazNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken)
 	{
-		Osoba osoba = await osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
 
-		unitOfWork.AddForDelete(osoba);
-		await unitOfWork.CommitAsync(cancellationToken);
+		_unitOfWork.AddForDelete(osoba);
+		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 
 	private void CheckNeaktivniNesmazana(Osoba osoba)
@@ -73,7 +65,7 @@ public class OsobaFacade : IOsobaFacade
 	{
 		var result = new OsobaListDto
 		{
-			Osoby = await osobaDataSource.Data
+			Osoby = await _osobaDataSource.Data
 				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyByAktivniAsync)))
 				.Where(osoba => osoba.Aktivni == aktivni)
 				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)

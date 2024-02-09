@@ -5,29 +5,21 @@ using Microsoft.EntityFrameworkCore;
 namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 [Service]
-public class EnsureTerminyService : IEnsureTerminyService
+public class EnsureTerminyService(
+	ITerminDataSource _terminDataSource,
+	IUnitOfWork _unitOfWork,
+	ITimeService _timeService) : IEnsureTerminyService
 {
-	private readonly ITerminDataSource terminDataSource;
-	private readonly IUnitOfWork unitOfWork;
-	private readonly ITimeService timeService;
-
-	public EnsureTerminyService(ITerminDataSource terminDataSource, IUnitOfWork unitOfWork, ITimeService timeService)
-	{
-		this.terminDataSource = terminDataSource;
-		this.unitOfWork = unitOfWork;
-		this.timeService = timeService;
-	}
-
 	public async Task EnsureTerminyAsync(CancellationToken cancellationToken)
 	{
-		int budouciTerminyPocet = await terminDataSource.Data
+		int budouciTerminyPocet = await _terminDataSource.Data
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(EnsureTerminyAsync)))
-			.Where(termin => termin.Datum.Date >= timeService.GetCurrentDate())
+			.Where(termin => termin.Datum.Date >= _timeService.GetCurrentDate())
 			.CountAsync(cancellationToken);
 
 		if (budouciTerminyPocet < 3)
 		{
-			DateTime posledniDatum = await terminDataSource.DataIncludingDeleted
+			DateTime posledniDatum = await _terminDataSource.DataIncludingDeleted
 				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(EnsureTerminyAsync)))
 				.OrderByDescending(item => item.Datum)
 				.Select(item => item.Datum)
@@ -37,7 +29,7 @@ public class EnsureTerminyService : IEnsureTerminyService
 			if (posledniDatum == default(DateTime))
 			{
 				// pokud není žádné datum, vezmeme první úterý ode dneška
-				datum = timeService.GetCurrentDate();
+				datum = _timeService.GetCurrentDate();
 				while (datum.DayOfWeek != DayOfWeek.Tuesday)
 				{
 					datum = datum.AddDays(1);
@@ -48,7 +40,7 @@ public class EnsureTerminyService : IEnsureTerminyService
 				// pokud již nějaké datum máme, přidáme vezmeme stejný den následující týden
 				datum = posledniDatum.AddDays(7);
 
-				while (datum < timeService.GetCurrentDate()) // pokud by to náhodou bylo v minulosti, což se nečeká, posuneme se do budoucnosti
+				while (datum < _timeService.GetCurrentDate()) // pokud by to náhodou bylo v minulosti, což se nečeká, posuneme se do budoucnosti
 				{
 					datum = datum.AddDays(7); // k tomuto snad nikdy nedojde
 				}
@@ -57,11 +49,11 @@ public class EnsureTerminyService : IEnsureTerminyService
 			for (int i = budouciTerminyPocet; i < 3; i++)
 			{
 				Termin termin = new Termin { Datum = datum };
-				unitOfWork.AddForInsert(termin);
+				_unitOfWork.AddForInsert(termin);
 				datum = datum.AddDays(7);
 			}
 
-			await unitOfWork.CommitAsync(cancellationToken);
+			await _unitOfWork.CommitAsync(cancellationToken);
 		}
 	}
 }

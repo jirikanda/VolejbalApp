@@ -3,21 +3,16 @@ using Microsoft.Extensions.Hosting;
 
 namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
-public class EnsureTerminyBackgroundService : BackgroundService
+public class EnsureTerminyBackgroundService(
+	IServiceProvider _serviceProvider) : BackgroundService
 {
-	private readonly IServiceProvider serviceProvider;
-
-	public EnsureTerminyBackgroundService(IServiceProvider serviceProvider)
-	{
-		this.serviceProvider = serviceProvider;
-	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		await Task.Delay(15000, stoppingToken); // workaround: necháme aplikaci nastartovat a spustit migrace
 		while (!stoppingToken.IsCancellationRequested)
 		{
-			using (var scope = serviceProvider.CreateScope())
+			using (var scope = _serviceProvider.CreateScope())
 			{
 				var ensureTerminyService = scope.ServiceProvider.GetRequiredService<IEnsureTerminyService>();
 				await ensureTerminyService.EnsureTerminyAsync(stoppingToken);
