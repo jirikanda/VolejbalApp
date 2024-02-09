@@ -11,6 +11,8 @@ public partial class Index
 	[Inject]
 	protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
 
+	public int? currentTerminId;
+
 	protected bool ShowNastenkaLink { get; set; }
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -32,5 +34,10 @@ public partial class Index
 
 			await LocalStorageService.SetItemAsync("LastVisit", DateTime.Now);
 		}
+	}
+
+	private void HandleCurrentTerminIdChanged(int newCurrentterminId)
+	{
+		currentTerminId = newCurrentterminId;
 	}
 }

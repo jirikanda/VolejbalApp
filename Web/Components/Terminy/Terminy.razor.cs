@@ -1,5 +1,4 @@
-﻿using EventAggregator.Blazor;
-using KandaEu.Volejbal.Contracts.Terminy.Dto;
+﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Web.WebApiClients;
 using Microsoft.AspNetCore.Components;
 
@@ -10,13 +9,12 @@ public partial class Terminy
 	[Inject]
 	protected ITerminWebApiClient TerminWebApiClient { get; set; }
 
-	[Inject]
-	protected IEventAggregator EventAggregator { get; set; }
-
 	protected TerminyState State { get; } = new TerminyState();
 
 	[CascadingParameter]
 	protected ProgressComponent.Progress Progress { get; set; }
+
+	[Parameter] public EventCallback<int> CurrentTerminIdChanged { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -42,6 +40,6 @@ public partial class Terminy
 	private async Task SetCurrentTerminAsync(TerminDto termin)
 	{
 		State.CurrentTerminId = termin.Id;
-		await EventAggregator.PublishAsync(new CurrentTerminChanged(termin.Id));
+		await CurrentTerminIdChanged.InvokeAsync(termin.Id);
 	}
 }

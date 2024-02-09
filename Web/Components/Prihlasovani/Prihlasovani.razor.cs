@@ -7,13 +7,10 @@ using Microsoft.AspNetCore.Components;
 
 namespace KandaEu.Volejbal.Web.Components.Prihlasovani;
 
-public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>
+public partial class Prihlasovani : ComponentBase
 {
 	[Inject]
 	protected ITerminWebApiClient TerminWebApiClient { get; set; }
-
-	[Inject]
-	protected EventAggregator.Blazor.IEventAggregator EventAggregator { get; set; }
 
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
@@ -26,12 +23,15 @@ public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandl
 	[Inject]
 	protected Sotsera.Blazor.Toaster.IToaster Toaster { get; set; }
 
+	[Parameter] public int? CurrentTerminId { get; set; }
 	protected int? PrefferedOsobaId { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnParametersSetAsync()
 	{
-		base.OnInitialized();
-		EventAggregator.Subscribe(this);
+		if ((CurrentTerminId  != null) && (CurrentTerminId != State.AktualniTerminId))
+		{
+			await SetCurrentTerminAsync(CurrentTerminId.Value);
+		}
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -58,13 +58,6 @@ public partial class Prihlasovani : ComponentBase, EventAggregator.Blazor.IHandl
 
 		State.Prihlaseni = terminDetail.Prihlaseni.ToList();
 		State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
-
-		StateHasChanged();
-	}
-
-	async Task EventAggregator.Blazor.IHandle<KandaEu.Volejbal.Web.Components.Terminy.CurrentTerminChanged>.HandleAsync(CurrentTerminChanged message)
-	{
-		await SetCurrentTerminAsync(message.TerminId);
 	}
 
 	private async Task PrihlasitAsync(OsobaDto neprihlaseny)
