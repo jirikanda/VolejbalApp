@@ -18,8 +18,8 @@ namespace KandaEu.Volejbal.DataLayer.Repositories;
 [System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 public partial class PrihlaskaDbRepository : PrihlaskaDbRepositoryBase, IPrihlaskaRepository
 {
-	public PrihlaskaDbRepository(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.IPrihlaskaDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
-		: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
+	public PrihlaskaDbRepository(IDbContext dbContext, IEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager, IRepositoryQueryProvider repositoryQueryProvider)
+		: base(dbContext, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager, repositoryQueryProvider)
 	{
 	}
 }

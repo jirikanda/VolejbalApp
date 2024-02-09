@@ -18,8 +18,8 @@ namespace KandaEu.Volejbal.DataLayer.Repositories;
 [System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
 public abstract class TerminDbRepositoryBase : DbRepository<KandaEu.Volejbal.Model.Termin>
 {
-	protected TerminDbRepositoryBase(IDbContext dbContext, KandaEu.Volejbal.DataLayer.DataSources.ITerminDataSource dataSource, IEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager)
-		: base(dbContext, dataSource, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager)
+	protected TerminDbRepositoryBase(IDbContext dbContext, IEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager, IRepositoryQueryProvider repositoryQueryProvider)
+		: base(dbContext, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager, repositoryQueryProvider)
 	{
 	}
 
