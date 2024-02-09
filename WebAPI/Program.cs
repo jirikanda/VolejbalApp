@@ -1,4 +1,6 @@
-﻿
+﻿using System.Runtime.InteropServices;
+using KandaEu.Volejbal.DependencyInjection.Configuration;
+
 namespace KandaEu.Volejbal.WebAPI;
 
 public static class Program
@@ -22,16 +24,18 @@ public static class Program
 				config
 					.AddJsonFile("appsettings.WebAPI.json", optional: false, reloadOnChange: false)
 					.AddJsonFile($"appsettings.WebAPI.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false)
-					.AddEnvironmentVariables();
+					.AddEnvironmentVariables()
+					.AddCustomizedAzureKeyVault();
 			})
 			.ConfigureLogging((hostingContext, logging) =>
 			{
 				logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
 				logging.AddConsole();
 				logging.AddDebug();
-#if !DEBUG
+				if (!hostingContext.HostingEnvironment.IsDevelopment() && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				{
 					logging.AddEventLog();
-#endif
+				}
 			});
 	}
 }
