@@ -1,4 +1,5 @@
-﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
+﻿using System.Threading;
+using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
 using KandaEu.Volejbal.Web.WebApiClients;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace KandaEu.Volejbal.Web.Components.Prihlasovani;
 
-public partial class Prihlasovani : ComponentBase
+public partial class Prihlasovani : ComponentBase, IDisposable
 {
 	[Inject]
 	protected ITerminWebApiClient TerminWebApiClient { get; set; }
@@ -25,9 +26,11 @@ public partial class Prihlasovani : ComponentBase
 	[Parameter] public int? CurrentTerminId { get; set; }
 	protected int? PrefferedOsobaId { get; set; }
 
+	private CancellationTokenSource _cancellationTokenSource;
+
 	protected override async Task OnParametersSetAsync()
 	{
-		if ((CurrentTerminId  != null) && (CurrentTerminId != State.AktualniTerminId))
+		if ((CurrentTerminId != null) && (CurrentTerminId != State.AktualniTerminId))
 		{
 			await SetCurrentTerminAsync(CurrentTerminId.Value);
 		}
@@ -53,10 +56,21 @@ public partial class Prihlasovani : ComponentBase
 		State.Neprihlaseni = null;
 		StateHasChanged();
 
-		TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetDetailTerminuAsync(terminId));
+		_cancellationTokenSource?.Cancel();
+		_cancellationTokenSource = new CancellationTokenSource();
 
-		State.Prihlaseni = terminDetail.Prihlaseni.ToList();
-		State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
+		CancellationToken cancellationToken = _cancellationTokenSource.Token;
+		try
+		{
+			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetDetailTerminuAsync(terminId, cancellationToken));
+
+			State.Prihlaseni = terminDetail.Prihlaseni.ToList();
+			State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
+		}
+		catch (OperationCanceledException oce) when (oce.CancellationToken == cancellationToken)
+		{
+			// NOOP - zamaskujeme výjimku
+		}
 	}
 
 	private async Task PrihlasitAsync(OsobaDto neprihlaseny)
@@ -101,5 +115,11 @@ public partial class Prihlasovani : ComponentBase
 		prihlaseni.Remove(prihlaseny);
 
 		Toaster.Success($"{prihlaseny.PrijmeniJmeno} odhlášen(a).");
+	}
+
+	public void Dispose()
+	{
+		_cancellationTokenSource?.Dispose();
+		_cancellationTokenSource = null;
 	}
 }
