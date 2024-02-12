@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
     <RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
+	<!-- workaround pro https://github.com/RicoSuter/NSwag/issues/4633 --> 
+	<NSwagGenerateExceptionClasses>true</NSwagGenerateExceptionClasses>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,10 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
+	<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 	<PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	<PackageReference Include="NSwag.ApiDescription.Client" Version="13.19.0">
+	<PackageReference Include="NSwag.ApiDescription.Client" Version="14.0.3">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
