@@ -56,7 +56,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		State.Neprihlaseni = null;
 		StateHasChanged();
 
-		_cancellationTokenSource?.Cancel();
+		await _cancellationTokenSource?.CancelAsync();
 		_cancellationTokenSource = new CancellationTokenSource();
 
 		CancellationToken cancellationToken = _cancellationTokenSource.Token;
