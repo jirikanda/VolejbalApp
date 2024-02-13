@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8" />
 	<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0" />
-	<link type="text/css" rel="stylesheet" href="/css/normalize.css" />
+    <base href="/" />
+    <link type="text/css" rel="stylesheet" href="/css/normalize.css" />
 	<link type="text/css" rel="stylesheet" href="/less/modern.min.css" media="screen" />
 	<link type="text/css" rel="stylesheet" href="/less/modern-responsive.min.css" media="screen" />
 	<link type="text/css" rel="stylesheet" href="/css/volejbal.css" />
@@ -11,15 +12,12 @@
     <link rel="stylesheet" href="app.css" />
     @* <link rel="stylesheet" href="KandaEu.Volejbal.Web.Server.styles.css" /> *@
     <link rel="manifest" href="manifest.json" />
-    <meta name="description" content="Volejbal - Přihlašování" />
-    <base href="/" />
-    @* TODO: PageTitle se nenastavuje *@
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="RenderMode.InteractiveServer" />
 </head>
 
 <body class="modern-ui">
     <div class="page secondary">
-        <Routes @rendermode="new InteractiveServerRenderMode(prerender: true)" />
+        <Routes @rendermode="RenderMode.InteractiveServer" />
     </div>
     
     <script src="_framework/blazor.web.js"></script>
