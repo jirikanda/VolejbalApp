@@ -1,26 +1,54 @@
-namespace KandaEu.Volejbal.Web;
+using Blazored.LocalStorage;
+using KandaEu.Volejbal.Web.App_Start;
+using KandaEu.Volejbal.Web.Components;
 
+namespace KandaEu.Volejbal.Web;
 public class Program
 {
 	public static void Main(string[] args)
 	{
-		CreateHostBuilder(args).Build().Run();
-	}
+		var builder = WebApplication.CreateBuilder(args);
 
-	public static IHostBuilder CreateHostBuilder(string[] args) =>
-		Host.CreateDefaultBuilder(args)
-			.ConfigureWebHostDefaults(webBuilder =>
-			{
-				webBuilder.UseStaticWebAssets(); // Sotsera.Blazor.Toaster
-				webBuilder.UseStartup<Startup>();
-			})
-			.ConfigureAppConfiguration((hostContext, config) =>
-			{
-				// delete all default configuration providers
-				config.Sources.Clear();
-				config
-					.AddJsonFile("appsettings.Web.json", optional: false, reloadOnChange: false)
-					.AddJsonFile($"appsettings.Web.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false)
-					.AddEnvironmentVariables();
-			});
+		builder.Configuration.AddJsonFile("appsettings.Web.json", optional: false, reloadOnChange: false);
+		builder.Configuration.AddJsonFile($"appsettings.Web.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false);
+		builder.Configuration.AddEnvironmentVariables();
+
+		// Add services to the container.
+		builder.Services.AddRazorComponents()
+			.AddInteractiveServerComponents();
+
+		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(builder.Configuration);
+		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(builder.Configuration);
+		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(builder.Configuration);
+		builder.Services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(builder.Configuration);
+		builder.Services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(builder.Configuration);
+
+		builder.Services.AddBlazoredLocalStorage();
+
+		var app = builder.Build();
+
+		// Configure the HTTP request pipeline.
+		if (!app.Environment.IsDevelopment())
+		{
+			app.UseExceptionHandler("/Error");
+			// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+			app.UseHsts();
+		}
+
+		app.UseHttpsRedirection();
+
+		app.UseStaticFiles();
+		app.UseAntiforgery();
+
+		app.MapRazorComponents<App>()
+			.AddInteractiveServerRenderMode();
+
+		app.Run();
+
+		// TODO: Vyøešit culture
+		//var cultureInfo = new CultureInfo("cs-CZ");
+		//CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+		//CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+	}
 }

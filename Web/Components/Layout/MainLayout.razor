@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page-header">
+	<div class="page-header-content">
+        <h1>Volejbal🏐 <small></small></h1>
+        @if (NavigationManager.Uri != NavigationManager.BaseUri)
+		{
+			<a href="/" class="back-button big page-back"></a>
+		}		
+	</div>
+</div>
+
+<div class="page-region">
+	<div class="page-region-content">
+		<ErrorBoundary>
+			<ChildContent>
+				<KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
+					@Body
+				</KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
+			</ChildContent>
+			 <ErrorContent>
+				 <KandaEu.Volejbal.Web.Components.Pages.Error />
+			 </ErrorContent>
+		</ErrorBoundary>
+	</div>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code{
+    [Inject] NavigationManager NavigationManager {get; set; }
+}

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-
-namespace KandaEu.Volejbal.Web.Components.ProgressComponent;
+﻿namespace KandaEu.Volejbal.Web.Components.ProgressComponent;
 
 public partial class ProgressOverlay : ComponentBase
 {
