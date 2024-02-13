@@ -1,21 +1,19 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 
-namespace KandaEu.Volejbal.Web.Components;
-
-// TODO: Lepší umístění
+namespace KandaEu.Volejbal.Web.Components.Inputs;
 
 public class InputSelectNumber<T> : InputSelect<T>
 {
 	protected override bool TryParseValueFromString(string value, out T result, out string validationErrorMessage)
 	{
-		if ((typeof(T) == typeof(int?)) && String.IsNullOrEmpty(value))
+		if (typeof(T) == typeof(int?) && string.IsNullOrEmpty(value))
 		{
 			result = default;
 			validationErrorMessage = null;
 			return true;
 		}
 
-		if ((typeof(T) == typeof(int) || typeof(T) == typeof(int?)))
+		if (typeof(T) == typeof(int) || typeof(T) == typeof(int?))
 		{
 			if (int.TryParse(value, out var resultInt))
 			{
