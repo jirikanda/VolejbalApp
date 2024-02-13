@@ -8,7 +8,7 @@ public partial class Terminy : IDisposable
 {
 	[Inject] protected ITerminWebApiClient TerminWebApiClient { get; set; }
 
-	[Inject] protected  PersistentComponentState ApplicationState { get; set; }
+	[Inject] protected PersistentComponentState ApplicationState { get; set; }
 
 	[CascadingParameter] protected ProgressComponent.Progress Progress { get; set; }
 
