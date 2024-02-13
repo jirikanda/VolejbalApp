@@ -7,6 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Havit.VolejbalApp.Tests" />
+	</ItemGroup>
+	
+	<ItemGroup>
 		<PackageReference Include="Havit.Data.Patterns" Version="2.1.25" />
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.1" />
 	</ItemGroup>
