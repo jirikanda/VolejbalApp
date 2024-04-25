@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 
-[assembly: ApiControllerAttribute]
+[assembly: ApiController]
 
 namespace KandaEu.Volejbal.WebAPI;
 
