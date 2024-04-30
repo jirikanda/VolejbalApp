@@ -38,8 +38,20 @@ public class PrihlaskaFacade(
 			if (prihlaska != null)
 			{
 				_unitOfWork.AddForDelete(prihlaska);
-				await _unitOfWork.CommitAsync(cancellationToken);
 			}
+			else
+			{
+				var now = _timeService.GetCurrentTime();
+
+				_unitOfWork.AddForInsert(new Prihlaska
+				{
+					TerminId = terminId,
+					OsobaId = osobaId,
+					DatumPrihlaseni = now,
+					Deleted = now
+				});
+			}
+			await _unitOfWork.CommitAsync(cancellationToken);
 		}
 	}
 }

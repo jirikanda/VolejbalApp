@@ -1,4 +1,5 @@
 ﻿using Havit.Services.TimeServices;
+using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
@@ -29,33 +30,51 @@ public class TerminFacade(
 		};
 	}
 
-
-
 	public async Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default)
 	{
-		List<Prihlaska> prihlasky = await _prihlaskaDataSource.Data
+		List<Prihlaska> prihlaskyIncludingDeleted = await _prihlaskaDataSource.DataIncludingDeleted
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
 			.Where(prihlaska => prihlaska.TerminId == terminId)
 			.Include(prihlaska => prihlaska.Osoba)
-			.OrderBy(prihlaska => prihlaska.DatumPrihlaseni)
 			.ToListAsync(cancellationToken);
 
-		List<Osoba> prihlaseni = prihlasky
-			.Select(item => item.Osoba)
-			.ToList();
+		List<Prihlaska> prihlasky = prihlaskyIncludingDeleted.Where(prihlaska => prihlaska.Deleted == null).ToList();
+		List<Prihlaska> odhlasky = prihlaskyIncludingDeleted.Where(prihlaska => prihlaska.Deleted != null).ToList();
+
+		List<Osoba> prihlaseni = prihlasky.Select(item => item.Osoba).ToList();
+		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().ToList();
 
 		List<Osoba> neprihlaseni = (await _osobaDataSource.Data
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
 			.Where(osoba => osoba.Aktivni)
 			.ToListAsync(cancellationToken))
 			.Except(prihlaseni /* in memory */)
-			.OrderBy(item => item.PrijmeniJmeno)
+			.Except(odhlaseni /* in memory */)
 			.ToList();
 
 		return new TerminDetailDto
 		{
-			Prihlaseni = prihlasky.Select(prihlaska => prihlaska.ToOsobaDto()).ToList(),
-			Neprihlaseni = neprihlaseni.Select(osoba => osoba.ToOsobaDto()).ToList()
+			Prihlaseni = prihlasky
+				.OrderBy(item => item.DatumPrihlaseni)
+				.Select(prihlaska => new PrihlasenaOsobaDto
+				{
+					Osoba = prihlaska.ToOsobaDto()
+				})
+				.ToList(),
+
+			Neprihlaseni = neprihlaseni
+				.Select(neprihlaseny => new NeprihlasenaOsobaDto
+				{
+					Osoba = neprihlaseny.ToOsobaDto(),
+					IsOdhlaseny = false
+				})
+				.Concat(odhlaseni.Select(odhlaseny => new NeprihlasenaOsobaDto
+				{
+					Osoba = odhlaseny.ToOsobaDto(),
+					IsOdhlaseny = true
+				}))
+				.OrderBy(neprihlasenaOsoba => neprihlasenaOsoba.Osoba.PrijmeniJmeno)
+				.ToList()
 		};
 	}
 

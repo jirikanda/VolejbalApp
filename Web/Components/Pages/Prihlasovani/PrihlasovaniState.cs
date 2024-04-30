@@ -6,7 +6,7 @@ public class PrihlasovaniState
 {
 	public int? AktualniTerminId { get; set; }
 
-	public List<OsobaDto> Prihlaseni { get; set; }
-	public List<OsobaDto> Neprihlaseni { get; set; }
+	public List<PrihlasenaOsobaDto> Prihlaseni { get; set; }
+	public List<NeprihlasenaOsobaDto> Neprihlaseni { get; set; }
 
 }

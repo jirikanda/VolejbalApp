@@ -72,7 +72,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		}
 	}
 
-	private async Task PrihlasitAsync(OsobaDto neprihlaseny)
+	private async Task HandlePrihlasitClickAsync(NeprihlasenaOsobaDto prihlasovanaOsoba)
 	{
 		// pokud kliknu na přihlášení a následně na změnu termínu, dojde
 		// - ke spuštění volání API pro přihlášení
@@ -85,33 +85,31 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;
 
-		await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, neprihlaseny.Id));
+		await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, prihlasovanaOsoba.Osoba.Id));
 
-		if (!prihlaseni.Contains(neprihlaseny))
-		{
-			prihlaseni.Add(neprihlaseny);
-		}
-		neprihlaseni.Remove(neprihlaseny);
+		neprihlaseni.RemoveAll(neprihlaseny => neprihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id);
+		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id); // to se snad nemůže stát
+		prihlaseni.Add(new PrihlasenaOsobaDto { Osoba = prihlasovanaOsoba.Osoba });
+		prihlaseni.Sort((a, b) => a.Osoba.PrijmeniJmeno.CompareTo(b.Osoba.PrijmeniJmeno));
 
 		//Toaster.Success($"{neprihlaseny.PrijmeniJmeno} přihlášen(a).");
 
-		await LocalStorageService.SetItemAsync("PrefferedOsobaId", neprihlaseny.Id);
-		PrefferedOsobaId = neprihlaseny.Id;
+		await LocalStorageService.SetItemAsync("PrefferedOsobaId", prihlasovanaOsoba.Osoba.Id);
+		PrefferedOsobaId = prihlasovanaOsoba.Osoba.Id;
 	}
 
-	private async Task OdhlasitAsync(OsobaDto prihlaseny)
+	private async Task HandleOdhlasitClickAsync(OsobaDto odhlasovanaOsobaDto)
 	{
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;
 
-		await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, prihlaseny.Id));
+		await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, odhlasovanaOsobaDto.Id));
 
-		if (!neprihlaseni.Contains(prihlaseny)) // pokud došlo k doubleclicku, mohl se tam dostat
-		{
-			neprihlaseni.Add(prihlaseny);
-			neprihlaseni.Sort((a, b) => a.PrijmeniJmeno.CompareTo(b.PrijmeniJmeno));
-		}
-		prihlaseni.Remove(prihlaseny);
+		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == odhlasovanaOsobaDto.Id);
+		neprihlaseni.RemoveAll(item => item.Osoba.Id == odhlasovanaOsobaDto.Id);
+
+		neprihlaseni.Add(new NeprihlasenaOsobaDto { Osoba = odhlasovanaOsobaDto, IsOdhlaseny = true });
+		neprihlaseni.Sort((a, b) => a.Osoba.PrijmeniJmeno.CompareTo(b.Osoba.PrijmeniJmeno));
 
 		//Toaster.Success($"{prihlaseny.PrijmeniJmeno} odhlášen(a).");
 	}

@@ -14,8 +14,8 @@
 					<span class="icon-user-index fg-color-blueLight">@(State.Prihlaseni.IndexOf(prihlaseny) + 1)</span>
 				</div>
 				<div class="data">
-					<h4 class="@(prihlaseny.Id == PrefferedOsobaId ? "strong" : "")">@prihlaseny.PrijmeniJmeno</h4>
-					<a @onclick="@(async _ => await OdhlasitAsync(prihlaseny))">odhlásit z termínu</a>
+					<h4 class="@(prihlaseny.Osoba.Id == PrefferedOsobaId ? "strong" : "")">@prihlaseny.Osoba.PrijmeniJmeno</h4>                    
+					<a @onclick="@(async _ => await HandleOdhlasitClickAsync(prihlaseny.Osoba))">odhlásit z termínu</a>
 				</div>
 			</li>
 		}
@@ -34,13 +34,25 @@
 		@foreach (var neprihlaseny in State.Neprihlaseni)
 		{
 
-			<li class="outline-color-orangeDark">
-				<div class="icon" style="margin-top: 0.5em;">
-					<i class="icon-user fg-color-orange"></i>
+            <li class="outline-color-orangeDark">
+                <div class="icon" style="margin-top: 0.5em;">
+                    @if (neprihlaseny.IsOdhlaseny)
+                    {
+                        <i class="icon-user fg-color-red"></i>
+                    }
+                    else
+                    {
+                        <i class="icon-user fg-color-orange"></i>
+                    }
 				</div>
 				<div class="data">
-					<h4 class="@(neprihlaseny.Id == PrefferedOsobaId ? "strong" : "")">@neprihlaseny.PrijmeniJmeno</h4>
-					<a @onclick="@(_ => PrihlasitAsync(neprihlaseny))" CssClass="fg-color-orange " runat="server">přihlásit na termín</a>
+					<h4 class="@(neprihlaseny.Osoba.Id == PrefferedOsobaId ? "strong" : "")">@neprihlaseny.Osoba.PrijmeniJmeno</h4>
+                    <a @onclick="@(async _ => await HandlePrihlasitClickAsync(neprihlaseny))" CssClass="fg-color-orange " runat="server">přihlásit</a>
+                    @if (!neprihlaseny.IsOdhlaseny)
+                    {
+                        <text> / </text>
+                        <a @onclick="@(async _ => await HandleOdhlasitClickAsync(neprihlaseny.Osoba))" CssClass="fg-color-orange " runat="server">odhlásit</a>
+                    }
 				</div>
 			</li>
 		}
