@@ -90,7 +90,6 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		neprihlaseni.RemoveAll(neprihlaseny => neprihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id);
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id); // to se snad nemůže stát
 		prihlaseni.Add(new PrihlasenaOsobaDto { Osoba = prihlasovanaOsoba.Osoba });
-		prihlaseni.Sort((a, b) => a.Osoba.PrijmeniJmeno.CompareTo(b.Osoba.PrijmeniJmeno));
 
 		//Toaster.Success($"{neprihlaseny.PrijmeniJmeno} přihlášen(a).");
 
