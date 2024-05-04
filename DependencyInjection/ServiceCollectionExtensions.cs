@@ -10,16 +10,13 @@ using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
-using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Hangfire;
 using Hangfire.States;
-using KandaEu.Volejbal.Services.Mailing;
 using Hangfire.Console.Extensions;
 using Hangfire.Console;
 using Havit.Hangfire.Extensions.Filters;
 using Microsoft.ApplicationInsights;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
-using KandaEu.Volejbal.Services.Jobs;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 

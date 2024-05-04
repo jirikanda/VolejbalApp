@@ -1,7 +1,6 @@
 ﻿using Havit.Data.EntityFrameworkCore;
 using Havit.Services.TimeServices;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;

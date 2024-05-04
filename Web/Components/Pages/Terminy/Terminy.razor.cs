@@ -1,5 +1,4 @@
-﻿using System;
-using KandaEu.Volejbal.Contracts.Terminy.Dto;
+﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
 
 // TODO: Není page!
 namespace KandaEu.Volejbal.Web.Components.Pages.Terminy;

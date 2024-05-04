@@ -4,7 +4,6 @@ using Havit.Hangfire.Extensions.BackgroundJobs;
 using Havit.Hangfire.Extensions.RecurringJobs;
 using KandaEu.Volejbal.Services.Jobs;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 
