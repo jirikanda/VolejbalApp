@@ -1,11 +1,13 @@
 ﻿using Havit.Data.EntityFrameworkCore;
 using Havit.Services.TimeServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace KandaEu.Volejbal.Services.DeaktivaceOsob;
 
 [Service]
 public class DeaktivaceOsobService(
+	ILogger<DeaktivaceOsobService> _logger,
 	IOsobaDataSource _osobaDataSource,
 	ITerminDataSource _terminDataSource,
 	IUnitOfWork _unitOfWork,
@@ -13,11 +15,16 @@ public class DeaktivaceOsobService(
 {
 	public async Task DeaktivujOsobyAsync(CancellationToken cancellationToken)
 	{
+		_logger.LogInformation("Zjišťuji osoby k deaktivaci...");
 		var osobyKDeaktivaci = await GetOsobyKDeaktivaciAsync(cancellationToken);
+		_logger.LogInformation("Zjištěno {count} osob k deaktivaci", osobyKDeaktivaci.Count);
+
 		if (osobyKDeaktivaci.Any())
 		{
 			osobyKDeaktivaci.ForEach(osoba => osoba.Aktivni = false);
+			_logger.LogInformation("Ukládám...");
 			await _unitOfWork.CommitAsync(cancellationToken);
+			_logger.LogInformation("Uloženo.");
 		}
 	}
 

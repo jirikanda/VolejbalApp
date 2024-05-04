@@ -10,7 +10,6 @@ using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
-using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Hangfire;
 using Hangfire.States;
@@ -20,6 +19,7 @@ using Hangfire.Console;
 using Havit.Hangfire.Extensions.Filters;
 using Microsoft.ApplicationInsights;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
+using KandaEu.Volejbal.Services.Jobs;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -41,8 +41,6 @@ public static class ServiceCollectionExtensions
 		{
 			services.AddHostedService<DatabaseMigrationHostedService>();
 		}
-		services.AddHostedService<DeaktivaceOsobBackgroundService>();
-		services.AddHostedService<EnsureTerminyBackgroundService>();
 
 		return services;
 	}

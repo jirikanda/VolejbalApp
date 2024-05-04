@@ -2,6 +2,8 @@
 using Hangfire.States;
 using Havit.Hangfire.Extensions.BackgroundJobs;
 using Havit.Hangfire.Extensions.RecurringJobs;
+using KandaEu.Volejbal.Services.Jobs;
+using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
@@ -29,7 +31,7 @@ public static class HangfireConfig
 	{
 		TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
 
-		return Enumerable.Empty<IRecurringJob>();
-
+		yield return new RecurringJob<IEnsureTerminyJob>(x => x.ExecuteAsync(CancellationToken.None), Cron.Hourly(), timeZone);
+		yield return new RecurringJob<IDeaktivaceOsobJob>(x => x.ExecuteAsync(CancellationToken.None), Cron.Daily(4, 00), timeZone);
 	}
 }

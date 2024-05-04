@@ -98,7 +98,9 @@ public class Startup
 				endpoints.MapHangfireDashboard("/hangfire", new DashboardOptions
 				{
 					DefaultRecordsPerPage = 50,
+#if !DEBUG
 					IsReadOnlyFunc = _ => true,
+#endif
 					Authorization = new List<IDashboardAuthorizationFilter>() { }, // see https://sahansera.dev/securing-hangfire-dashboard-with-endpoint-routing-auth-policy-aspnetcore/
 					DisplayStorageConnectionString = false,
 					DashboardTitle = $"VolejbalApp",
