@@ -12,6 +12,14 @@ using Havit.Extensions.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
 using KandaEu.Volejbal.Services.DeaktivaceOsob;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+using Hangfire;
+using Hangfire.States;
+using KandaEu.Volejbal.Services.Mailing;
+using Hangfire.Console.Extensions;
+using Hangfire.Console;
+using Havit.Hangfire.Extensions.Filters;
+using Microsoft.ApplicationInsights;
+using Havit.AspNetCore.ExceptionMonitoring.Services;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -57,7 +65,8 @@ public static class ServiceCollectionExtensions
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
 			DatabaseConnectionString = configuration.GetConnectionString("Database"),
-			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
+			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile },
+			InstallOnlyLimitedHangfireExtensions = true
 		};
 
 		return services.ConfigureForAll(installConfiguration);
@@ -68,6 +77,7 @@ public static class ServiceCollectionExtensions
 	{
 		InstallHavitEntityFramework(services, installConfiguration);
 		InstallHavitServices(services);
+		InstallHangfire(services, installConfiguration);
 		InstallByServiceAttribute(services, installConfiguration);
 
 		return services;
@@ -90,6 +100,46 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<ITimeService, ApplicationTimeService>();
 		services.AddSingleton<ICacheService, MemoryCacheService>();
 		services.AddSingleton(new MemoryCacheServiceOptions { UseCacheDependenciesSupport = false });
+	}
+
+	private static void InstallHangfire(IServiceCollection services, InstallConfiguration installConfiguration)
+	{
+		services.AddHangfire((serviceProvider, configuration) =>
+		{
+			configuration
+				.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+				.UseSimpleAssemblyNameTypeSerializer()
+				.UseRecommendedSerializerSettings()
+				.UseInMemoryStorage()
+				//.UseSqlServerStorage(() => new Microsoft.Data.SqlClient.SqlConnection(installConfiguration.DatabaseConnectionString), new SqlServerStorageOptions
+				//{
+				//	CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+				//	SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+				//	QueuePollInterval = TimeSpan.FromSeconds(5),
+				//	UseRecommendedIsolationLevel = true,
+				//	DisableGlobalLocks = true,
+				//	EnableHeavyMigrations = true
+				//})
+				.WithJobExpirationTimeout(TimeSpan.FromDays(30)) // historie hangfire
+				.UseFilter(new AutomaticRetryAttribute { Attempts = 0 }) // do not retry failed jobs						
+				.UseFilter(new ContinuationsSupportAttribute(new HashSet<string> { FailedState.StateName, DeletedState.StateName, SucceededState.StateName })) // only working with AutomaticRetryAttribute with Attempts = 0
+				.UseFilter(new CancelRecurringJobWhenAlreadyInQueueOrCurrentlyRunningFilter()); // joby se (v případě "nestihnutí" zpracování) nezařazují opakovaně
+
+			if (!installConfiguration.InstallOnlyLimitedHangfireExtensions)
+			{
+				// V TestsForLocalDebugging nemáme (a nepotřebujeme) závislost TelemetryClient (ApplicationInsights) ani IExceptionMonitoringService.
+
+				configuration
+					//.UseFilter(new SoftErrorNotificationFilter(serviceProvider.GetRequiredService<IMailingService>(), serviceProvider.GetRequiredService<IOptions<SoftErrorNotificationOptions>>()))
+					.UseFilter(new ExceptionMonitoringAttribute(serviceProvider.GetRequiredService<IExceptionMonitoringService>())) // zajistíme hlášení chyby v případě selhání jobu
+					.UseFilter(new ApplicationInsightAttribute(serviceProvider.GetRequiredService<TelemetryClient>()) { JobNameFunc = backgroundJob => Havit.Hangfire.Extensions.Helpers.JobNameHelper.TryGetSimpleName(backgroundJob.Job, out string simpleName) ? simpleName : backgroundJob.Job.ToString() });
+			}
+
+			configuration.UseConsole();
+		});
+
+		services.AddHangfireConsoleExtensions();
+		//services.AddHangfireSequenceRecurringJobScheduler(); // adds support for SequenceRecurringJobs
 	}
 
 	private static void InstallByServiceAttribute(IServiceCollection services, InstallConfiguration configuration)

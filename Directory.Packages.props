@@ -1,45 +1,50 @@
 <Project>
-	<PropertyGroup>
-		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-	</PropertyGroup>
-	<!-- Global packages (private, build-time packages for all projects) -->
-	<ItemGroup Condition="'$(ProjectName.EndsWith(`Tests`))' == 'False'">
-		<GlobalPackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-		</GlobalPackageReference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.1" />
-		<PackageVersion Include="Azure.Identity" Version="1.11.2" />
-		<PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
-		<PackageVersion Include="Havit.AspNetCore.Mvc" Version="2.0.7" />
-		<PackageVersion Include="Havit.Data.EntityFrameworkCore" Version="2.8.8" />
-		<PackageVersion Include="Havit.Data.EntityFrameworkCore.Abstractions" Version="2.1.1" />
-		<PackageVersion Include="Havit.Data.EntityFrameworkCore.CodeGenerator" Version="2.8.3" />
-		<PackageVersion Include="Havit.Data.EntityFrameworkCore.Patterns" Version="2.8.5" />
-		<PackageVersion Include="Havit.Data.Patterns" Version="2.1.25" />
-		<PackageVersion Include="Havit.Extensions.DependencyInjection" Version="2.0.12" />
-		<PackageVersion Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.6" />
-		<PackageVersion Include="Havit.Model" Version="2.0.4" />
-		<PackageVersion Include="Havit.Services" Version="2.0.42" />
-		<PackageVersion Include="ChartJs.Blazor" Version="1.1.0" />
-		<PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-		<PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.4" />
-		<PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.0" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.4" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4" />
-		<PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="8.0.4" />
-		<PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-		<PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28" />
-		<PackageVersion Include="MSTest.TestAdapter" Version="3.3.1" />
-		<PackageVersion Include="MSTest.TestFramework" Version="3.3.1" />
-		<PackageVersion Include="NSwag.ApiDescription.Client" Version="14.0.7" />
-		<PackageVersion Include="NSwag.AspNetCore" Version="14.0.7" />
-	</ItemGroup>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <!-- Global packages (private, build-time packages for all projects) -->
+  <ItemGroup Condition="'$(ProjectName.EndsWith(`Tests`))' == 'False'">
+    <GlobalPackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </GlobalPackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.1" />
+    <PackageVersion Include="Azure.Identity" Version="1.11.2" />
+    <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageVersion Include="Hangfire" Version="1.8.12" />
+    <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.12" />
+    <PackageVersion Include="Hangfire.Console.Extensions" Version="2.0.0" />
+    <PackageVersion Include="Hangfire.InMemory" Version="0.9.0" />
+    <PackageVersion Include="Havit.AspNetCore.Mvc" Version="2.0.7" />
+    <PackageVersion Include="Havit.Data.EntityFrameworkCore" Version="2.8.8" />
+    <PackageVersion Include="Havit.Data.EntityFrameworkCore.Abstractions" Version="2.1.1" />
+    <PackageVersion Include="Havit.Data.EntityFrameworkCore.CodeGenerator" Version="2.8.3" />
+    <PackageVersion Include="Havit.Data.EntityFrameworkCore.Patterns" Version="2.8.5" />
+    <PackageVersion Include="Havit.Data.Patterns" Version="2.1.25" />
+    <PackageVersion Include="Havit.Extensions.DependencyInjection" Version="2.0.12" />
+    <PackageVersion Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.6" />
+    <PackageVersion Include="Havit.Hangfire.Extensions" Version="2.0.13" />
+    <PackageVersion Include="Havit.Model" Version="2.0.4" />
+    <PackageVersion Include="Havit.Services" Version="2.0.42" />
+    <PackageVersion Include="ChartJs.Blazor" Version="1.1.0" />
+    <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.22.0" />
+    <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.3.1" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.3.1" />
+    <PackageVersion Include="NSwag.ApiDescription.Client" Version="14.0.7" />
+    <PackageVersion Include="NSwag.AspNetCore" Version="14.0.7" />
+  </ItemGroup>
 </Project>
