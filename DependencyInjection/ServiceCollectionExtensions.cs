@@ -17,6 +17,7 @@ using Hangfire.Console;
 using Havit.Hangfire.Extensions.Filters;
 using Microsoft.ApplicationInsights;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
+using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -37,6 +38,7 @@ public static class ServiceCollectionExtensions
 		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
 		{
 			services.AddHostedService<DatabaseMigrationHostedService>();
+			services.AddHostedService<EnsureTerminyStartupService>();
 		}
 
 		return services;
