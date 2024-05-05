@@ -1,6 +1,5 @@
 ﻿using KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 
@@ -19,14 +18,12 @@ public class ValidationErrorModel
 	/// Null hodnota není do JSON serializována.
 	/// Je vzájemně výlučné s Errors. Buď je jedno, nebo druhé.
 	/// </summary>
-	[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 	public string Message { get; private set; }
 
 #if DEBUG
 	/// <summary>
 	/// Stack trace výjimky. Použito pro chyby vyhozené "ručně" výjimkou OperationFailedException (ev. jiné). Jen pro aplikaci kompilovanou v DEBUGu!
 	/// </summary>
-	[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 	public string StackTrace { get; private set; }
 #endif
 
@@ -43,7 +40,6 @@ public class ValidationErrorModel
 	/// Null hodnota není do JSON serializována.
 	/// Je vzájemně výlučné s Message. Buď je jedno, nebo druhé.
 	/// </summary>
-	[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 	public IReadOnlyCollection<FieldValidationError> Errors { get; private set; }
 
 	/// <summary>

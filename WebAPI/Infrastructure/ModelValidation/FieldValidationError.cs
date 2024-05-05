@@ -1,12 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
 
 namespace KandaEu.Volejbal.WebAPI.Infrastructure.ModelValidation;
 
 public class FieldValidationError
 {
-	[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 	public string Field { get; }
 
 	public string Message { get; }
