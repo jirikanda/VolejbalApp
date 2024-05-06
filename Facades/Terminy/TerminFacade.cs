@@ -10,7 +10,7 @@ namespace KandaEu.Volejbal.Facades.Terminy;
 public class TerminFacade(
 	ITerminDataSource _terminDataSource,
 	IPrihlaskaDataSource _prihlaskaDataSource,
-	IOsobaDataSource _osobaDataSource,
+	IOsobaRepository _osobaRepository,
 	ITimeService _timeService) : ITerminFacade
 {
 	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken)
@@ -44,10 +44,7 @@ public class TerminFacade(
 		List<Osoba> prihlaseni = prihlasky.Select(item => item.Osoba).ToList();
 		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().ToList();
 
-		List<Osoba> neprihlaseni = (await _osobaDataSource.Data
-			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
-			.Where(osoba => osoba.Aktivni)
-			.ToListAsync(cancellationToken))
+		List<Osoba> neprihlaseni = (await _osobaRepository.GetAllAktivniAsync(cancellationToken))
 			.Except(prihlaseni /* in memory */)
 			.Except(odhlaseni /* in memory */)
 			.ToList();

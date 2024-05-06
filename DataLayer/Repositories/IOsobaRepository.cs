@@ -2,5 +2,5 @@
 
 public partial interface IOsobaRepository
 {
-
+	Task<List<Osoba>> GetAllAktivniAsync(CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,6 @@
-﻿namespace KandaEu.Volejbal.Model;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace KandaEu.Volejbal.Model;
 
 public class Osoba
 {
@@ -21,6 +23,9 @@ public class Osoba
 	public bool Aktivni { get; set; } = true;
 
 	public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
+
+	[NotMapped]	
+	public bool PripominkyPovoleny { get; } = true;
 
 	public string PrijmeniJmeno
 	{
