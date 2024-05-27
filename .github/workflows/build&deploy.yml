@@ -55,15 +55,24 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-#      - name: dotnet publish
-#        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: dotnet publish Web
+        run: dotnet publish Web\Web.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/Web
 
-#      - name: Upload artifact for deployment job
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: .net-app
-#          path: ${{env.DOTNET_ROOT}}/myapp
 
+      - name: dotnet publish WebAPI
+        run: dotnet publish WebAPI\WebAPI.csproj --configuration Release  -o ${{env.DOTNET_ROOT}}/WebAPI
+
+      - name: Upload artifact for Web
+        uses: actions/upload-artifact@v3
+        with:
+          name: Web
+          path: ${{env.DOTNET_ROOT}}/Web
+
+      - name: Upload artifact for WebAPI
+        uses: actions/upload-artifact@v3
+        with:
+          name: WebAPI
+          path: ${{env.DOTNET_ROOT}}/WebAPI
   deploy:
     permissions:
       contents: none
