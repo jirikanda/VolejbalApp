@@ -83,10 +83,18 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+      - name: Download Web artifact
+        uses: actions/download-artifact@v3		
         with:
-          name: .net-app
+          name: Web
+          path: ${{env.GITHUB_WORKSPACE}}/Web
+
+      - name: Download WebAPI artifact
+        uses: actions/download-artifact@v3		
+        with:
+          name: WebAPI
+          path: ${{env.GITHUB_WORKSPACE}}/WebAPI
+
 
 #      - name: Deploy to Azure Web App
 #        id: deploy-to-webapp
