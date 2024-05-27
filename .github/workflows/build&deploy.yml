@@ -87,13 +87,13 @@ jobs:
         uses: actions/download-artifact@v3		
         with:
           name: Web
-          path: ${{env.GITHUB_WORKSPACE}}/Web
+          path: Web
 
       - name: Download WebAPI artifact
         uses: actions/download-artifact@v3		
         with:
           name: WebAPI
-          path: ${{env.GITHUB_WORKSPACE}}/WebAPI
+          path: WebAPI
 
 
 #      - name: Deploy to Azure Web App
