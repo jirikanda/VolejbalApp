@@ -40,12 +40,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Set up dependency caching for faster builds
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -63,13 +63,13 @@ jobs:
         run: dotnet publish WebAPI/WebAPI.csproj --configuration Release  -o ${{env.DOTNET_ROOT}}/WebAPI
 
       - name: Upload artifact for Web
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Web
           path: ${{env.DOTNET_ROOT}}/Web
 
       - name: Upload artifact for WebAPI
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: WebAPI
           path: ${{env.DOTNET_ROOT}}/WebAPI
@@ -84,13 +84,13 @@ jobs:
 
     steps:
       - name: Download Web artifact
-        uses: actions/download-artifact@v3		
+        uses: actions/download-artifact@v4
         with:
           name: Web
           path: Web
 
       - name: Download WebAPI artifact
-        uses: actions/download-artifact@v3		
+        uses: actions/download-artifact@v4		
         with:
           name: WebAPI
           path: WebAPI
