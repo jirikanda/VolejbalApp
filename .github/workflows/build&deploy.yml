@@ -56,11 +56,11 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish Web
-        run: dotnet publish Web\Web.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/Web
+        run: dotnet publish Web/Web.csproj --configuration Release -o ${{env.DOTNET_ROOT}}/Web
 
 
       - name: dotnet publish WebAPI
-        run: dotnet publish WebAPI\WebAPI.csproj --configuration Release  -o ${{env.DOTNET_ROOT}}/WebAPI
+        run: dotnet publish WebAPI/WebAPI.csproj --configuration Release  -o ${{env.DOTNET_ROOT}}/WebAPI
 
       - name: Upload artifact for Web
         uses: actions/upload-artifact@v3
