@@ -32,6 +32,8 @@ public static class HangfireConfig
 
 		yield return new RecurringJob<IEnsureTerminyJob>(x => x.ExecuteAsync(CancellationToken.None), Cron.Hourly(), timeZone);
 		yield return new RecurringJob<IDeaktivaceOsobJob>(x => x.ExecuteAsync(CancellationToken.None), Cron.Daily(4, 00), timeZone);
+#if DEBUG
 		yield return new RecurringJob<IPripomenutiPrihlaskyJob>(x => x.ExecuteAsync(CancellationToken.None), Cron.Daily(16, 00), timeZone);
+#endif
 	}
 }

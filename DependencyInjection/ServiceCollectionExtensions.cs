@@ -18,6 +18,10 @@ using Havit.Hangfire.Extensions.Filters;
 using Microsoft.ApplicationInsights;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+using Azure.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.Graph;
+using KandaEu.Volejbal.Services.Mailing;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -28,14 +32,14 @@ public static class ServiceCollectionExtensions
 	{
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
-			DatabaseConnectionString = configuration.GetConnectionString("Database"),
+			Configuration = configuration,
 			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile, ServiceProfiles.WebAPI }
 		};
 
 		services.ConfigureForAll(installConfiguration);
 
 		// background jobs
-		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
+		if (!String.IsNullOrEmpty(installConfiguration.Configuration.GetConnectionString("Database"))) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
 		{
 			services.AddHostedService<DatabaseMigrationHostedService>();
 			services.AddHostedService<EnsureTerminyStartupService>();
@@ -61,7 +65,7 @@ public static class ServiceCollectionExtensions
 
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
-			DatabaseConnectionString = configuration.GetConnectionString("Database"),
+			Configuration = configuration,
 			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile },
 			InstallOnlyLimitedHangfireExtensions = true
 		};
@@ -75,19 +79,20 @@ public static class ServiceCollectionExtensions
 		InstallHavitEntityFramework(services, installConfiguration);
 		InstallHavitServices(services);
 		InstallHangfire(services, installConfiguration);
+		InstallGraphServiceClient(services, installConfiguration);
 		InstallByServiceAttribute(services, installConfiguration);
 
 		return services;
 	}
 
-	private static void InstallHavitEntityFramework(IServiceCollection services, InstallConfiguration configuration)
+	private static void InstallHavitEntityFramework(IServiceCollection services, InstallConfiguration installConfiguration)
 	{
 		services.WithEntityPatternsInstaller()
 			.AddEntityPatterns()
 			//.AddLocalizationServices<Language>()
-			.AddDbContext<VolejbalDbContext>(options => _ = configuration.UseInMemoryDb
+			.AddDbContext<VolejbalDbContext>(options => _ = installConfiguration.UseInMemoryDb
 				? options.UseInMemoryDatabase(nameof(VolejbalDbContext))
-				: options.UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30)))
+				: options.UseSqlServer(installConfiguration.Configuration.GetConnectionString("Database"), c => c.MaxBatchSize(30)))
 			.AddDataLayer(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly);
 	}
 
@@ -137,6 +142,16 @@ public static class ServiceCollectionExtensions
 
 		services.AddHangfireConsoleExtensions();
 		//services.AddHangfireSequenceRecurringJobScheduler(); // adds support for SequenceRecurringJobs
+	}
+
+	private static void InstallGraphServiceClient(IServiceCollection services, InstallConfiguration installConfiguration)
+	{
+		SendMailGraphApiOptions sendMailGraphApiOptions = installConfiguration.Configuration.GetSection(SendMailGraphApiOptions.Path).Get<SendMailGraphApiOptions>();
+		var clientSecretCredential = new ClientSecretCredential(sendMailGraphApiOptions.TenantId, sendMailGraphApiOptions.ClientId, sendMailGraphApiOptions.ClientSecret);
+		var scopes = new[] { "https://graph.microsoft.com/.default" };
+
+		// you can use a single client instance for the lifetime of the application
+		services.AddSingleton(new GraphServiceClient(clientSecretCredential, scopes));
 	}
 
 	private static void InstallByServiceAttribute(IServiceCollection services, InstallConfiguration configuration)

@@ -9,6 +9,7 @@ public class MailingOptions
 	public string SmtpUsername { get; set; }
 	public string SmtpPassword { get; set; }
 	public string From { get; set; }
+	public string OverrideTo { get; set; }
 
 	public bool HasCredentials()
 	{
