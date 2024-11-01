@@ -76,10 +76,7 @@ public class Startup
 				app.UseDeveloperExceptionPage();
 				app.UseMiddleware<DelayRequestMiddleware>();
 			}
-			else
-			{
-				app.UseExceptionHandler(options => { /* NOOP */});
-			}
+			app.UseExceptionHandler(_ => { /* NOOP */ });
 
 			app.UseCustomizedCors(corsOptions);
 			app.UseStaticFiles();
