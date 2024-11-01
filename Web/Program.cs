@@ -17,6 +17,8 @@ public class Program
 		builder.Services.AddRazorComponents()
 			.AddInteractiveServerComponents();
 
+		builder.Services.AddLocalization();
+
 		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(builder.Configuration);
 		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(builder.Configuration);
 		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(builder.Configuration);
@@ -40,15 +42,10 @@ public class Program
 		app.UseStaticFiles();
 		app.UseAntiforgery();
 
+		app.UseRequestLocalization("cs-CZ"); // https://learn.microsoft.com/en-us/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0#statically-set-the-server-side-culture
 		app.MapRazorComponents<App>()
 			.AddInteractiveServerRenderMode();
 
 		app.Run();
-
-		// TODO: Vyøešit culture
-		//var cultureInfo = new CultureInfo("cs-CZ");
-		//CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-		//CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
 	}
 }
