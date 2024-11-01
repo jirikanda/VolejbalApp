@@ -23,10 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Identity" />
 		<PackageReference Include="Havit.Data.EntityFrameworkCore" />
 		<PackageReference Include="Havit.Data.EntityFrameworkCore.CodeGenerator" />
-		<PackageReference Include="Microsoft.Data.SqlClient" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
 		  <PrivateAssets>all</PrivateAssets>
@@ -37,13 +35,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Model\Model.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-	  </PackageReference>
 	</ItemGroup>
 
 </Project>

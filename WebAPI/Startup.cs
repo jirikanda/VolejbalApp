@@ -76,6 +76,10 @@ public class Startup
 				app.UseDeveloperExceptionPage();
 				app.UseMiddleware<DelayRequestMiddleware>();
 			}
+			else
+			{
+				app.UseExceptionHandler(options => { /* NOOP */});
+			}
 
 			app.UseCustomizedCors(corsOptions);
 			app.UseStaticFiles();
@@ -83,7 +87,6 @@ public class Startup
 
 			app.UseRequestLocalization();
 
-			app.UseExceptionMonitoring();
 			app.UseErrorToJson();
 			app.UseRouting();
 			app.UseRateLimiter();
