@@ -42,7 +42,7 @@ public class TerminFacade(
 		List<Prihlaska> odhlasky = prihlaskyIncludingDeleted.Where(prihlaska => prihlaska.Deleted != null).ToList();
 
 		List<Osoba> prihlaseni = prihlasky.Select(item => item.Osoba).ToList();
-		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().ToList();
+		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().Except(prihlaseni).ToList();
 
 		List<Osoba> neprihlaseni = (await _osobaRepository.GetAllAktivniAsync(cancellationToken))
 			.Except(prihlaseni /* in memory */)
