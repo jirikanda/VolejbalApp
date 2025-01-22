@@ -13,8 +13,8 @@ public class DataSeedingTests : TestBase
 	protected override bool UseLocalDb => true;
 	protected override bool SeedData => false;
 
-	//[TestMethod]
-	[TestCategory("Explicit")]
+	[Ignore]
+	[TestMethod]
 	public void DataSeedRunner_SeedCoreProfile()
 	{
 		// arrange
