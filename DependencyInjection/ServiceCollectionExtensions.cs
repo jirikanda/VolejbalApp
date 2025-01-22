@@ -9,7 +9,6 @@ using KandaEu.Volejbal.Entity;
 using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
-using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
 using Hangfire;
 using Hangfire.States;
 using Hangfire.Console.Extensions;
@@ -18,6 +17,8 @@ using Havit.Hangfire.Extensions.Filters;
 using Microsoft.ApplicationInsights;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+using Havit.Data.EntityFrameworkCore;
+using KandaEu.Volejbal.DataLayer;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -82,13 +83,20 @@ public static class ServiceCollectionExtensions
 
 	private static void InstallHavitEntityFramework(IServiceCollection services, InstallConfiguration configuration)
 	{
-		services.WithEntityPatternsInstaller()
-			.AddEntityPatterns()
-			//.AddLocalizationServices<Language>()
-			.AddDbContext<VolejbalDbContext>(options => _ = configuration.UseInMemoryDb
-				? options.UseInMemoryDatabase(nameof(VolejbalDbContext))
-				: options.UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30)))
-			.AddDataLayer(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly);
+		services.AddDbContext<IDbContext, VolejbalDbContext>(optionsBuilder =>
+		{
+			if (configuration.UseInMemoryDb)
+			{
+				optionsBuilder.UseInMemoryDatabase(nameof(VolejbalDbContext));
+			}
+			else
+			{
+				string databaseConnectionString = configuration.DatabaseConnectionString;
+				optionsBuilder.UseSqlServer(databaseConnectionString, c => c.MaxBatchSize(30));
+			}
+			optionsBuilder.UseDefaultHavitConventions();
+		});
+		services.AddDataLayerServices();
 	}
 
 	private static void InstallHavitServices(IServiceCollection services)

@@ -39,7 +39,7 @@ public class Program
 
 		app.UseHttpsRedirection();
 
-		app.UseStaticFiles();
+		app.MapStaticAssets();
 		app.UseAntiforgery();
 
 		app.UseRequestLocalization("cs-CZ"); // https://learn.microsoft.com/en-us/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0#statically-set-the-server-side-culture

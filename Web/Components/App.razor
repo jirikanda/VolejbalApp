@@ -4,15 +4,16 @@
     <meta charset="utf-8" />
 	<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0" />
     <base href="/" />
-    <link type="text/css" rel="stylesheet" href="/css/normalize.css" />
-	<link type="text/css" rel="stylesheet" href="/less/modern.min.css" media="screen" />
-	<link type="text/css" rel="stylesheet" href="/less/modern-responsive.min.css" media="screen" />
-	<link type="text/css" rel="stylesheet" href="/css/volejbal.css" />
-	<link rel="stylesheet" href="/_content/ChartJs.Blazor/ChartJSBlazor.css" />
-    <link rel="stylesheet" href="app.css" />
+    <link type="text/css" rel="stylesheet" href="@Assets["/css/normalize.css"]" />
+    <link type="text/css" rel="stylesheet" href="@Assets["/less/modern.min.css"]" media="screen" />
+    <link type="text/css" rel="stylesheet" href="@Assets["/less/modern-responsive.min.css"]" media="screen" />
+    <link type="text/css" rel="stylesheet" href="@Assets["/css/volejbal.css"]" />
+	<link rel="stylesheet" href="@Assets["/_content/ChartJs.Blazor/ChartJSBlazor.css"]" />
+    <link rel="stylesheet" href="@Assets["/app.css"]" />
     @* <link rel="stylesheet" href="KandaEu.Volejbal.Web.Server.styles.css" /> *@
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="@Assets["manifest.json"]" />
     <HeadOutlet @rendermode="RenderMode.InteractiveServer" />
+    <ImportMap />
 </head>
 
 <body class="modern-ui">
@@ -23,13 +24,13 @@
     <script src="_framework/blazor.web.js"></script>
 
     <!-- Reference the included moment.js javascript file. -->
-    <script src="/_content/ChartJs.Blazor/moment-with-locales.min.js" type="text/javascript" language="javascript"></script>
+    <script src="@Assets["/_content/ChartJs.Blazor/moment-with-locales.min.js"]" type="text/javascript" language="javascript"></script>
 
     <!-- Reference the included ChartJs javascript file. -->
-    <script src="/_content/ChartJs.Blazor/Chart.min.js" type="text/javascript" language="javascript"></script>
+    <script src="@Assets[" /_content/ChartJs.Blazor/Chart.min.js"]" type="text/javascript" language="javascript"></script>
 
     <!-- This is the glue between the C# code and the ChartJs charts -->
-    <script src="/_content/ChartJs.Blazor/ChartJsBlazorInterop.js" type="text/javascript" language="javascript"></script>
+    <script src="@Assets["/_content/ChartJs.Blazor/ChartJsBlazorInterop.js"]" type="text/javascript" language="javascript"></script>
 
 </body>
 
