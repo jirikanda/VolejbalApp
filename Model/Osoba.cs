@@ -24,7 +24,7 @@ public class Osoba
 
 	public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
 
-	[NotMapped]	
+	[NotMapped]
 	public bool PripominkyPovoleny { get; } = true;
 
 	public string PrijmeniJmeno

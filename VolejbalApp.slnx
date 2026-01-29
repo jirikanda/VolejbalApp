@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="Contracts/Contracts.csproj" />
+  <Project Path="DataLayer/DataLayer.csproj" />
+  <Project Path="DependencyInjection/DependencyInjection.csproj" />
+  <Project Path="Entity/Entity.csproj" />
+  <Project Path="Facades/Facades.csproj" />
+  <Project Path="Model/Model.csproj" />
+  <Project Path="Services/Services.csproj" />
+  <Project Path="Tests/Tests.csproj" />
+  <Project Path="TestsForLocalDebugging/TestsForLocalDebugging.csproj" />
+  <Project Path="Web/Web.csproj" />
+  <Project Path="WebAPI/WebAPI.csproj" />
+  <Properties Name="Performance">
+    <Property Name="HasPerformanceSessions" Value="true" />
+  </Properties>
+</Solution>

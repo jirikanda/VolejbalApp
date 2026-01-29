@@ -3,6 +3,7 @@ using KandaEu.Volejbal.Web.App_Start;
 using KandaEu.Volejbal.Web.Components;
 
 namespace KandaEu.Volejbal.Web;
+
 public class Program
 {
 	public static void Main(string[] args)

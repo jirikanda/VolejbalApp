@@ -10,6 +10,6 @@ using Havit.Data.Patterns.Repositories;
 namespace KandaEu.Volejbal.DataLayer.Repositories;
 
 [System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-public partial interface IVzkazRepository : IRepository<KandaEu.Volejbal.Model.Vzkaz>
+public partial interface IVzkazRepository : IRepository<KandaEu.Volejbal.Model.Vzkaz, System.Int32>
 {
 }

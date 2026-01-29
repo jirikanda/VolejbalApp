@@ -9,7 +9,7 @@ namespace KandaEu.Volejbal.Services.Infrastructure;
 
 public class DatabaseMigrationHostedService(
 	IServiceScopeFactory _serviceScopeFactory) : IHostedService
-{ 
+{
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		using (IServiceScope serviceScope = _serviceScopeFactory.CreateScope())

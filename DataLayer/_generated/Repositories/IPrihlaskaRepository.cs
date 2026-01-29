@@ -10,6 +10,6 @@ using Havit.Data.Patterns.Repositories;
 namespace KandaEu.Volejbal.DataLayer.Repositories;
 
 [System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-public partial interface IPrihlaskaRepository : IRepository<KandaEu.Volejbal.Model.Prihlaska>
+public partial interface IPrihlaskaRepository : IRepository<KandaEu.Volejbal.Model.Prihlaska, System.Int32>
 {
 }

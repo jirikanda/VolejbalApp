@@ -56,7 +56,6 @@ public class Startup
 
 		services.AddApplicationInsightsTelemetry(configuration);
 
-		services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 		services.AddTransient<ErrorMonitoringFilter>();
 
 		services.ConfigureForWebAPI(configuration);

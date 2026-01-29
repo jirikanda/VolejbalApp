@@ -8,7 +8,7 @@ public class OsobaFacade(
 	IOsobaRepository _osobaRepository,
 	IOsobaDataSource _osobaDataSource,
 	IUnitOfWork _unitOfWork) : IOsobaFacade
-{ 
+{
 	public async Task VlozOsobuAsync(OsobaInputDto osobaInputDto, CancellationToken cancellationToken)
 	{
 		Osoba osoba = new Osoba

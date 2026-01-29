@@ -16,9 +16,9 @@ using Havit.Data.Patterns.Infrastructure;
 namespace KandaEu.Volejbal.DataLayer.Repositories;
 
 [System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-public abstract class VzkazDbRepositoryBase : DbRepository<KandaEu.Volejbal.Model.Vzkaz>
+public abstract class VzkazDbRepositoryBase : DbRepository<KandaEu.Volejbal.Model.Vzkaz, System.Int32>
 {
-	protected VzkazDbRepositoryBase(IDbContext dbContext, IEntityKeyAccessor<KandaEu.Volejbal.Model.Vzkaz, int> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager, IRepositoryQueryProvider repositoryQueryProvider)
+	protected VzkazDbRepositoryBase(IDbContext dbContext, IEntityKeyAccessor<KandaEu.Volejbal.Model.Vzkaz, System.Int32> entityKeyAccessor, IDataLoader dataLoader, ISoftDeleteManager softDeleteManager, IEntityCacheManager entityCacheManager, IRepositoryQueryProvider<KandaEu.Volejbal.Model.Vzkaz, System.Int32> repositoryQueryProvider)
 		: base(dbContext, entityKeyAccessor, dataLoader, softDeleteManager, entityCacheManager, repositoryQueryProvider)
 	{
 	}

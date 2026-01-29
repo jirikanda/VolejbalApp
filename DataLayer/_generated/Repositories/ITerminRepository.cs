@@ -10,6 +10,6 @@ using Havit.Data.Patterns.Repositories;
 namespace KandaEu.Volejbal.DataLayer.Repositories;
 
 [System.CodeDom.Compiler.GeneratedCode("Havit.Data.EntityFrameworkCore.CodeGenerator", "1.0")]
-public partial interface ITerminRepository : IRepository<KandaEu.Volejbal.Model.Termin>
+public partial interface ITerminRepository : IRepository<KandaEu.Volejbal.Model.Termin, System.Int32>
 {
 }

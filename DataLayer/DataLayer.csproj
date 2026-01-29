@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.DataLayer</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.DataLayer</RootNamespace>
 	</PropertyGroup>

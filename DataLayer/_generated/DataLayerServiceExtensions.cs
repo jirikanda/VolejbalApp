@@ -7,6 +7,7 @@
 
 using Havit.Data.EntityFrameworkCore.Patterns.DependencyInjection;
 using Havit.Data.EntityFrameworkCore.Patterns.Infrastructure;
+using Havit.Data.EntityFrameworkCore.Patterns.Repositories;
 using Havit.Data.Patterns.DataEntries;
 using Havit.Data.Patterns.DataSources;
 using Havit.Data.Patterns.Infrastructure;
@@ -50,16 +51,20 @@ public static partial class DataLayerServiceExtensions
 	private static void AddRepositories(IServiceCollection services)
 	{
 		services.TryAddScoped<KandaEu.Volejbal.DataLayer.Repositories.IOsobaRepository, KandaEu.Volejbal.DataLayer.Repositories.OsobaDbRepository>();
-		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Osoba>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.IOsobaRepository>());
+		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Osoba, System.Int32>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.IOsobaRepository>());
+		services.TryAddSingleton<IRepositoryQueryProvider<KandaEu.Volejbal.Model.Osoba, System.Int32>, KandaEu.Volejbal.DataLayer.Repositories.OsobaDbRepositoryQueryProvider>();
 
 		services.TryAddScoped<KandaEu.Volejbal.DataLayer.Repositories.IPrihlaskaRepository, KandaEu.Volejbal.DataLayer.Repositories.PrihlaskaDbRepository>();
-		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Prihlaska>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.IPrihlaskaRepository>());
+		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Prihlaska, System.Int32>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.IPrihlaskaRepository>());
+		services.TryAddSingleton<IRepositoryQueryProvider<KandaEu.Volejbal.Model.Prihlaska, System.Int32>, KandaEu.Volejbal.DataLayer.Repositories.PrihlaskaDbRepositoryQueryProvider>();
 
 		services.TryAddScoped<KandaEu.Volejbal.DataLayer.Repositories.ITerminRepository, KandaEu.Volejbal.DataLayer.Repositories.TerminDbRepository>();
-		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Termin>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.ITerminRepository>());
+		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Termin, System.Int32>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.ITerminRepository>());
+		services.TryAddSingleton<IRepositoryQueryProvider<KandaEu.Volejbal.Model.Termin, System.Int32>, KandaEu.Volejbal.DataLayer.Repositories.TerminDbRepositoryQueryProvider>();
 
 		services.TryAddScoped<KandaEu.Volejbal.DataLayer.Repositories.IVzkazRepository, KandaEu.Volejbal.DataLayer.Repositories.VzkazDbRepository>();
-		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Vzkaz>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.IVzkazRepository>());
+		services.TryAddScoped<IRepository<KandaEu.Volejbal.Model.Vzkaz, System.Int32>>(sp => sp.GetRequiredService<KandaEu.Volejbal.DataLayer.Repositories.IVzkazRepository>());
+		services.TryAddSingleton<IRepositoryQueryProvider<KandaEu.Volejbal.Model.Vzkaz, System.Int32>, KandaEu.Volejbal.DataLayer.Repositories.VzkazDbRepositoryQueryProvider>();
 
 	}
 
@@ -69,9 +74,9 @@ public static partial class DataLayerServiceExtensions
 
 	private static void AddEntityKeyAccessors(IServiceCollection services)
 	{
-		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Osoba, int>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Osoba, int>>();
-		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, int>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, int>>();
-		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, int>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, int>>();
-		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Vzkaz, int>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Vzkaz, int>>();
+		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Osoba, System.Int32>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Osoba, System.Int32>>();
+		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, System.Int32>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Prihlaska, System.Int32>>();
+		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, System.Int32>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Termin, System.Int32>>();
+		services.TryAddTransient<IEntityKeyAccessor<KandaEu.Volejbal.Model.Vzkaz, System.Int32>, DbEntityKeyAccessor<KandaEu.Volejbal.Model.Vzkaz, System.Int32>>();
 	}
 }

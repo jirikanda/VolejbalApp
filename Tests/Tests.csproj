@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
 		<AssemblyName>KandaEu.Volejbal.Tests</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Tests</RootNamespace>
 		<PublishDir>obj\$(Configuration)\publish</PublishDir>

@@ -46,7 +46,9 @@ public static class ServiceCollectionExtensions
 	}
 
 	[MethodImpl(MethodImplOptions.NoInlining)]
-	public static IServiceCollection ConfigureForTests(this IServiceCollection services, bool useInMemoryDb = true)
+#pragma warning disable IDE0060 // Remove unused parameter
+	public static IServiceCollection ConfigureForTests(this IServiceCollection services, bool useInMemoryDb = false)
+#pragma warning restore IDE0060 // Remove unused parameter
 	{
 		string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 		if (string.IsNullOrEmpty(environment))
