@@ -1,13 +1,13 @@
 ﻿using System.Threading.RateLimiting;
 using Hangfire;
 using Hangfire.Dashboard;
-using Havit.AspNetCore.ExceptionMonitoring.Services;
+using Havit.ApplicationInsights.DependencyCollector;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.WebAPI.Infrastructure.ConfigurationExtensions;
 using KandaEu.Volejbal.WebAPI.Infrastructure.Middlewares;
+using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Options;
@@ -18,17 +18,17 @@ namespace KandaEu.Volejbal.WebAPI;
 
 public class Startup
 {
-	private readonly IConfiguration configuration;
+	private readonly IConfiguration _configuration;
 
 	public Startup(IConfiguration configuration)
 	{
-		this.configuration = configuration;
+		this._configuration = configuration;
 	}
 
 	/// <summary>
 	/// Configure services.
 	/// </summary>
-	public void ConfigureServices(IServiceCollection services)
+	public void ConfigureServices(IServiceCollection services, IWebHostEnvironment _)
 	{
 		services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -36,7 +36,7 @@ public class Startup
 		services.AddMemoryCache(); // ie. IClaimsCacheStorage
 
 		services.AddCustomizedRequestLocalization();
-		services.AddCustomizedMvc(configuration);
+		services.AddCustomizedMvc(_configuration);
 		services.AddAuthorization();
 		services.AddRateLimiter(c => c.AddFixedWindowLimiter("DefaultAPI", options =>
 		{
@@ -46,19 +46,21 @@ public class Startup
 			options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
 		}));
 
-		services.AddCustomizedMailing(configuration);
+		services.AddCustomizedMailing(_configuration);
 
-		services.AddExceptionMonitoring(configuration);
+		services.AddExceptionMonitoring(_configuration);
 		services.AddCustomizedErrorToJson();
 
-		services.AddCustomizedCors(configuration);
+		services.AddCustomizedCors(_configuration);
 		services.AddCustomizedOpenApi();
 
-		services.AddApplicationInsightsTelemetry(configuration);
+		services.AddApplicationInsightsTelemetry(_configuration);
+		services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) => { module.EnableSqlCommandTextInstrumentation = true; });
+		services.AddApplicationInsightsTelemetryProcessor<IgnoreCancellationExceptionsTelemetryProcessor>();
 
 		services.AddTransient<ErrorMonitoringFilter>();
 
-		services.ConfigureForWebAPI(configuration);
+		services.ConfigureForWebAPI(_configuration);
 
 		services.AddCustomizedHangfireServer();
 	}
@@ -66,57 +68,50 @@ public class Startup
 	/// <summary>
 	/// Configure middleware.
 	/// </summary>
-	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions> corsOptions, IExceptionMonitoringService exceptionMonitoringService)
+	public void ConfigureMiddleware(WebApplication app)
 	{
-		try
+		if (app.Environment.IsDevelopment())
 		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseMiddleware<DelayRequestMiddleware>();
-			}
-			app.UseExceptionHandler(_ => { /* NOOP */ });
+			app.UseDeveloperExceptionPage();
+			app.UseMiddleware<DelayRequestMiddleware>();
+		}
+		app.UseExceptionHandler(_ => { /* NOOP */ });
 
-			app.UseCustomizedCors(corsOptions);
-			app.UseStaticFiles();
-			app.UseAuthentication();
+		var corsOptions = app.Services.GetRequiredService<IOptions<KandaEu.Volejbal.WebAPI.Infrastructure.Cors.CorsOptions>>();
+		app.UseCustomizedCors(corsOptions);
+		app.UseStaticFiles();
+		app.UseAuthentication();
 
-			app.UseRequestLocalization();
+		app.UseRequestLocalization();
 
-			app.UseErrorToJson();
-			app.UseRouting();
-			app.UseRateLimiter();
+		app.UseErrorToJson();
+		app.UseRouting();
+		app.UseRateLimiter();
 
-			// výchozí stránku hangfire změníme na recurring jobs (na výchozí stránku se nyní není jak dostat, což nám nevadí)
-			app.UseRewriter(new Microsoft.AspNetCore.Rewrite.RewriteOptions().AddRedirect("^hangfire(/)?$", "hangfire/recurring"));
+		// výchozí stránku hangfire změníme na recurring jobs (na výchozí stránku se nyní není jak dostat, což nám nevadí)
+		app.UseRewriter(new Microsoft.AspNetCore.Rewrite.RewriteOptions().AddRedirect("^hangfire(/)?$", "hangfire/recurring"));
+	}
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers().RequireRateLimiting("DefaultAPI");
+	public void ConfigureEndpoints(WebApplication app)
+	{
+		app.MapControllers().RequireRateLimiting("DefaultAPI");
 
-				endpoints.MapHangfireDashboard("/hangfire", new DashboardOptions
-				{
-					DefaultRecordsPerPage = 50,
+		app.MapHangfireDashboard("/hangfire", new DashboardOptions
+		{
+			DefaultRecordsPerPage = 50,
 #if !DEBUG
-					IsReadOnlyFunc = _ => true,
+			IsReadOnlyFunc = _ => true,
 #endif
-					Authorization = new List<IDashboardAuthorizationFilter>() { }, // see https://sahansera.dev/securing-hangfire-dashboard-with-endpoint-routing-auth-policy-aspnetcore/
-					DisplayStorageConnectionString = false,
-					DashboardTitle = $"VolejbalApp",
-					StatsPollingInterval = 60_000, // once a minute
-					DisplayNameFunc = (_, job) => Havit.Hangfire.Extensions.Helpers.JobNameHelper.TryGetSimpleName(job, out string simpleName)
-														? simpleName
-														: job.ToString()
-				});
-			});
+			Authorization = new List<IDashboardAuthorizationFilter>() { }, // see https://sahansera.dev/securing-hangfire-dashboard-with-endpoint-routing-auth-policy-aspnetcore/
+			DisplayStorageConnectionString = false,
+			DashboardTitle = $"VolejbalApp",
+			StatsPollingInterval = 60_000, // once a minute
+			DisplayNameFunc = (_, job) => Havit.Hangfire.Extensions.Helpers.JobNameHelper.TryGetSimpleName(job, out string simpleName)
+												? simpleName
+												: job.ToString()
+		});
 
-			app.UseCustomizedOpenApiSwaggerUI();
-		}
-		catch (Exception exception)
-		{
-			exceptionMonitoringService.HandleException(exception);
-			throw;
-		}
+		app.UseCustomizedOpenApiSwaggerUI();
 	}
 
 }

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Havit.ApplicationInsights.DependencyCollector" />
 	<PackageReference Include="Havit.AspNetCore.Mvc" />
 	<PackageReference Include="Havit.Hangfire.Extensions" />
 	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />

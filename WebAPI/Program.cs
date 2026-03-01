@@ -7,35 +7,54 @@ public static class Program
 {
 	public static void Main(string[] args)
 	{
-		CreateHostBuilder(args).Build().Run();
+		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+		ConfigureConfigurationAndLogging(builder);
+		ConfigureServices(builder);
+
+		var app = builder.Build();
+
+		ConfigureMiddleware(app);
+		ConfigureEndpoints(app);
+
+		app.Run();
 	}
 
-	public static IHostBuilder CreateHostBuilder(string[] args)
+	private static void ConfigureConfigurationAndLogging(WebApplicationBuilder builder)
 	{
-		return Host.CreateDefaultBuilder(args)
-			.ConfigureWebHostDefaults(webBuilder =>
-			{
-				webBuilder.UseStartup<Startup>();
-			})
-			.ConfigureAppConfiguration((hostContext, config) =>
-			{
-				// delete all default configuration providers
-				config.Sources.Clear();
-				config
-					.AddJsonFile("appsettings.WebAPI.json", optional: false, reloadOnChange: false)
-					.AddJsonFile($"appsettings.WebAPI.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false)
-					.AddEnvironmentVariables()
-					.AddCustomizedAzureKeyVault();
-			})
-			.ConfigureLogging((hostingContext, logging) =>
-			{
-				logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-				logging.AddConsole();
-				logging.AddDebug();
-				if (!hostingContext.HostingEnvironment.IsDevelopment() && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				{
-					logging.AddEventLog();
-				}
-			});
+		builder.Configuration.AddJsonFile("appsettings.WebAPI.json", optional: false);
+		builder.Configuration.AddJsonFile($"appsettings.WebAPI.{builder.Environment.EnvironmentName}.json", optional: true);
+#if DEBUG
+		builder.Configuration.AddJsonFile($"appsettings.WebAPI.{builder.Environment.EnvironmentName}.local.json", optional: true); // .gitignored
+#endif
+		builder.Configuration.AddEnvironmentVariables();
+		builder.Configuration.AddCustomizedAzureKeyVault();
+
+		builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+		builder.Logging.AddConsole();
+		builder.Logging.AddDebug();
+
+		if (!builder.Environment.IsDevelopment() && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		{
+			builder.Logging.AddEventLog();
+		}
+	}
+
+	private static void ConfigureServices(WebApplicationBuilder builder)
+	{
+		Startup startup = new Startup(builder.Configuration);
+		startup.ConfigureServices(builder.Services, builder.Environment);
+	}
+
+	private static void ConfigureMiddleware(WebApplication app)
+	{
+		Startup startup = new Startup(app.Configuration);
+		startup.ConfigureMiddleware(app);
+	}
+
+	private static void ConfigureEndpoints(WebApplication app)
+	{
+		Startup startup = new Startup(app.Configuration);
+		startup.ConfigureEndpoints(app);
 	}
 }
