@@ -1,36 +1,34 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<div class="page-header">
-	<div class="page-header-content">
-        <h1>Volejbal🏐 <small></small></h1>
+<HxSetup />
+
+<div class="app-container">
+    <div class="app-header">
         @if (NavigationManager.Uri != NavigationManager.BaseUri)
-		{
-			<a href="/" class="back-button big page-back"></a>
-		}		
-	</div>
-</div>
+        {
+            <a href="javascript:history.back()" class="back-btn">&#8592;</a>
+        }
+        <span class="app-title">Volejbal &#127944;</span>
+    </div>
 
-<div class="page-region">
-	<div class="page-region-content">
-		<ErrorBoundary>
-			<ChildContent>
-				<KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
-					@Body
-				</KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
-			</ChildContent>
-			 <ErrorContent>
-				 <KandaEu.Volejbal.Web.Components.Pages.Error />
-			 </ErrorContent>
-		</ErrorBoundary>
-	</div>
+    <ErrorBoundary>
+        <ChildContent>
+            <KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
+                @Body
+            </KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
+        </ChildContent>
+        <ErrorContent>
+            <KandaEu.Volejbal.Web.Components.Pages.Error />
+        </ErrorContent>
+    </ErrorBoundary>
 </div>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+    <a class="dismiss">&#x2757;</a>
 </div>
 
-@code{
-    [Inject] NavigationManager NavigationManager {get; set; }
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
 }

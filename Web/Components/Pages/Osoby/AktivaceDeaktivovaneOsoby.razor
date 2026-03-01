@@ -1,31 +1,35 @@
-﻿<h2>Aktivace deaktivované osoby</h2>
+<h2>Aktivace deaktivované osoby</h2>
 <p>Kdo na volejbale nebyl 2 měsíce, je automaticky deaktivován. Může se zde znovu aktivovat a přihlásit se (nepřihlásí-li se, je další den opět deaktivován).</p>
 
 @if (osoby != null)
 {
-	@if (osoby.Osoby.Count > 0)
-	{
-		<div>
-			<table class="bordered" cellspacing="0" style="border-collapse:collapse; width: inherit;">
-				<tbody>
-					@foreach (var osoba in osoby.Osoby)
-					{
-						<tr>
-							<td>@osoba.PrijmeniJmeno</td>
-							<td>
-								<a class="fg-color-green" @onclick="@(async () => await AktivovatAsync(osoba))">aktivovat</a>
-							</td>
-							<td>
-								<a class="fg-color-red" @onclick="@(async () => await SmazatAsync(osoba))">smazat</a>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-	}
-	else
-	{
-		<p>Neevidujeme žádné neaktivní osoby.</p>
-	}
+    @if (osoby.Osoby.Count > 0)
+    {
+        <table class="table table-sm mb-3" style="width: auto;">
+            <tbody>
+                @foreach (var osoba in osoby.Osoby)
+                {
+                    <tr>
+                        <td>@osoba.PrijmeniJmeno</td>
+                        <td><a class="text-success" @onclick="@(async () => await AktivovatAsync(osoba))">aktivovat</a></td>
+                        <td><a class="text-danger" @onclick="@(async () => await SmazatAsync(osoba))">smazat</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Neevidujeme žádné neaktivní osoby.</p>
+    }
 }
+
+<HxModal @ref="deleteModal" Title="Smazat osobu" Size="ModalSize.Small">
+    <BodyTemplate>
+        Opravdu chceš smazat osobu &ldquo;@osobaKeSmazani?.PrijmeniJmeno&rdquo;?
+    </BodyTemplate>
+    <FooterTemplate>
+        <HxButton Text="Zrušit" Color="ThemeColor.Secondary" OnClick="@(async () => await deleteModal.HideAsync())" />
+        <HxButton Text="Smazat" Color="ThemeColor.Danger" OnClick="PotvrditSmazaniAsync" />
+    </FooterTemplate>
+</HxModal>

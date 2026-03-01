@@ -18,7 +18,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" />
-		<PackageReference Include="ChartJs.Blazor" />
+		<PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" />
+		<PackageReference Include="Havit.Blazor.Components.Web.ECharts" />
+		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="NSwag.ApiDescription.Client">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

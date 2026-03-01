@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Havit.Blazor.Components.Web;
 using KandaEu.Volejbal.Web.App_Start;
 using KandaEu.Volejbal.Web.Components;
 
@@ -27,12 +28,13 @@ public class Program
 		builder.Services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(builder.Configuration);
 
 		builder.Services.AddBlazoredLocalStorage();
+		builder.Services.AddHxServices();
 
 		var app = builder.Build();
 
 		// Configure the HTTP request pipeline.
 		if (!app.Environment.IsDevelopment())
-		{
+		{	
 			app.UseExceptionHandler("/Error");
 			// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 			app.UseHsts();

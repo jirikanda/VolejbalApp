@@ -1,68 +1,72 @@
-﻿@if (State.AktualniTerminId == null)
+@if (State.AktualniTerminId == null)
 {
-	<p><em>Termín není zvolen.</em></p>
+    <p><em>Termín není zvolen.</em></p>
 }
 
 <h2>Přihlášení</h2>
 @if (State.Prihlaseni != null)
 {
-	<ul class="listview fluid">
-		@foreach (var prihlaseny in State.Prihlaseni)
-		{
-			<li class="outline-color-blueDark">
-				<div class="icon">
-					<span class="icon-user-index fg-color-blueLight">@(State.Prihlaseni.IndexOf(prihlaseny) + 1)</span>
-				</div>
-				<div class="data">
-					<h4 class="@(prihlaseny.Osoba.Id == PrefferedOsobaId ? "strong" : "")">@prihlaseny.Osoba.PrijmeniJmeno</h4>                    
-					<a @onclick="@(async _ => await HandleOdhlasitClickAsync(prihlaseny.Osoba))">odhlásit z termínu</a>
-				</div>
-			</li>
-		}
-	</ul>
-
-	@if (State.Prihlaseni.Count == 0)
-	{
-		<p>Na tento termín není nikdo přihlášen.</p>
-	}
+    @if (State.Prihlaseni.Count == 0)
+    {
+        <p>Na tento termín není nikdo přihlášen.</p>
+    }
+    else
+    {
+        <div class="persons-grid mb-3">
+            @foreach (var prihlaseny in State.Prihlaseni)
+            {
+                <div class="person-item">
+                    <span class="person-num">@(State.Prihlaseni.IndexOf(prihlaseny) + 1)</span>
+                    <div class="person-data">
+                        <span class="person-name @(prihlaseny.Osoba.Id == PrefferedOsobaId ? "fw-bold" : "")">
+                            @prihlaseny.Osoba.PrijmeniJmeno
+                        </span>
+                        <span class="person-links">
+                            <a @onclick="@(async _ => await HandleOdhlasitClickAsync(prihlaseny.Osoba))">odhlásit z termínu</a>
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 }
 
 <h2>Nepřihlášení</h2>
 @if (State.Neprihlaseni != null)
 {
-	<ul class="listview fluid">
-		@foreach (var neprihlaseny in State.Neprihlaseni)
-		{
-
-            <li class="outline-color-orangeDark">
-                <div class="icon" style="margin-top: 0.5em;">
+    @if (State.Neprihlaseni.Count == 0)
+    {
+        <p>Všichni jsou přihlášeni.</p>
+    }
+    else
+    {
+        <div class="persons-grid mb-3">
+            @foreach (var neprihlaseny in State.Neprihlaseni)
+            {
+                <div class="person-item">
                     @if (neprihlaseny.IsOdhlaseny)
                     {
-                        <i class="icon-user fg-color-red"></i>
+                        <i class="bi bi-person-x person-icon text-danger"></i>
                     }
                     else
                     {
-                        <i class="icon-user fg-color-orange"></i>
+                        <i class="bi bi-person person-icon text-warning"></i>
                     }
-				</div>
-				<div class="data">
-					<h4 class="@(neprihlaseny.Osoba.Id == PrefferedOsobaId ? "strong" : "")">@neprihlaseny.Osoba.PrijmeniJmeno</h4>
-                    <a @onclick="@(async _ => await HandlePrihlasitClickAsync(neprihlaseny))" CssClass="fg-color-orange " runat="server">přihlásit</a>
-                    @if (!neprihlaseny.IsOdhlaseny)
-                    {
-                        <text> / </text>
-                        <a @onclick="@(async _ => await HandleOdhlasitClickAsync(neprihlaseny.Osoba))" CssClass="fg-color-orange " runat="server">odhlásit</a>
-                    }
-				</div>
-			</li>
-		}
-	</ul>
-
-	@if (State.Neprihlaseni.Count == 0)
-	{
-		<p>Všichni jsou přihlášeni.</p>
-	}
+                    <div class="person-data">
+                        <span class="person-name @(neprihlaseny.Osoba.Id == PrefferedOsobaId ? "fw-bold" : "")">
+                            @neprihlaseny.Osoba.PrijmeniJmeno
+                        </span>
+                        <span class="person-links">
+                            <a @onclick="@(async _ => await HandlePrihlasitClickAsync(neprihlaseny))">přihlásit</a>
+                            @if (!neprihlaseny.IsOdhlaseny)
+                            {
+                                <text> / </text>
+                                <a @onclick="@(async _ => await HandleOdhlasitClickAsync(neprihlaseny.Osoba))">odhlásit</a>
+                            }
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 }
-
-
-

@@ -1,6 +1,6 @@
-﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
+using Havit.Blazor.Components.Web.Bootstrap;
+using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
-using Microsoft.JSInterop;
 
 namespace KandaEu.Volejbal.Web.Components.Pages.Osoby;
 
@@ -12,10 +12,10 @@ public partial class AktivaceDeaktivovaneOsoby
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
 
-	[Inject]
-	protected IJSRuntime JSRuntime { get; set; }
-
 	protected OsobaListDto osoby;
+
+	private HxModal deleteModal;
+	private OsobaDto osobaKeSmazani;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -27,18 +27,19 @@ public partial class AktivaceDeaktivovaneOsoby
 	{
 		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
 		osoby.Osoby.Remove(osoba);
-
-		//Toaster.Success($"{osoba.PrijmeniJmeno} aktivován(a).");
 	}
 
 	protected async Task SmazatAsync(OsobaDto osoba)
 	{
-		bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Opravdu chceš smazat osobu \"{osoba.PrijmeniJmeno}\"?");
-		if (confirmed)
-		{
-			await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osoba.Id));
-			osoby.Osoby.Remove(osoba);
-			//Toaster.Success($"{osoba.PrijmeniJmeno} smazán(a).");
-		}
+		osobaKeSmazani = osoba;
+		await deleteModal.ShowAsync();
+	}
+
+	protected async Task PotvrditSmazaniAsync()
+	{
+		await deleteModal.HideAsync();
+		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osobaKeSmazani.Id));
+		osoby.Osoby.Remove(osobaKeSmazani);
+		osobaKeSmazani = null;
 	}
 }

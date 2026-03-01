@@ -1,6 +1,5 @@
-﻿@using KandaEu.Volejbal.Contracts.Nastenka.Dto;
+@using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 @using KandaEu.Volejbal.Web.WebApiClients;
-@using KandaEu.Volejbal.Web.Components.Inputs;
 
 @inject INastenkaWebApiClient NastenkaWebApiClient
 @inject IOsobaWebApiClient OsobaWebApiClient
@@ -11,49 +10,42 @@
 
 @if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
 {
-	if (State.Vzkazy.Count == 0)
-	{
-		<p>Na nástěnce není žádný aktuální vzkaz.</p>
-	}
-	else
-	{
-		foreach (var vzkaz in State.Vzkazy)
-		{
-			<blockquote>
-				<small>@vzkaz.Author dne @vzkaz.DatumVlozeni.ToShortDateString() v @vzkaz.DatumVlozeni.ToShortTimeString()</small>
-				<p>@vzkaz.Zprava</p>
-			</blockquote>
-			<div>&nbsp;</div>
-		}
-	}
+    @if (State.Vzkazy.Count == 0)
+    {
+        <p>Na nástěnce není žádný aktuální vzkaz.</p>
+    }
+    else
+    {
+        @foreach (var vzkaz in State.Vzkazy)
+        {
+            <div class="vzkaz-item">
+                <small>— @vzkaz.Author dne @vzkaz.DatumVlozeni.ToShortDateString() v @vzkaz.DatumVlozeni.ToShortTimeString()</small>
+                <p class="mb-0">@vzkaz.Zprava</p>
+            </div>
+        }
+    }
 
-	<h2 class="icon-plus-2">Přidat vzkaz</h2>
+    <h2><i class="bi bi-plus-circle me-1"></i>Přidat vzkaz</h2>
 
-	<EditForm Model="@formData" OnValidSubmit="OnValidSubmitAsync">
-		<ValidationSummary />
-		<DataAnnotationsValidator />
+    <EditForm Model="@formData" OnValidSubmit="OnValidSubmitAsync">
+        <ValidationSummary class="validation-message" />
+        <DataAnnotationsValidator />
 
-		<h3>Kdo</h3>
-		<div class="input-control select">            
-			<InputSelectNumber @bind-Value="@formData.AutorId" style="width:20em;">
-				<option value="" selected="selected">---</option>
-				@if (State.AktivniOsoby != null)
-					{
-					@foreach (var osoba in State.AktivniOsoby)
-						{
-						<option value="@osoba.Id">@osoba.PrijmeniJmeno</option>
-						}
-					}
-			</InputSelectNumber>
-		</div>
+        <HxSelect TItem="KandaEu.Volejbal.Contracts.Osoby.Dto.OsobaDto"
+                  TValue="int?"
+                  Label="Kdo"
+                  Data="@State.AktivniOsoby"
+                  @bind-Value="@formData.AutorId"
+                  TextSelector="@(o => o.PrijmeniJmeno)"
+                  ValueSelector="@(o => (int?)o.Id)"
+                  NullText="---"
+                  Nullable="true"
+                  InputSize="InputSize.Regular" />
 
-		<h3>Vzkaz</h3>
-		<div class="input-control textarea">
-			<span></span>
-			<InputTextArea @bind-Value="@formData.Zprava" rows="5" cols="20" style="width:30em;" />
-		</div>
+        <HxInputTextArea Label="Vzkaz"
+                         @bind-Value="@formData.Zprava"
+                         Rows="5" />
 
-		<input type="submit" value="přidat vzkaz" class="bg-color-red fg-color-white" />
-
-	</EditForm>
+        <HxSubmit Text="přidat vzkaz" Color="ThemeColor.Danger" />
+    </EditForm>
 }

@@ -1,81 +1,155 @@
-﻿@media screen and (min-width: 1024px)
-{
-    .page
-    {
-        width: 980px;
-        margin: auto;            
-        background-color: white;
-        height: auto;
-    }
+/* =============================================
+   Globální layout – bílá stránka na modrém pozadí
+   ============================================= */
 
-    body
-    {
-        height: 100%;
-
-    }
-        
-    html
-    {
-        background-color: #eff4ff;
-        height: 100%;
-    }
-
+html {
+    background-color: #eff4ff;
+    height: 100%;
 }
 
-.page
-{
-    padding-right: 80px;
+body {
+    min-height: 100%;
 }
 
-.icon-user
-{
-   font-size: 200%;
+.app-container {
+    max-width: 980px;
+    margin: 0 auto;
+    background-color: white;
+    min-height: 100vh;
+    padding: 0.75rem 2rem 2rem 2rem;
 }
 
-.icon-user-index
-{
-    font-family: 'Segoe UI Semilight', 'Open Sans', Verdana, Arial, Helvetica, sans-serif;
-    margin-top: 10px;
-    font-size: 32pt;
-    left: 0px;
+/* =============================================
+   Záhlaví
+   ============================================= */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.app-title {
+    font-size: 2rem;
+    font-weight: 300;
+    margin: 0;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 2px solid #555;
+    border-radius: 50%;
+    color: #555;
+    font-size: 1.1rem;
+    text-decoration: none;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.back-btn:hover {
+    color: #222;
+    border-color: #222;
+    text-decoration: none;
+}
+
+/* =============================================
+   Přihlašování – 3-sloupcový grid
+   ============================================= */
+
+.persons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.1rem 0;
+}
+
+.person-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.35rem 0.25rem;
+}
+
+/* Velká dekorativní čísla pro přihlášené */
+.person-num {
+    font-family: 'Segoe UI Semilight', 'Open Sans', Verdana, Arial, sans-serif;
+    font-size: 2rem;
     font-weight: bold;
-    width: 58px !important;
-    text-align: right !important;
-    position: absolute;
+    color: #2d89ef;
+    opacity: 0.35;
+    line-height: 1;
+    min-width: 2.2rem;
+    text-align: right;
+    flex-shrink: 0;
 }
 
-ul.listview li
-{
-    margin-top: 2px;
-    margin-bottom: 2px;
-    padding-bottom: 2px;
-    width: 250px;
+/* Velké ikony osob pro nepřihlášené */
+.person-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
-button, .button
-{
-    min-width: 110px;
+.person-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
-h4.strong
-{
-    font-weight: bold;
-    color: black;
+.person-name {
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.3;
 }
 
-a:hover {
+.person-links {
+    font-size: 0.85rem;
+}
+
+.person-links a {
     cursor: pointer;
 }
 
-.listview li
-{
-    cursor: inherit;
+/* =============================================
+   Nástěnka – blockquote styl
+   ============================================= */
+
+.vzkaz-item {
+    border-left: 4px solid #dee2e6;
+    padding-left: 0.75rem;
+    margin-bottom: 1rem;
 }
 
-.validation-errors
-{
-    color: red;
+.vzkaz-item small {
+    color: #6c757d;
+    font-size: 0.82rem;
 }
+
+/* =============================================
+   Navigační tlačítka – min. šířka pro konzistenci
+   ============================================= */
+
+.nav-btn {
+    min-width: 110px;
+}
+
+/* =============================================
+   Validace formulářů
+   ============================================= */
+
+.validation-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+
+/* =============================================
+   Blazor error UI
+   ============================================= */
 
 #blazor-error-ui {
     background: coral;

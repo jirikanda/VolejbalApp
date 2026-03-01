@@ -1,12 +1,4 @@
-﻿using ChartJs.Blazor.ChartJS.Common.Properties;
-using ChartJs.Blazor.Util;
-using ChartJs.Blazor.ChartJS.BarChart;
-using ChartJs.Blazor.ChartJS.Common.Enums;
-using ChartJs.Blazor.ChartJS.Common.Axes;
-using ChartJs.Blazor.ChartJS.Common.Axes.Ticks;
-using ChartJs.Blazor.ChartJS.Common.Wrappers;
 using KandaEu.Volejbal.Web.Components.ProgressComponent;
-using ChartJs.Blazor.ChartJS.Common.Handlers;
 
 namespace KandaEu.Volejbal.Web.Components.Pages.Statistika;
 
@@ -18,58 +10,31 @@ public partial class StatistikaOsob
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
 
-	private BarConfig barConfig;
-	private int reportHeight = 300;
-	private bool isLoaded = false;
+	private object chartOptions;
+	private int chartHeight = 300;
 
 	protected override async Task OnInitializedAsync()
 	{
-		barConfig = new BarConfig(ChartType.HorizontalBar)
-		{
-			Options = new BarOptions
-			{
-				Title = new OptionsTitle
-				{
-					Display = false,
-				},
-				Responsive = false,
-				Scales = new BarScales
-				{
-					XAxes = new List<CartesianAxis>
-					{
-						new LinearCartesianAxis
-						{
-							Ticks = new LinearCartesianTicks
-							{
-								AutoSkip = false,
-								Min = 0,
-								StepSize = 1
-							},
-						}
-					}
-				},
-				Legend = new Legend
-				{
-					Display = false,
-				}
-			}
-		};
-
 		var report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
 
+		var labels = report.UcastHracu.Select(item => item.PrijmeniJmeno).ToArray();
+		var data = report.UcastHracu
+			.Select((item, i) => new
+			{
+				value = item.PocetTerminu,
+				itemStyle = new { color = $"rgb(0,0,{255 - (i * 15) % 200})" }
+			})
+			.ToArray();
 
-		barConfig.Data.Labels.AddRange(report.UcastHracu.Select(item => item.PrijmeniJmeno).ToArray());
-
-		BarDataset<Int32Wrapper> barDataSet = new BarDataset<Int32Wrapper>(ChartType.HorizontalBar)
+		chartOptions = new
 		{
-			BackgroundColor = Enumerable.Range(0, report.UcastHracu.Count).Select(i => ColorUtil.ColorHexString(0, 0, (byte)(255 - ((i * 15) % 200)))).ToArray()
+			grid = new { left = "110px", right = "20px", top = "10px", bottom = "10px" },
+			xAxis = new { type = "value", minInterval = 1 },
+			yAxis = new { type = "category", data = labels, axisLabel = new { fontSize = 11 } },
+			series = new[] { new { type = "bar", data } }
 		};
 
-		barDataSet.AddRange(report.UcastHracu.Select(item => item.PocetTerminu).ToArray().Wrap());
-		barConfig.Data.Datasets.Add(barDataSet);
-
-		reportHeight = (report.UcastHracu.Count * 40) + 60;
-		isLoaded = true;
+		chartHeight = (report.UcastHracu.Count * 30) + 40;
 		StateHasChanged();
 	}
 }

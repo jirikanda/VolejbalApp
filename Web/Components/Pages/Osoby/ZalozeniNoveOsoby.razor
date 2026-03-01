@@ -1,23 +1,12 @@
-﻿<h2 class="icon-plus-2">Založení nové osoby</h2>
+<h2><i class="bi bi-plus-circle me-1"></i>Založení nové osoby</h2>
 
 <EditForm Model="@formData" OnValidSubmit="ValidSubmitAsync">
-	<DataAnnotationsValidator />
-	<ValidationSummary />
+    <DataAnnotationsValidator />
+    <ValidationSummary class="validation-message" />
 
-	<h3>jméno</h3>
-	<div class="input-control text">
-		<input type="text" maxlength="50" style="width:22em;" @bind-value="@formData.Jmeno" />
-	</div>
+    <HxInputText Label="jméno" @bind-Value="@formData.Jmeno" MaxLength="50" />
+    <HxInputText Label="příjmení" @bind-Value="@formData.Prijmeni" MaxLength="50" />
+    <HxInputText Label="email" @bind-Value="@formData.Email" MaxLength="50" />
 
-	<h3>příjmení</h3>
-	<div class="input-control text">
-		<input type="text" maxlength="50" style="width:22em;" @bind-value="@formData.Prijmeni"/>
-	</div>
-
-	<h3>email</h3>
-	<div class="input-control email">
-		<input type="text" maxlength="50" style="width:22em;" @bind-value="@formData.Email"/>
-	</div>
-
-	<input type="submit" value="založit osobu" class="bg-color-green fg-color-white" />
+    <HxSubmit Text="založit osobu" Color="ThemeColor.Success" />
 </EditForm>

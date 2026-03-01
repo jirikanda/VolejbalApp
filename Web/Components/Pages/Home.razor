@@ -1,17 +1,23 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Volejbal - Přihlašování</PageTitle>
 
 @if (ShowNastenkaLink)
 {
-	<a href="/Nastenka" class="fg-color-red">Na nástěnce jsou nové vzkazy!</a>
+    <a href="/Nastenka" class="text-danger fw-semibold d-block mb-2">Na nástěnce jsou nové vzkazy!</a>
 }
 
 <KandaEu.Volejbal.Web.Components.Pages.Terminy.Terminy CurrentTerminIdChanged="HandleCurrentTerminIdChanged" />
 <KandaEu.Volejbal.Web.Components.Pages.Prihlasovani.Prihlasovani CurrentTerminId="@currentTerminId" />
 
-<div class="button-set" data-role="xbutton-set">
-	<a href="/Nastenka" class="button icon-comments-4 bg-color-red fg-color-white">nástěnka</a>
-	<a href="/Osoby" class="button icon-cog bg-color-green fg-color-white">správa osob</a>
-	<a href="/Statistika" class="button icon-stats bg-color-orange fg-color-white">statistika</a>
+<div class="d-flex flex-wrap gap-2 mt-3">
+    <a href="/Nastenka" class="btn btn-danger nav-btn">
+        <i class="bi bi-chat-dots me-1"></i>nástěnka
+    </a>
+    <a href="/Osoby" class="btn btn-success nav-btn">
+        <i class="bi bi-people me-1"></i>správa osob
+    </a>
+    <a href="/Statistika" class="btn nav-btn" style="background-color:#e3a21a; color:white;">
+        <i class="bi bi-bar-chart-horizontal me-1"></i>statistika
+    </a>
 </div>

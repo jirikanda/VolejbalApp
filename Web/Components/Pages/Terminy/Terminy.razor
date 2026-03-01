@@ -1,19 +1,19 @@
-﻿<h2>Termín</h2>
+<h2>Termín</h2>
 
 @if (State.Terminy != null)
 {
-	<div class="button-set" data-role="button-set">
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        @foreach (var termin in State.Terminy)
+        {
+            <button class="btn @((termin.Id == State.CurrentTerminId) ? "btn-primary" : "btn-secondary")"
+                    @onclick="@(_ => TerminClickAsync(termin))">
+                @termin.Datum.ToString("d. MMMM")
+            </button>
+        }
 
-		@foreach (var termin in State.Terminy)
-		{
-			<a class="button @((termin.Id == this.State.CurrentTerminId) ? "bg-color-blue fg-color-white" : "bg-color-blueDark fg-color-white")" @onclick="@(_ => TerminClickAsync(termin))"><span class="box"><span>@termin.Datum.ToString("d. MMMM")</span></span></a>
-			<span></span>			
-		}
-
-		@if (State.Terminy.Count == 0)
-		{
-			<span>Žádné termíny nejsou k dispozici.</span>
-		}
-
-	</div>
+        @if (State.Terminy.Count == 0)
+        {
+            <span>Žádné termíny nejsou k dispozici.</span>
+        }
+    </div>
 }
