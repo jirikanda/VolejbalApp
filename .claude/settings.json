@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/Users/jiri/.nuget/packages/havit.blazor.components.web.echarts/4.23.0/lib/net10.0/**)"
-    ]
-  }
-}
