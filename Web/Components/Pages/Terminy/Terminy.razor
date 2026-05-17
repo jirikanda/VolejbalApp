@@ -14,7 +14,7 @@
                         aria-pressed="@(isSelected ? "true" : "false")"
                         @onclick="@(_ => TerminClickAsync(termin))">
                     <div class="d-date">
-                        @($"{termin.Datum.Day}.") <small>@CzechMonth(termin.Datum.Month)</small>
+                        @($"{termin.Datum.Day}.") <small>@termin.Datum.ToString("MMMM")</small>
                     </div>
                 </button>
             }

@@ -14,7 +14,7 @@ else if (State.Prihlaseni != null && State.Neprihlaseni != null)
             @if (State.Prihlaseni.Count == 0)
             {
                 <div class="empty-block" style="padding: 24px 16px;">
-                    <strong>Zatím nikdo</strong>
+                    <strong>Zatím není nikdo přihlášen.</strong>
                     Buď první, kdo se přihlásí.
                 </div>
             }
@@ -51,7 +51,7 @@ else if (State.Prihlaseni != null && State.Neprihlaseni != null)
             @if (State.Neprihlaseni.Count == 0)
             {
                 <div class="empty-block" style="padding: 24px 16px;">
-                    <strong>Všichni jsou přihlášeni</strong>
+                    <strong>Všichni jsou přihlášeni.</strong>
                 </div>
             }
             else

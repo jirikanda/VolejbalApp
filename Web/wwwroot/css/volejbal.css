@@ -535,6 +535,12 @@ body::before {
     border-radius: var(--radius); padding: 22px;
     align-self: start; box-shadow: var(--shadow-sm);
 }
+/* Force consistent vertical gaps between fields regardless of HAVIT's wrapper class. */
+.new-form .compose {
+    display: flex; flex-direction: column; gap: 14px;
+}
+.new-form .compose > * { margin-bottom: 0 !important; }
+.new-form .compose .btn { margin-top: 4px; }
 
 /* ─── MISC ─── */
 .empty-block {
