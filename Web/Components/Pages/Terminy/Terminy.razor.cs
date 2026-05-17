@@ -1,6 +1,6 @@
 ﻿using KandaEu.Volejbal.Contracts.Terminy.Dto;
 
-	namespace KandaEu.Volejbal.Web.Components.Pages.Terminy;
+namespace KandaEu.Volejbal.Web.Components.Pages.Terminy;
 
 public partial class Terminy : IDisposable
 {
