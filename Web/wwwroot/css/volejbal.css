@@ -86,7 +86,7 @@ body::before {
 .app {
     max-width: 1220px;
     margin: 0 auto;
-    padding: 0 24px 100px;
+	    padding: 0 24px 100px;
 }
 @media (max-width: 720px) { .app { padding: 0 14px 100px; } }
 
@@ -233,10 +233,9 @@ body::before {
 
 /* ─── ROSTER ─── */
 .roster {
-    display: grid; grid-template-columns: 1.1fr 1fr;
-    gap: 20px; margin-top: 20px;
+    display: grid; grid-template-columns: 1fr;
+    gap: 28px; margin-top: 20px;
 }
-@media (max-width: 900px) { .roster { grid-template-columns: 1fr; } }
 .roster-col h3 {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
     font-weight: 700; color: var(--ink-3); font-family: var(--font-mono);
@@ -266,9 +265,14 @@ body::before {
 .roster-col h3 .h3-legend { margin-left: auto; }
 
 /* Signed list */
-.signed-list { display: flex; flex-direction: column; gap: 8px; }
+.signed-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 8px;
+}
+@media (max-width: 720px) { .signed-list { grid-template-columns: 1fr; } }
 .signed-row {
-    display: grid; grid-template-columns: 38px 1fr auto;
+    display: grid; grid-template-columns: 32px minmax(0, 1fr) auto;
     align-items: center; gap: 12px;
     padding: 13px 16px; min-height: 54px;
     background: linear-gradient(100deg, var(--signed-soft) 0%, oklch(0.97 0.03 145 / .4) 100%);
