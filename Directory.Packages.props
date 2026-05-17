@@ -1,4 +1,4 @@
-<Project>
+	<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
@@ -40,5 +40,7 @@
     <PackageVersion Include="MSTest" Version="4.0.2" />
     <PackageVersion Include="NSwag.ApiDescription.Client" Version="14.6.3" />
     <PackageVersion Include="NSwag.AspNetCore" Version="14.6.3" />
+	  <!-- fix vulnerabilities -->
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.8" />
   </ItemGroup>
 </Project>
