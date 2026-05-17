@@ -6,7 +6,22 @@
     <header class="topbar">
         <a class="brand" href="/">
             <span class="mark @(ProgressState.InProgress ? "loading" : "")" aria-hidden="true" aria-busy="@ProgressState.InProgress">
-                <span class="ball">🏐</span>
+                <svg class="ball" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="brand-ball-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FAEFD8" />
+                            <stop offset="100%" stop-color="#C7A26B" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="12" cy="12" r="10" fill="url(#brand-ball-bg)" stroke="#3D2817" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                    <g fill="none" stroke="#3D2817" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11.1 7.1a16.55 16.55 0 0 1 10.9 4" />
+                        <path d="M12 12a12.6 12.6 0 0 1-8.7 5" />
+                        <path d="M16.8 13.6a16.55 16.55 0 0 1-9 7.5" />
+                        <path d="M20.7 17a12.8 12.8 0 0 0-8.7-5 13.3 13.3 0 0 1 0-10" />
+                        <path d="M6.3 3.8a16.55 16.55 0 0 0 1.9 11.5" />
+                    </g>
+                </svg>
             </span>
             <span class="name">Volejbal</span>
         </a>

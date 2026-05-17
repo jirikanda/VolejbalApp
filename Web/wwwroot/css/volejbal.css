@@ -116,13 +116,14 @@ body::before {
 .brand .mark {
     width: 40px; height: 40px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 24px; line-height: 1; text-align: center;
+    flex-shrink: 0;
     background: linear-gradient(135deg, oklch(0.92 0.04 80), oklch(0.82 0.08 60));
     border-radius: 14px;
     box-shadow: var(--shadow-md), inset 0 1px 0 oklch(1 0 0 / .5);
 }
 .brand .mark .ball {
-    display: block; line-height: 1;
+    display: block;
+    width: 86%; height: 86%;
     transform-origin: center center;
 }
 .brand .mark.loading .ball {
@@ -409,6 +410,16 @@ body::before {
     background: transparent; border: 1px dashed var(--line-strong);
     border-radius: var(--radius-sm);
 }
+.msg-older { margin: 10px 0 4px; }
+.msg-older button {
+    appearance: none; border: 0; background: transparent; padding: 6px 0;
+    color: var(--ink-2); font: 600 13px/1 var(--font-sans);
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s, color .15s;
+}
+.msg-older button:hover { color: var(--ink); border-bottom-color: var(--line-strong); }
+.msg-older button svg { width: 12px; height: 12px; }
 
 /* ─── COMPOSE ─── */
 .compose {
