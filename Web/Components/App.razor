@@ -2,8 +2,19 @@
 <html lang="cs">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <base href="/" />
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('volejbal-theme');
+                if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
     <link rel="stylesheet" href="_content/Havit.Blazor.Components.Web.Bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="_content/Havit.Blazor.Components.Web.Bootstrap/bootstrap-icons.lib.css" />
     <link rel="stylesheet" href="_content/Havit.Blazor.Components.Web.Bootstrap/defaults.lib.css" />
@@ -16,8 +27,8 @@
 <body>
     <Routes @rendermode="RenderMode.InteractiveServer" />
 
+    <script src="js/theme.js"></script>
     <script src="_framework/blazor.web.js"></script>
-    @((MarkupString)Havit.Blazor.Components.Web.ECharts.HxEChartsSetup.RenderEChartsJavaScriptReference())
 </body>
 
 </html>

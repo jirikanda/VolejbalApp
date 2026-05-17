@@ -1,8 +1,8 @@
-﻿using KandaEu.Volejbal.Web.Components.ProgressComponent;
+using KandaEu.Volejbal.Web.Components.ProgressComponent;
 
 namespace KandaEu.Volejbal.Web.Components.Pages.Nastenka;
 
-public partial class Nastenka
+public partial class NastenkaSidebar
 {
 	private NovyVzkazFormData formData = new NovyVzkazFormData();
 	private NastenkaState State = new NastenkaState();
@@ -19,10 +19,8 @@ public partial class Nastenka
 	private async Task OnValidSubmitAsync()
 	{
 		await NastenkaWebApiClient.VlozVzkazAsync(formData.ToVzkazInputDto());
-		formData.Zprava = ""; // vyčistit formulář
+		formData.Zprava = "";
 		await LoadDataAsync();
-
-		//Toaster.Success("Vzkaz zapsán.");
 	}
 
 	private async Task LoadDataAsync()

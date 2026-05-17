@@ -1,7 +1,48 @@
-<h3>Účast osob</h3>
-<p>Zobrazuje, na kolika termínech hráč hrál.</p>
+<div class="chart">
+    <h3>&#218;&#269;ast hr&#225;&#269;&#367;</h3>
+    <p class="descr">Na kolika term&#237;nech kdo hr&#225;l b&#283;hem sez&#243;ny.</p>
 
-@if (chartOptions != null)
-{
-    <HxEChart Options="@chartOptions" Height="@($"{chartHeight}px")" />
+    @if (report != null)
+    {
+        @if (report.UcastHracu.Count == 0)
+        {
+            <div class="empty-block">
+                <strong>Zat&#237;m &#382;&#225;dn&#225; data</strong>
+                Statistika se zobraz&#237; po prvn&#237;ch term&#237;nech.
+            </div>
+        }
+        else
+        {
+            var sorted = report.UcastHracu.OrderByDescending(x => x.PocetTerminu).ToList();
+            var max = Math.Max(sorted.Max(x => x.PocetTerminu), 1);
+            <div>
+                @{
+                    var i = 0;
+                }
+                @foreach (var item in sorted)
+                {
+                    i++;
+                    var pct = (item.PocetTerminu / (double)max) * 100;
+                    var hue = HueForRank(i, sorted.Count);
+                    <div class="bar-row wide-label">
+                        <span class="label">@item.PrijmeniJmeno</span>
+                        <span class="bar-track">
+                            <span class="bar-fill" style="@($"width: {pct.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%; background: linear-gradient(90deg, oklch(0.58 0.20 {hue}), oklch(0.68 0.22 {hue + 20}));")"></span>
+                        </span>
+                        <span class="val">@item.PocetTerminu</span>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private static int HueForRank(int rank, int total)
+    {
+        // ramp od 145 (zelená) přes tyrkysovou (200) k modré (255)
+        if (total <= 1) return 145;
+        var pct = (rank - 1) / (double)(total - 1);
+        return (int)(145 + pct * 110);
+    }
 }

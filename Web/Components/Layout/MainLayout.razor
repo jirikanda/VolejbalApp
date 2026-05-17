@@ -1,15 +1,39 @@
 @inherits LayoutComponentBase
+@implements IAsyncDisposable
+@inject IJSRuntime JS
 
-<HxSetup />
-
-<div class="app-container">
-    <div class="app-header">
-        @if (NavigationManager.Uri != NavigationManager.BaseUri)
-        {
-            <a href="javascript:history.back()" class="back-btn">&#8592;</a>
-        }
-        <span class="app-title">Volejbal &#127944;</span>
-    </div>
+<div class="app">
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="mark" aria-hidden="true">🏐</span>
+            <span>
+                <span class="name">Volejbal<em>.</em></span>
+                <span class="sub">p&#345;ihla&#353;ov&#225;n&#237;</span>
+            </span>
+        </a>
+        <nav class="nav" role="tablist">
+            <NavLink href="/" Match="NavLinkMatch.All">Term&#237;ny</NavLink>
+            <NavLink href="/statistika">Statistika</NavLink>
+            <NavLink href="/osoby">Spr&#225;va hr&#225;&#269;&#367;</NavLink>
+            <button type="button" class="theme-toggle"
+                    @onclick="ToggleThemeAsync"
+                    aria-label="@(isDark ? "Světlý režim" : "Tmavý režim")">
+                @if (isDark)
+                {
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                    </svg>
+                }
+                else
+                {
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                }
+            </button>
+        </nav>
+    </header>
 
     <ErrorBoundary>
         <ChildContent>
@@ -24,11 +48,29 @@
 </div>
 
 <div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
+    Do&#353;lo k chyb&#283;.
+    <a href="" class="reload">Znovu na&#269;&#237;st</a>
     <a class="dismiss">&#x2757;</a>
 </div>
 
 @code {
-    [Inject] NavigationManager NavigationManager { get; set; }
+    private bool isDark;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var theme = await JS.InvokeAsync<string>("volejbalTheme.get");
+            isDark = theme == "dark";
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleThemeAsync()
+    {
+        var newTheme = await JS.InvokeAsync<string>("volejbalTheme.toggle");
+        isDark = newTheme == "dark";
+    }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

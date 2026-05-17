@@ -1,0 +1,64 @@
+@using KandaEu.Volejbal.Contracts.Nastenka.Dto
+@using KandaEu.Volejbal.Web.WebApiClients
+
+@inject INastenkaWebApiClient NastenkaWebApiClient
+@inject IOsobaWebApiClient OsobaWebApiClient
+
+@if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
+{
+    <div class="msg-head">
+        <h2>N&#225;st&#283;nka</h2>
+        <span class="meta">@VzkazyCountLabel(State.Vzkazy.Count)</span>
+    </div>
+
+    @if (State.Vzkazy.Count == 0)
+    {
+        <p class="msg-note">&#381;&#225;dn&#233; aktu&#225;ln&#237; zpr&#225;vy.</p>
+    }
+    else
+    {
+        <div class="msg-list">
+            @foreach (var vzkaz in State.Vzkazy)
+            {
+                <div class="msg">
+                    <div class="meta">
+                        <span class="author">@vzkaz.Author</span>
+                        <span>&#183;</span>
+                        <span>@vzkaz.DatumVlozeni.ToString("d.M.yyyy HH:mm")</span>
+                    </div>
+                    <div class="body">@vzkaz.Zprava</div>
+                </div>
+            }
+        </div>
+    }
+
+    <EditForm class="compose" Model="@formData" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator />
+
+        <HxSelect TItem="KandaEu.Volejbal.Contracts.Osoby.Dto.OsobaDto"
+                  TValue="int?"
+                  Label="Kdo p&#237;&#353;e"
+                  Data="@State.AktivniOsoby"
+                  @bind-Value="@formData.AutorId"
+                  TextSelector="@(o => o.PrijmeniJmeno)"
+                  ValueSelector="@(o => (int?)o.Id)"
+                  NullText="&#8212; vyber autora &#8212;"
+                  Nullable="true"
+                  InputSize="InputSize.Regular" />
+
+        <HxInputTextArea Label="Vzkaz"
+                         @bind-Value="@formData.Zprava"
+                         Placeholder="Co chce&#353; ostatn&#237;m vzk&#225;zat?" />
+
+        <button type="submit" class="btn primary-signed">P&#345;idat vzkaz</button>
+    </EditForm>
+}
+
+@code {
+    private static string VzkazyCountLabel(int count) => count switch
+    {
+        1 => "1 vzkaz",
+        >= 2 and <= 4 => $"{count} vzkazy",
+        _ => $"{count} vzkazů"
+    };
+}

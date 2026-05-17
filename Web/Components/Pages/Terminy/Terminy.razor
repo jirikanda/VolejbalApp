@@ -1,19 +1,23 @@
-<h2>Termín</h2>
-
 @if (State.Terminy != null)
 {
-    <div class="d-flex flex-wrap gap-2 mb-3">
-        @foreach (var termin in State.Terminy)
-        {
-            <button class="btn @((termin.Id == State.CurrentTerminId) ? "btn-primary" : "btn-secondary")"
-                    @onclick="@(_ => TerminClickAsync(termin))">
-                @termin.Datum.ToString("d. MMMM")
-            </button>
-        }
-
-        @if (State.Terminy.Count == 0)
-        {
-            <span>Žádné termíny nejsou k dispozici.</span>
-        }
-    </div>
+    @if (State.Terminy.Count == 0)
+    {
+        <div class="empty-date">&#381;&#225;dn&#253; term&#237;n nen&#237; k&#160;dispozici.</div>
+    }
+    else
+    {
+        <div class="dates">
+            @foreach (var termin in State.Terminy)
+            {
+                var isSelected = termin.Id == State.CurrentTerminId;
+                <button type="button" class="date"
+                        aria-pressed="@(isSelected ? "true" : "false")"
+                        @onclick="@(_ => TerminClickAsync(termin))">
+                    <div class="d-date">
+                        @($"{termin.Datum.Day}.") <small>@CzechMonth(termin.Datum.Month)</small>
+                    </div>
+                </button>
+            }
+        </div>
+    }
 }

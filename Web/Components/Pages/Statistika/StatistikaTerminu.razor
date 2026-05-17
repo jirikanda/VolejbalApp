@@ -1,7 +1,44 @@
-<h3>Obsazenost termínů</h3>
-<p>Zobrazuje, kolik hráčů se zúčastnilo termínu.</p>
+<div class="chart">
+    <h3>Obsazenost term&#237;n&#367;</h3>
+    <p class="descr">Kolik hr&#225;&#269;&#367; se z&#250;&#269;astnilo jednotliv&#253;ch term&#237;n&#367;.</p>
 
-@if (chartOptions != null)
-{
-    <HxEChart Options="@chartOptions" Height="@($"{chartHeight}px")" />
+    @if (report != null)
+    {
+        @if (report.ObsazenostTerminu.Count == 0)
+        {
+            <div class="empty-block">
+                <strong>Zat&#237;m &#382;&#225;dn&#225; data</strong>
+                Statistika se zobraz&#237; po prvn&#237;ch term&#237;nech.
+            </div>
+        }
+        else
+        {
+            var max = Math.Max(report.ObsazenostTerminu.Max(x => x.PocetHracu), 1);
+            <div style="max-height: 520px; overflow-y: auto; padding-right: 6px;">
+                @foreach (var item in report.ObsazenostTerminu)
+                {
+                    var pct = (item.PocetHracu / (double)max) * 100;
+                    var hue = HueForMonth(item.Datum.Month);
+                    <div class="bar-row">
+                        <span class="label">@item.Datum.ToString("d. MMMM", _cz)</span>
+                        <span class="bar-track">
+                            <span class="bar-fill" style="@($"width: {pct.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%; background: linear-gradient(90deg, oklch(0.62 0.17 {hue}), oklch(0.70 0.20 {hue + 15}));")"></span>
+                        </span>
+                        <span class="val">@item.PocetHracu</span>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private static readonly System.Globalization.CultureInfo _cz = new("cs-CZ");
+
+    private static int HueForMonth(int month)
+    {
+        // ramp: zelená → tyrkysová → modrá
+        int[] ramp = { 145, 145, 160, 175, 195, 220, 250, 240, 225, 205, 180, 160 };
+        return ramp[Math.Clamp(month - 1, 0, 11)];
+    }
 }

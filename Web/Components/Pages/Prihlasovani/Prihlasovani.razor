@@ -1,72 +1,98 @@
 @if (State.AktualniTerminId == null)
 {
-    <p><em>Termín není zvolen.</em></p>
+    <p style="margin-top: 20px; color: var(--ink-3); font-style: italic;">Term&#237;n nen&#237; zvolen.</p>
 }
-
-<h2>Přihlášení</h2>
-@if (State.Prihlaseni != null)
+else if (State.Prihlaseni != null && State.Neprihlaseni != null)
 {
-    @if (State.Prihlaseni.Count == 0)
-    {
-        <p>Na tento termín není nikdo přihlášen.</p>
-    }
-    else
-    {
-        <div class="persons-grid mb-3">
-            @foreach (var prihlaseny in State.Prihlaseni)
+    <div class="roster">
+        <div class="roster-col">
+            <h3>
+                <span class="legend-key" style="background: var(--signed);"></span>
+                P&#345;ihl&#225;&#353;en&#237;
+                <span class="count">@State.Prihlaseni.Count</span>
+            </h3>
+            @if (State.Prihlaseni.Count == 0)
             {
-                <div class="person-item">
-                    <span class="person-num">@(State.Prihlaseni.IndexOf(prihlaseny) + 1)</span>
-                    <div class="person-data">
-                        <span class="person-name @(prihlaseny.Osoba.Id == PrefferedOsobaId ? "fw-bold" : "")">
-                            @prihlaseny.Osoba.PrijmeniJmeno
-                        </span>
-                        <span class="person-links">
-                            <a @onclick="@(async _ => await HandleOdhlasitClickAsync(prihlaseny.Osoba))">odhlásit z termínu</a>
-                        </span>
-                    </div>
+                <div class="empty-block" style="padding: 24px 16px;">
+                    <strong>Zat&#237;m nikdo</strong>
+                    Bu&#271; prvn&#237;, kdo se p&#345;ihl&#225;s&#237;.
+                </div>
+            }
+            else
+            {
+                <div class="signed-list">
+                    @{ var idx = 0; }
+                    @foreach (var prihlaseny in State.Prihlaseni)
+                    {
+                        idx++;
+                        var rowIdx = idx;
+                        <div class="signed-row">
+                            <span class="idx">@rowIdx</span>
+                            <span class="nm @(prihlaseny.Osoba.Id == PrefferedOsobaId ? "preferred" : "")">@prihlaseny.Osoba.PrijmeniJmeno</span>
+                            <button type="button" class="unsign"
+                                    @onclick="@(async _ => await HandleOdhlasitClickAsync(prihlaseny.Osoba))">
+                                odhl&#225;sit
+                            </button>
+                        </div>
+                    }
                 </div>
             }
         </div>
-    }
-}
 
-<h2>Nepřihlášení</h2>
-@if (State.Neprihlaseni != null)
-{
-    @if (State.Neprihlaseni.Count == 0)
-    {
-        <p>Všichni jsou přihlášeni.</p>
-    }
-    else
-    {
-        <div class="persons-grid mb-3">
-            @foreach (var neprihlaseny in State.Neprihlaseni)
+        <div class="roster-col">
+            <h3>
+                Nep&#345;ihl&#225;&#353;en&#237;
+                <span class="count">@State.Neprihlaseni.Count</span>
+                <span class="legend h3-legend">
+                    <span class="l-pending"><i></i>nereagoval</span>
+                    <span class="l-decl"><i></i>odm&#237;tl</span>
+                </span>
+            </h3>
+            @if (State.Neprihlaseni.Count == 0)
             {
-                <div class="person-item">
-                    @if (neprihlaseny.IsOdhlaseny)
+                <div class="empty-block" style="padding: 24px 16px;">
+                    <strong>V&#353;ichni jsou p&#345;ihl&#225;&#353;eni</strong>
+                </div>
+            }
+            else
+            {
+                <div class="unsigned-grid">
+                    @foreach (var neprihlaseny in State.Neprihlaseni)
                     {
-                        <i class="bi bi-person-x person-icon text-danger"></i>
+                        var stateClass = neprihlaseny.IsOdhlaseny ? "state-declined" : "state-pending";
+                        var avatarColor = neprihlaseny.IsOdhlaseny ? "var(--declined)" : "var(--pending)";
+                        <div class="player @stateClass">
+                            <div class="avatar" aria-hidden="true" style="background: @avatarColor;">
+                                <svg viewBox="0 0 448 512" fill="currentColor">
+                                    <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3 0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z" />
+                                </svg>
+                            </div>
+                            <div class="nm-block">
+                                <div class="nm @(neprihlaseny.Osoba.Id == PrefferedOsobaId ? "preferred" : "")">@neprihlaseny.Osoba.PrijmeniJmeno</div>
+                            </div>
+                            <div class="actions">
+                                <button type="button" class="act-sign"
+                                        @onclick="@(async _ => await HandlePrihlasitClickAsync(neprihlaseny))">
+                                    p&#345;ihl&#225;sit
+                                </button>
+                                @if (!neprihlaseny.IsOdhlaseny)
+                                {
+                                    <button type="button" class="act-decline"
+                                            @onclick="@(async _ => await HandleOdhlasitClickAsync(neprihlaseny.Osoba))">
+                                        nem&#367;&#382;u
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="act-decline" tabindex="-1" aria-hidden="true" style="visibility: hidden;">
+                                        nem&#367;&#382;u
+                                    </button>
+                                }
+                            </div>
+                        </div>
                     }
-                    else
-                    {
-                        <i class="bi bi-person person-icon text-warning"></i>
-                    }
-                    <div class="person-data">
-                        <span class="person-name @(neprihlaseny.Osoba.Id == PrefferedOsobaId ? "fw-bold" : "")">
-                            @neprihlaseny.Osoba.PrijmeniJmeno
-                        </span>
-                        <span class="person-links">
-                            <a @onclick="@(async _ => await HandlePrihlasitClickAsync(neprihlaseny))">přihlásit</a>
-                            @if (!neprihlaseny.IsOdhlaseny)
-                            {
-                                <text> / </text>
-                                <a @onclick="@(async _ => await HandleOdhlasitClickAsync(neprihlaseny.Osoba))">odhlásit</a>
-                            }
-                        </span>
-                    </div>
                 </div>
             }
         </div>
-    }
+    </div>
 }
