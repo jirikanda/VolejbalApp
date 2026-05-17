@@ -1,14 +1,14 @@
 <div class="deactivated">
-    <h3>Deaktivovan&#233; osoby</h3>
-    <p class="descr">Kdo na volejbale nebyl 2 m&#283;s&#237;ce, je automaticky deaktivov&#225;n. M&#367;&#382;e se zde znovu aktivovat a p&#345;ihl&#225;sit se.</p>
+    <h3>Deaktivované osoby</h3>
+    <p class="descr">Kdo na volejbale nebyl 2 měsíce, je automaticky deaktivován. Může se zde znovu aktivovat a přihlásit se.</p>
 
     @if (osoby != null)
     {
         @if (osoby.Osoby.Count == 0)
         {
             <div class="empty-block" style="padding: 24px 16px;">
-                <strong>&#381;&#225;dn&#233; deaktivovan&#233; osoby</strong>
-                V&#353;ichni evidovan&#237; hr&#225;&#269;i jsou aktivn&#237;.
+                <strong>Žádné deaktivované osoby</strong>
+                Všichni evidovaní hráči jsou aktivní.
             </div>
         }
         else
@@ -33,10 +33,10 @@
 
 <HxModal @ref="deleteModal" Title="Smazat osobu" Size="ModalSize.Small">
     <BodyTemplate>
-        Opravdu chce&#353; smazat osobu &ldquo;@osobaKeSmazani?.PrijmeniJmeno&rdquo;?
+        Opravdu chceš smazat osobu &ldquo;@osobaKeSmazani?.PrijmeniJmeno&rdquo;?
     </BodyTemplate>
     <FooterTemplate>
-        <HxButton Text="Zru&#353;it" Color="ThemeColor.Secondary" OnClick="@(async () => await deleteModal.HideAsync())" />
+        <HxButton Text="Zrušit" Color="ThemeColor.Secondary" OnClick="@(async () => await deleteModal.HideAsync())" />
         <HxButton Text="Smazat" Color="ThemeColor.Danger" OnClick="PotvrditSmazaniAsync" />
     </FooterTemplate>
 </HxModal>

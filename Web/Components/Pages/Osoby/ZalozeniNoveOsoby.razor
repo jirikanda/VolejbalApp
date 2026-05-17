@@ -1,14 +1,14 @@
 <EditForm class="new-form" Model="@formData" OnValidSubmit="ValidSubmitAsync">
     <DataAnnotationsValidator />
 
-    <h3>+ Nov&#225; osoba</h3>
-    <p class="descr">Nov&#253; hr&#225;&#269; se rovnou objev&#237; v aktivn&#237;m seznamu.</p>
+    <h3>+ Nová osoba</h3>
+    <p class="descr">Nový hráč se rovnou objeví v aktivním seznamu.</p>
 
     <div class="compose" style="padding: 0; border: 0; background: transparent; box-shadow: none;">
-        <HxInputText Label="Jm&#233;no" @bind-Value="@formData.Jmeno" MaxLength="50" Placeholder="Jana" />
-        <HxInputText Label="P&#345;&#237;jmen&#237;" @bind-Value="@formData.Prijmeni" MaxLength="50" Placeholder="Nov&#225;kov&#225;" />
+        <HxInputText Label="Jméno" @bind-Value="@formData.Jmeno" MaxLength="50" Placeholder="Jana" />
+        <HxInputText Label="Příjmení" @bind-Value="@formData.Prijmeni" MaxLength="50" Placeholder="Nováková" />
         <HxInputText Label="E-mail" @bind-Value="@formData.Email" MaxLength="50" Placeholder="jana@havit.cz" />
 
-        <button type="submit" class="btn primary-signed">Zalo&#382;it osobu</button>
+        <button type="submit" class="btn primary-signed">Založit osobu</button>
     </div>
 </EditForm>

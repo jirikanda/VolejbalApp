@@ -1,14 +1,14 @@
 <div class="chart">
-    <h3>Obsazenost term&#237;n&#367;</h3>
-    <p class="descr">Kolik hr&#225;&#269;&#367; se z&#250;&#269;astnilo jednotliv&#253;ch term&#237;n&#367;.</p>
+    <h3>Obsazenost termínů</h3>
+    <p class="descr">Kolik hráčů se zúčastnilo jednotlivých termínů.</p>
 
     @if (report != null)
     {
         @if (report.ObsazenostTerminu.Count == 0)
         {
             <div class="empty-block">
-                <strong>Zat&#237;m &#382;&#225;dn&#225; data</strong>
-                Statistika se zobraz&#237; po prvn&#237;ch term&#237;nech.
+                <strong>Zatím žádná data</strong>
+                Statistika se zobrazí po prvních termínech.
             </div>
         }
         else

@@ -1,6 +1,6 @@
 @page "/"
 
-<PageTitle>Volejbal &#183; Term&#237;ny</PageTitle>
+<PageTitle>Volejbal &#183; Termíny</PageTitle>
 
 <div class="home-layout">
     <main>
@@ -8,13 +8,13 @@
         {
             <a class="mobile-msg-link" href="#zpravy">
                 <span class="pulse" aria-hidden="true"></span>
-                <span>Na n&#225;st&#283;nce jsou nov&#233; vzkazy</span>
+                <span>Na nástěnce jsou nové vzkazy</span>
                 <span class="arr" aria-hidden="true">&#8595;</span>
             </a>
         }
 
         <section class="section" style="margin-top: 0;">
-            <div class="section-head"><h2>Term&#237;n</h2></div>
+            <div class="section-head"><h2>Termín</h2></div>
             <KandaEu.Volejbal.Web.Components.Pages.Terminy.Terminy CurrentTerminIdChanged="HandleCurrentTerminIdChanged" />
             <KandaEu.Volejbal.Web.Components.Pages.Prihlasovani.Prihlasovani CurrentTerminId="@currentTerminId" />
         </section>

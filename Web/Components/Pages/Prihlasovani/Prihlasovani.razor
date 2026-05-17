@@ -1,6 +1,6 @@
 @if (State.AktualniTerminId == null)
 {
-    <p style="margin-top: 20px; color: var(--ink-3); font-style: italic;">Term&#237;n nen&#237; zvolen.</p>
+    <p style="margin-top: 20px; color: var(--ink-3); font-style: italic;">Termín není zvolen.</p>
 }
 else if (State.Prihlaseni != null && State.Neprihlaseni != null)
 {
@@ -8,14 +8,14 @@ else if (State.Prihlaseni != null && State.Neprihlaseni != null)
         <div class="roster-col">
             <h3>
                 <span class="legend-key" style="background: var(--signed);"></span>
-                P&#345;ihl&#225;&#353;en&#237;
+                Přihlášení
                 <span class="count">@State.Prihlaseni.Count</span>
             </h3>
             @if (State.Prihlaseni.Count == 0)
             {
                 <div class="empty-block" style="padding: 24px 16px;">
-                    <strong>Zat&#237;m nikdo</strong>
-                    Bu&#271; prvn&#237;, kdo se p&#345;ihl&#225;s&#237;.
+                    <strong>Zatím nikdo</strong>
+                    Buď první, kdo se přihlásí.
                 </div>
             }
             else
@@ -31,7 +31,7 @@ else if (State.Prihlaseni != null && State.Neprihlaseni != null)
                             <span class="nm @(prihlaseny.Osoba.Id == PrefferedOsobaId ? "preferred" : "")">@prihlaseny.Osoba.PrijmeniJmeno</span>
                             <button type="button" class="unsign"
                                     @onclick="@(async _ => await HandleOdhlasitClickAsync(prihlaseny.Osoba))">
-                                odhl&#225;sit
+                                odhlásit
                             </button>
                         </div>
                     }
@@ -41,17 +41,17 @@ else if (State.Prihlaseni != null && State.Neprihlaseni != null)
 
         <div class="roster-col">
             <h3>
-                Nep&#345;ihl&#225;&#353;en&#237;
+                Nepřihlášení
                 <span class="count">@State.Neprihlaseni.Count</span>
                 <span class="legend h3-legend">
                     <span class="l-pending"><i></i>nereagoval</span>
-                    <span class="l-decl"><i></i>odm&#237;tl</span>
+                    <span class="l-decl"><i></i>odmítl</span>
                 </span>
             </h3>
             @if (State.Neprihlaseni.Count == 0)
             {
                 <div class="empty-block" style="padding: 24px 16px;">
-                    <strong>V&#353;ichni jsou p&#345;ihl&#225;&#353;eni</strong>
+                    <strong>Všichni jsou přihlášeni</strong>
                 </div>
             }
             else
@@ -73,19 +73,19 @@ else if (State.Prihlaseni != null && State.Neprihlaseni != null)
                             <div class="actions">
                                 <button type="button" class="act-sign"
                                         @onclick="@(async _ => await HandlePrihlasitClickAsync(neprihlaseny))">
-                                    p&#345;ihl&#225;sit
+                                    přihlásit
                                 </button>
                                 @if (!neprihlaseny.IsOdhlaseny)
                                 {
                                     <button type="button" class="act-decline"
                                             @onclick="@(async _ => await HandleOdhlasitClickAsync(neprihlaseny.Osoba))">
-                                        nem&#367;&#382;u
+                                        nemůžu
                                     </button>
                                 }
                                 else
                                 {
                                     <button type="button" class="act-decline" tabindex="-1" aria-hidden="true" style="visibility: hidden;">
-                                        nem&#367;&#382;u
+                                        nemůžu
                                     </button>
                                 }
                             </div>

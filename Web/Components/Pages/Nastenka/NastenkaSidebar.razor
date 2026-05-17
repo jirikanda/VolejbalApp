@@ -7,13 +7,13 @@
 @if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
 {
     <div class="msg-head">
-        <h2>N&#225;st&#283;nka</h2>
+        <h2>Nástěnka</h2>
         <span class="meta">@VzkazyCountLabel(State.Vzkazy.Count)</span>
     </div>
 
     @if (State.Vzkazy.Count == 0)
     {
-        <p class="msg-note">&#381;&#225;dn&#233; aktu&#225;ln&#237; zpr&#225;vy.</p>
+        <p class="msg-note">Žádné aktuální zprávy.</p>
     }
     else
     {
@@ -37,7 +37,7 @@
 
         <HxSelect TItem="KandaEu.Volejbal.Contracts.Osoby.Dto.OsobaDto"
                   TValue="int?"
-                  Label="Kdo p&#237;&#353;e"
+                  Label="Kdo píše"
                   Data="@State.AktivniOsoby"
                   @bind-Value="@formData.AutorId"
                   TextSelector="@(o => o.PrijmeniJmeno)"
@@ -48,9 +48,9 @@
 
         <HxInputTextArea Label="Vzkaz"
                          @bind-Value="@formData.Zprava"
-                         Placeholder="Co chce&#353; ostatn&#237;m vzk&#225;zat?" />
+                         Placeholder="Co chceš ostatním vzkázat?" />
 
-        <button type="submit" class="btn primary-signed">P&#345;idat vzkaz</button>
+        <button type="submit" class="btn primary-signed">Přidat vzkaz</button>
     </EditForm>
 }
 

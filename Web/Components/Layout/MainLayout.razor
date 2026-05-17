@@ -6,15 +6,12 @@
     <header class="topbar">
         <a class="brand" href="/">
             <span class="mark" aria-hidden="true">🏐</span>
-            <span>
-                <span class="name">Volejbal<em>.</em></span>
-                <span class="sub">p&#345;ihla&#353;ov&#225;n&#237;</span>
-            </span>
+            <span class="name">Volejbal</span>
         </a>
         <nav class="nav" role="tablist">
-            <NavLink href="/" Match="NavLinkMatch.All">Term&#237;ny</NavLink>
+            <NavLink href="/" Match="NavLinkMatch.All">Termíny</NavLink>
             <NavLink href="/statistika">Statistika</NavLink>
-            <NavLink href="/osoby">Spr&#225;va hr&#225;&#269;&#367;</NavLink>
+            <NavLink href="/osoby">Správa hráčů</NavLink>
             <button type="button" class="theme-toggle"
                     @onclick="ToggleThemeAsync"
                     aria-label="@(isDark ? "Světlý režim" : "Tmavý režim")">
@@ -48,8 +45,8 @@
 </div>
 
 <div id="blazor-error-ui">
-    Do&#353;lo k chyb&#283;.
-    <a href="" class="reload">Znovu na&#269;&#237;st</a>
+    Došlo k chybě.
+    <a href="" class="reload">Znovu načíst</a>
     <a class="dismiss">&#x2757;</a>
 </div>
 
