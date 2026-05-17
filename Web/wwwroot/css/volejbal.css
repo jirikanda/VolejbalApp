@@ -121,6 +121,18 @@ body::before {
     border-radius: 14px;
     box-shadow: var(--shadow-md), inset 0 1px 0 oklch(1 0 0 / .5);
 }
+.brand .mark .ball {
+    display: block; line-height: 1;
+    transform-origin: center center;
+}
+.brand .mark.loading .ball {
+    animation: ballSpinPulse 1.2s ease-in-out infinite;
+}
+@keyframes ballSpinPulse {
+    0%   { transform: rotate(0deg)   scale(1); }
+    50%  { transform: rotate(180deg) scale(1.06); }
+    100% { transform: rotate(360deg) scale(1); }
+}
 .brand .name {
     font-weight: 800; font-size: 22px;
     letter-spacing: -0.03em;

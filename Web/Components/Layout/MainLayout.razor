@@ -5,7 +5,9 @@
 <div class="app">
     <header class="topbar">
         <a class="brand" href="/">
-            <span class="mark" aria-hidden="true">🏐</span>
+            <span class="mark @(ProgressState.InProgress ? "loading" : "")" aria-hidden="true" aria-busy="@ProgressState.InProgress">
+                <span class="ball">🏐</span>
+            </span>
             <span class="name">Volejbal</span>
         </a>
         <nav class="nav" role="tablist">
@@ -34,9 +36,9 @@
 
     <ErrorBoundary>
         <ChildContent>
-            <KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
+            <CascadingValue Value="@Progress" IsFixed="true">
                 @Body
-            </KandaEu.Volejbal.Web.Components.ProgressComponent.ProgressOverlay>
+            </CascadingValue>
         </ChildContent>
         <ErrorContent>
             <KandaEu.Volejbal.Web.Components.Pages.Error />
@@ -49,25 +51,3 @@
     <a href="" class="reload">Znovu načíst</a>
     <a class="dismiss">&#x2757;</a>
 </div>
-
-@code {
-    private bool isDark;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var theme = await JS.InvokeAsync<string>("volejbalTheme.get");
-            isDark = theme == "dark";
-            StateHasChanged();
-        }
-    }
-
-    private async Task ToggleThemeAsync()
-    {
-        var newTheme = await JS.InvokeAsync<string>("volejbalTheme.toggle");
-        isDark = newTheme == "dark";
-    }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-}
