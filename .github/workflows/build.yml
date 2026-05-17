@@ -1,6 +1,3 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: Build
 
 on:
@@ -8,21 +5,54 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --configuration Release
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore VolejbalApp.slnx
+
+      - name: Build
+        run: dotnet build VolejbalApp.slnx --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Tests/Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Publish Web
+        run: dotnet publish Web/Web.csproj --no-restore --configuration Release --output ./publish/Web
+
+      - name: Publish WebAPI
+        run: dotnet publish WebAPI/WebAPI.csproj --no-restore --configuration Release --output ./publish/WebAPI
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Web
+          path: ./publish/Web
+
+      - name: Upload WebAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebAPI
+          path: ./publish/WebAPI
