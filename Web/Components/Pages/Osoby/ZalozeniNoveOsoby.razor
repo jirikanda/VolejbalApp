@@ -5,9 +5,9 @@
     <p class="descr">Nový hráč se rovnou objeví v aktivním seznamu.</p>
 
     <div class="compose" style="padding: 0; border: 0; background: transparent; box-shadow: none;">
-        <HxInputText Label="Jméno" @bind-Value="@formData.Jmeno" MaxLength="50" Placeholder="Jana" />
-        <HxInputText Label="Příjmení" @bind-Value="@formData.Prijmeni" MaxLength="50" Placeholder="Nováková" />
-        <HxInputText Label="E-mail" @bind-Value="@formData.Email" MaxLength="50" Placeholder="jana@havit.cz" />
+        <HxInputText Label="Jméno" @bind-Value="@formData.Jmeno" MaxLength="50" />
+        <HxInputText Label="Příjmení" @bind-Value="@formData.Prijmeni" MaxLength="50" />
+        <HxInputText Label="E-mail" @bind-Value="@formData.Email" MaxLength="50" />
 
         <button type="submit" class="btn primary-signed">Založit osobu</button>
     </div>

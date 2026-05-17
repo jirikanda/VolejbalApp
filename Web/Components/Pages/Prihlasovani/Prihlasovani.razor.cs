@@ -4,8 +4,6 @@ using KandaEu.Volejbal.Web.Components.ProgressComponent;
 
 namespace KandaEu.Volejbal.Web.Components.Pages.Prihlasovani;
 
-// TODO: Není page!
-
 public partial class Prihlasovani : ComponentBase, IDisposable
 {
 	[Inject]
@@ -91,8 +89,6 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id); // to se snad nemůže stát
 		prihlaseni.Add(new PrihlasenaOsobaDto { Osoba = prihlasovanaOsoba.Osoba });
 
-		//Toaster.Success($"{neprihlaseny.PrijmeniJmeno} přihlášen(a).");
-
 		await LocalStorageService.SetItemAsync("PrefferedOsobaId", prihlasovanaOsoba.Osoba.Id);
 		PrefferedOsobaId = prihlasovanaOsoba.Osoba.Id;
 	}
@@ -109,8 +105,6 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 
 		neprihlaseni.Add(new NeprihlasenaOsobaDto { Osoba = odhlasovanaOsobaDto, IsOdhlaseny = true });
 		neprihlaseni.Sort((a, b) => a.Osoba.PrijmeniJmeno.CompareTo(b.Osoba.PrijmeniJmeno));
-
-		//Toaster.Success($"{prihlaseny.PrijmeniJmeno} odhlášen(a).");
 	}
 
 	public void Dispose()

@@ -26,7 +26,6 @@ public partial class ZalozeniNoveOsoby
 		};
 
 		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.VlozOsobuAsync(novaOsoba));
-		//Toaster.Success($"{novaOsoba.Prijmeni} {novaOsoba.Jmeno} založen(a).");
 		NavigationManager.NavigateTo("/");
 	}
 }
