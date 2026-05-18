@@ -38,6 +38,8 @@ public class OsobaFacade(
 	{
 		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
 
+		CheckNeaktivniNesmazana(osoba);
+
 		_unitOfWork.AddForDelete(osoba);
 		await _unitOfWork.CommitAsync(cancellationToken);
 	}

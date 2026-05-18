@@ -6,6 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Havit.Core" />
 		<PackageReference Include="Havit.Data.EntityFrameworkCore.Abstractions" />
 		<PackageReference Include="Havit.Model" />
 	</ItemGroup>

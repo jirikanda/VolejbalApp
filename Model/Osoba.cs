@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Havit;
 
 namespace KandaEu.Volejbal.Model;
 
@@ -39,7 +40,7 @@ public class Osoba
 	{
 		if (this.Deleted != null)
 		{
-			throw new InvalidOperationException("Osoba je smazaná.");
+			throw new OperationFailedException("Osoba je smazaná.");
 		}
 	}
 
@@ -47,7 +48,7 @@ public class Osoba
 	{
 		if (this.Aktivni)
 		{
-			throw new InvalidOperationException("Osoba je aktivní.");
+			throw new OperationFailedException("Osoba je aktivní.");
 		}
 	}
 
@@ -55,7 +56,7 @@ public class Osoba
 	{
 		if (!this.Aktivni)
 		{
-			throw new InvalidOperationException("Osoba je neaktivní.");
+			throw new OperationFailedException("Osoba je neaktivní.");
 		}
 	}
 }

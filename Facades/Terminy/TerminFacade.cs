@@ -9,6 +9,7 @@ namespace KandaEu.Volejbal.Facades.Terminy;
 [Service]
 public class TerminFacade(
 	ITerminDataSource _terminDataSource,
+	ITerminRepository _terminRepostory,
 	IPrihlaskaDataSource _prihlaskaDataSource,
 	IOsobaRepository _osobaRepository,
 	ITimeService _timeService) : ITerminFacade
@@ -32,6 +33,11 @@ public class TerminFacade(
 
 	public async Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default)
 	{
+		// Kontrola existence termínu
+		var termin = await _terminRepostory.GetObjectAsync(terminId, cancellationToken);
+		termin.ThrowIfDeleted();
+		termin.ThrowIfPast(_timeService.GetCurrentDate());
+
 		List<Prihlaska> prihlaskyIncludingDeleted = await _prihlaskaDataSource.DataIncludingDeleted
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
 			.Where(prihlaska => prihlaska.TerminId == terminId)
