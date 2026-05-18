@@ -20,7 +20,7 @@
         <div class="msg-list">
             @foreach (var vzkaz in State.Vzkazy)
             {
-                <div class="msg">
+                <div class="msg @(vzkaz.IsObsolete ? "obsolete" : "")">
                     <div class="meta">
                         <span class="author">@vzkaz.Author</span>
                         <span>&#183;</span>

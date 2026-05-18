@@ -400,14 +400,13 @@ body::before {
 .msg {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-left: 3px solid var(--line-strong);
+    border-left: 3px solid var(--accent);
     border-radius: var(--radius-sm);
     padding: 14px 16px;
     box-shadow: var(--shadow-sm);
     animation: slideIn .32s ease backwards;
 }
-.msg-list .msg:nth-child(-n+2) { border-left-color: var(--accent); }
-.msg.new { border-left-color: var(--accent); }
+.msg.obsolete { border-left-color: var(--line-strong); }
 .msg .meta {
     display: flex; gap: 8px; align-items: center;
     font-family: var(--font-mono); font-size: 11px;

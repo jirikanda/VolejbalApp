@@ -15,6 +15,7 @@ public class NastenkaFacade(
 	{
 		DateTime today = _timeService.GetCurrentDate();
 		DateTime prispevkyOd = today.AddDays(-14);
+		DateTime currentWaveStart = GetCurrentWaveStart(today);
 
 		VzkazListDto result = new VzkazListDto
 		{
@@ -26,12 +27,23 @@ public class NastenkaFacade(
 				{
 					Author = vzkaz.Autor.PrijmeniJmeno,
 					Zprava = vzkaz.Zprava,
-					DatumVlozeni = vzkaz.DatumVlozeni
+					DatumVlozeni = vzkaz.DatumVlozeni,
+					IsObsolete = vzkaz.DatumVlozeni < currentWaveStart
 				})
 				.ToListAsync(cancellationToken)
 		};
 
 		return result;
+	}
+
+	/// <summary>
+	/// Vrací začátek aktuální "vlny" zpráv = nejbližší předchozí (nebo dnešní) středa, 00:00.
+	/// Vzkazy od této chvíle jsou aktuální, starší jsou obsolete.
+	/// </summary>
+	private static DateTime GetCurrentWaveStart(DateTime today)
+	{
+		int daysSinceWednesday = ((int)today.DayOfWeek - (int)DayOfWeek.Wednesday + 7) % 7;
+		return today.Date.AddDays(-daysSinceWednesday);
 	}
 
 	public async Task VlozVzkazAsync(VzkazInputDto vzkazInputDto, CancellationToken cancellationToken)
