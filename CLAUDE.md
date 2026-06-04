@@ -106,7 +106,8 @@ Two test projects, deliberately separated:
 - `ImplicitUsings` enabled; common HAVIT/EF usings are pulled in via per-project `GlobalUsings.cs`.
 - `DisableTransitiveProjectReferences=true` — if you need a type from a non-direct dependency, add the explicit `ProjectReference`.
 - Central package versions in [Directory.Packages.props](Directory.Packages.props) (`ManagePackageVersionsCentrally=true`). Add new packages by `<PackageVersion>` here, then `<PackageReference>` (no version) in the csproj.
-- `.editorconfig` enforces tabs, file-scoped namespaces, usings outside namespace, `var` only when type is apparent, braces required. Style violations are warnings; `Release` turns them into errors.
+- `.editorconfig` enforces tabs, file-scoped namespaces, usings outside namespace (`System.*` first), **explicit types over `var` (never use `var`)**, required braces, and parentheses-for-clarity in binary/relational expressions. Style violations are warnings; `Release` turns them into errors.
+- Project-specific naming (full detail in the `CodeConventions` skill, [.claude/skills/CodeConventions/SKILL.md](.claude/skills/CodeConventions/SKILL.md)): instance fields `_camelCase`, static fields `s_camelCase`, **primary-constructor parameters also `_camelCase`** (e.g. `MailingService(IOptions<MailingOptions> _mailingOptions)`), fields are always `private`, async methods end with `Async` and take `CancellationToken` as the last parameter.
 
 ## CI / deployment
 

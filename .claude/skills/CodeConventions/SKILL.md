@@ -24,7 +24,7 @@ Naming conventions:
 - Generic type parameters are prefixed with `T` (e.g., `TItem`, `TValue`); a single type parameter may simply be `T`.
 
 Code style guidelines:
-- Prefer explicit types over `var`. Do not use `var`, even when the type is apparent.
+- Do not use `new ()` syntax for object instantiation.
 - Use file-scoped namespace declarations (`namespace Foo;`), not block-scoped.
 - Place `using` directives outside the namespace. Sort `System.*` directives first. Do not separate import groups with blank lines.
 - Always use braces, even for single-line `if`/`for`/`while`/`foreach` bodies.
