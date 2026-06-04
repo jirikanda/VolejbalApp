@@ -11,10 +11,10 @@ public partial class StatistikaTerminu
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
 
-	private ReportTerminu report;
+	private ReportTerminu _report;
 
 	protected override async Task OnInitializedAsync()
 	{
-		report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportTerminuAsync());
+		_report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportTerminuAsync());
 	}
 }

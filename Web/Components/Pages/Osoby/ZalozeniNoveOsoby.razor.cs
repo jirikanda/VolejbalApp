@@ -14,15 +14,15 @@ public partial class ZalozeniNoveOsoby
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
 
-	protected NovaOsobaFormData formData = new NovaOsobaFormData();
+	private NovaOsobaFormData _formData = new NovaOsobaFormData();
 
 	protected async Task ValidSubmitAsync()
 	{
 		OsobaInputDto novaOsoba = new OsobaInputDto()
 		{
-			Jmeno = formData.Jmeno,
-			Prijmeni = formData.Prijmeni,
-			Email = formData.Email
+			Jmeno = _formData.Jmeno,
+			Prijmeni = _formData.Prijmeni,
+			Email = _formData.Email
 		};
 
 		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.VlozOsobuAsync(novaOsoba));

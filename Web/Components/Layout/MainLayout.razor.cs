@@ -8,7 +8,7 @@ public partial class MainLayout
 	protected ProgressState ProgressState { get; }
 	protected Progress Progress { get; }
 
-	private bool isDark;
+	private bool _isDark;
 
 	public MainLayout()
 	{
@@ -21,7 +21,7 @@ public partial class MainLayout
 		if (firstRender)
 		{
 			var theme = await JS.InvokeAsync<string>("volejbalTheme.get");
-			isDark = theme == "dark";
+			_isDark = theme == "dark";
 			StateHasChanged();
 		}
 	}
@@ -29,7 +29,7 @@ public partial class MainLayout
 	private async Task ToggleThemeAsync()
 	{
 		var newTheme = await JS.InvokeAsync<string>("volejbalTheme.toggle");
-		isDark = newTheme == "dark";
+		_isDark = newTheme == "dark";
 	}
 
 	public ValueTask DisposeAsync() => ValueTask.CompletedTask;

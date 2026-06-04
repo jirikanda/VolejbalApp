@@ -11,10 +11,10 @@ public partial class StatistikaOsob
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
 
-	private ReportOsob report;
+	private ReportOsob _report;
 
 	protected override async Task OnInitializedAsync()
 	{
-		report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
+		_report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
 	}
 }

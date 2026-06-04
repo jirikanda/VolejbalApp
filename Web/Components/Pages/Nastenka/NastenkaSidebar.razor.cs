@@ -4,11 +4,11 @@ namespace KandaEu.Volejbal.Web.Components.Pages.Nastenka;
 
 public partial class NastenkaSidebar
 {
-	private NovyVzkazFormData formData = new NovyVzkazFormData();
-	private NastenkaState State = new NastenkaState();
+	private NovyVzkazFormData _formData = new NovyVzkazFormData();
+	private NastenkaState _state = new NastenkaState();
 
 	[CascadingParameter]
-	public Progress Progress { get; set; }
+	protected Progress Progress { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -18,20 +18,20 @@ public partial class NastenkaSidebar
 
 	private async Task OnValidSubmitAsync()
 	{
-		await NastenkaWebApiClient.VlozVzkazAsync(formData.ToVzkazInputDto());
-		formData.Zprava = "";
+		await NastenkaWebApiClient.VlozVzkazAsync(_formData.ToVzkazInputDto());
+		_formData.Zprava = "";
 		await LoadDataAsync();
 	}
 
 	private async Task LoadDataAsync()
 	{
-		State.AktivniOsoby = null;
-		State.Vzkazy = null;
+		_state.AktivniOsoby = null;
+		_state.Vzkazy = null;
 
 		await Progress.ExecuteInProgressAsync(async () =>
 		{
-			State.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
-			State.Vzkazy = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.ToList();
+			_state.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
+			_state.Vzkazy = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.ToList();
 		});
 	}
 }

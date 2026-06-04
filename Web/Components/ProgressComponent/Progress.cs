@@ -4,14 +4,14 @@ namespace KandaEu.Volejbal.Web.Components.ProgressComponent;
 
 public class Progress
 {
-	private readonly ProgressState progressState;
-	private readonly Action stateHasChanged;
-	private int counter = 0;
+	private readonly ProgressState _progressState;
+	private readonly Action _stateHasChanged;
+	private int _counter = 0;
 
 	public Progress(ProgressState progressState, Action stateHasChanged)
 	{
-		this.progressState = progressState;
-		this.stateHasChanged = stateHasChanged;
+		_progressState = progressState;
+		_stateHasChanged = stateHasChanged;
 	}
 
 	public async Task ExecuteInProgressAsync(Func<Task> action)
@@ -34,9 +34,9 @@ public class Progress
 			{
 				lock (this)
 				{
-					counter += 1;
-					progressState.InProgress = true;
-					stateHasChanged();
+					_counter += 1;
+					_progressState.InProgress = true;
+					_stateHasChanged();
 				}
 			}
 
@@ -46,16 +46,16 @@ public class Progress
 		{
 			stopwatch.Stop();
 
-			if ((stopwatch.ElapsedMilliseconds < 300) && (counter == 1))
+			if ((stopwatch.ElapsedMilliseconds < 300) && (_counter == 1))
 			{
 				// TODO: Ale nechceme běh programu blokovat...
 				await Task.Delay(300 - (int)stopwatch.ElapsedMilliseconds);
 			}
 			lock (this)
 			{
-				counter -= 1;
-				progressState.InProgress = counter > 0;
-				stateHasChanged();
+				_counter -= 1;
+				_progressState.InProgress = _counter > 0;
+				_stateHasChanged();
 			}
 		}
 	}

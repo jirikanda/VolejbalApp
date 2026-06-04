@@ -1,13 +1,13 @@
-<EditForm class="new-form" Model="@formData" OnValidSubmit="ValidSubmitAsync">
+<EditForm class="new-form" Model="@_formData" OnValidSubmit="ValidSubmitAsync">
     <DataAnnotationsValidator />
 
     <h3>+ Nová osoba</h3>
     <p class="descr">Nový hráč se rovnou objeví v aktivním seznamu.</p>
 
     <div class="compose" style="padding: 0; border: 0; background: transparent; box-shadow: none;">
-        <HxInputText Label="Jméno" @bind-Value="@formData.Jmeno" MaxLength="50" />
-        <HxInputText Label="Příjmení" @bind-Value="@formData.Prijmeni" MaxLength="50" />
-        <HxInputText Label="E-mail" @bind-Value="@formData.Email" MaxLength="50" />
+        <HxInputText Label="Jméno" @bind-Value="@_formData.Jmeno" MaxLength="50" />
+        <HxInputText Label="Příjmení" @bind-Value="@_formData.Prijmeni" MaxLength="50" />
+        <HxInputText Label="E-mail" @bind-Value="@_formData.Email" MaxLength="50" />
 
         <p class="form-legend">Chráníme své soukromí a e-mail na těchto stránkách nezobrazujeme.</p>
 

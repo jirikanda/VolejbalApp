@@ -2,9 +2,9 @@
     <h3>Obsazenost termínů</h3>
     <p class="descr">Kolik hráčů se zúčastnilo jednotlivých termínů.</p>
 
-    @if (report != null)
+    @if (_report != null)
     {
-        @if (report.ObsazenostTerminu.Count == 0)
+        @if (_report.ObsazenostTerminu.Count == 0)
         {
             <div class="empty-block">
                 <strong>Zatím žádná data</strong>
@@ -13,9 +13,9 @@
         }
         else
         {
-            var max = Math.Max(report.ObsazenostTerminu.Max(x => x.PocetHracu), 1);
+            var max = Math.Max(_report.ObsazenostTerminu.Max(x => x.PocetHracu), 1);
             <div style="max-height: 520px; overflow-y: auto; padding-right: 6px;">
-                @foreach (var item in report.ObsazenostTerminu)
+                @foreach (var item in _report.ObsazenostTerminu)
                 {
                     var pct = (item.PocetHracu / (double)max) * 100;
                     var hue = HueForMonth(item.Datum.Month);

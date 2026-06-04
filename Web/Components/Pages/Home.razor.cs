@@ -8,7 +8,7 @@ public partial class Home
 	[Inject]
 	protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
 
-	public int? currentTerminId;
+	private int? _currentTerminId;
 
 	protected bool ShowNastenkaLink { get; set; }
 
@@ -35,6 +35,6 @@ public partial class Home
 
 	private void HandleCurrentTerminIdChanged(int newCurrentterminId)
 	{
-		currentTerminId = newCurrentterminId;
+		_currentTerminId = newCurrentterminId;
 	}
 }

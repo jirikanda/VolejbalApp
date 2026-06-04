@@ -12,34 +12,34 @@ public partial class AktivaceDeaktivovaneOsoby
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
 
-	protected OsobaListDto osoby;
+	private OsobaListDto _osoby;
 
-	private HxModal deleteModal;
-	private OsobaDto osobaKeSmazani;
+	private HxModal _deleteModal;
+	private OsobaDto _osobaKeSmazani;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetNeaktivniOsobyAsync());
+		_osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetNeaktivniOsobyAsync());
 	}
 
 	protected async Task AktivovatAsync(OsobaDto osoba)
 	{
 		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
-		osoby.Osoby.Remove(osoba);
+		_osoby.Osoby.Remove(osoba);
 	}
 
 	protected async Task SmazatAsync(OsobaDto osoba)
 	{
-		osobaKeSmazani = osoba;
-		await deleteModal.ShowAsync();
+		_osobaKeSmazani = osoba;
+		await _deleteModal.ShowAsync();
 	}
 
 	protected async Task PotvrditSmazaniAsync()
 	{
-		await deleteModal.HideAsync();
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(osobaKeSmazani.Id));
-		osoby.Osoby.Remove(osobaKeSmazani);
-		osobaKeSmazani = null;
+		await _deleteModal.HideAsync();
+		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(_osobaKeSmazani.Id));
+		_osoby.Osoby.Remove(_osobaKeSmazani);
+		_osobaKeSmazani = null;
 	}
 }

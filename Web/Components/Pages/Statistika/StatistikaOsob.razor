@@ -2,9 +2,9 @@
     <h3>Účast hráčů</h3>
     <p class="descr">Na kolika termínech kdo hrál během sezóny.</p>
 
-    @if (report != null)
+    @if (_report != null)
     {
-        @if (report.UcastHracu.Count == 0)
+        @if (_report.UcastHracu.Count == 0)
         {
             <div class="empty-block">
                 <strong>Zatím žádná data</strong>
@@ -13,7 +13,7 @@
         }
         else
         {
-            var sorted = report.UcastHracu.OrderByDescending(x => x.PocetTerminu).ToList();
+            var sorted = _report.UcastHracu.OrderByDescending(x => x.PocetTerminu).ToList();
             var max = Math.Max(sorted.Max(x => x.PocetTerminu), 1);
             <div>
                 @{

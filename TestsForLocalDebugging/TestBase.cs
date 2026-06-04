@@ -10,11 +10,11 @@ namespace KandaEu.Volejbal.TestsForLocalDebugging;
 
 /// <summary>
 /// Bázový třída pro testy.
-/// Zpřístupňuje nakonfigurovaný DI container a transparentně zajišťuje scope.
+/// Zpřístupňuje nakonfigurovaný DI container a transparentně zajišťuje _scope.
 /// </summary>
 public class TestBase
 {
-	private IDisposable scope;
+	private IDisposable _scope;
 
 	protected IServiceProvider ServiceProvider { get; private set; }
 
@@ -29,7 +29,7 @@ public class TestBase
 		IServiceCollection services = CreateServiceCollection();
 		IServiceProvider serviceProvider = services.BuildServiceProvider();
 
-		scope = serviceProvider.CreateScope();
+		_scope = serviceProvider.CreateScope();
 
 		var dbContext = serviceProvider.GetRequiredService<IDbContext>();
 		if (DeleteDbData)
@@ -53,7 +53,7 @@ public class TestBase
 	[TestCleanup]
 	public virtual void TestCleanup()
 	{
-		scope.Dispose();
+		_scope.Dispose();
 		if (this.ServiceProvider is IDisposable)
 		{
 			((IDisposable)this.ServiceProvider).Dispose();

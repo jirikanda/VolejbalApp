@@ -4,21 +4,21 @@
 @inject INastenkaWebApiClient NastenkaWebApiClient
 @inject IOsobaWebApiClient OsobaWebApiClient
 
-@if ((State.AktivniOsoby != null) && (State.Vzkazy != null))
+@if ((_state.AktivniOsoby != null) && (_state.Vzkazy != null))
 {
     <div class="msg-head">
         <h2>Nástěnka</h2>
-        <span class="meta">@VzkazyCountLabel(State.Vzkazy.Count)</span>
+        <span class="meta">@VzkazyCountLabel(_state.Vzkazy.Count)</span>
     </div>
 
-    @if (State.Vzkazy.Count == 0)
+    @if (_state.Vzkazy.Count == 0)
     {
         <p class="msg-note">Žádné aktuální zprávy.</p>
     }
     else
     {
         <div class="msg-list">
-            @foreach (var vzkaz in State.Vzkazy)
+            @foreach (var vzkaz in _state.Vzkazy)
             {
                 <div class="msg @(vzkaz.IsObsolete ? "obsolete" : "")">
                     <div class="meta">
@@ -40,14 +40,14 @@
         </div> *@
     }
 
-    <EditForm class="compose" Model="@formData" OnValidSubmit="OnValidSubmitAsync">
+    <EditForm class="compose" Model="@_formData" OnValidSubmit="OnValidSubmitAsync">
         <DataAnnotationsValidator />
 
         <HxSelect TItem="KandaEu.Volejbal.Contracts.Osoby.Dto.OsobaDto"
                   TValue="int?"
                   Label="Kdo píše"
-                  Data="@State.AktivniOsoby"
-                  @bind-Value="@formData.AutorId"
+                  Data="@_state.AktivniOsoby"
+                  @bind-Value="@_formData.AutorId"
                   TextSelector="@(o => o.PrijmeniJmeno)"
                   ValueSelector="@(o => (int?)o.Id)"
                   NullText="&#8212; vyber autora &#8212;"
@@ -55,7 +55,7 @@
                   InputSize="InputSize.Regular" />
 
         <HxInputTextArea Label="Vzkaz"
-                         @bind-Value="@formData.Zprava"
+                         @bind-Value="@_formData.Zprava"
                          Placeholder="Co chceš ostatním vzkázat?" />
 
         <button type="submit" class="btn primary-signed">Přidat vzkaz</button>
