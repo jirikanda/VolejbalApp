@@ -26,7 +26,7 @@
     <PackageVersion Include="Havit.Model" Version="2.0.5" />
     <PackageVersion Include="Havit.Services" Version="2.0.51" />
     <PackageVersion Include="ChartJs.Blazor" Version="1.1.0" />
-    <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+    <PackageVersion Include="Microsoft.ApplicationInsights" Version="3.1.2" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9" />
