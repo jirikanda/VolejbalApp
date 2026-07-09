@@ -4,15 +4,15 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="Hangfire" Version="1.8.12" />
     <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.23" />
-    <PackageVersion Include="Hangfire.Console.Extensions" Version="2.1.1" />
+    <PackageVersion Include="Hangfire.Console.Extensions" Version="2.1.2" />
     <PackageVersion Include="Hangfire.InMemory" Version="1.0.0" />
     <PackageVersion Include="Havit.ApplicationInsights.DependencyCollector" Version="2.0.10" />
     <PackageVersion Include="Havit.AspNetCore.Mvc" Version="2.0.30" />
-    <PackageVersion Include="Havit.Core" Version="2.0.36" />
+    <PackageVersion Include="Havit.Core" Version="2.0.38" />
     <PackageVersion Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.25.0" />
     <PackageVersion Include="Havit.Blazor.Components.Web.ECharts" Version="4.23.0" />
     <PackageVersion Include="Havit.Data.EntityFrameworkCore" Version="2.10.2" />
@@ -23,7 +23,7 @@
     <PackageVersion Include="Havit.Extensions.DependencyInjection" Version="2.0.14" />
     <PackageVersion Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.22" />
     <PackageVersion Include="Havit.Hangfire.Extensions" Version="2.0.24" />
-    <PackageVersion Include="Havit.Model" Version="2.0.5" />
+    <PackageVersion Include="Havit.Model" Version="2.0.6" />
     <PackageVersion Include="Havit.Services" Version="2.0.51" />
     <PackageVersion Include="ChartJs.Blazor" Version="1.1.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.23.0" />
@@ -38,7 +38,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageVersion Include="MSTest" Version="4.2.3" />
+    <PackageVersion Include="MSTest" Version="4.3.0" />
     <PackageVersion Include="NSwag.ApiDescription.Client" Version="14.7.1" />
     <PackageVersion Include="NSwag.AspNetCore" Version="14.7.1" />
 	  <!-- fix vulnerabilities -->
