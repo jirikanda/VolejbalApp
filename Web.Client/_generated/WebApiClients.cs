@@ -32,19 +32,23 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface INastenkaWebApiClient
     {
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<VzkazListDto> GetVzkazyAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<VzkazListDto> GetVzkazyAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto vzkaz);
+        System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto body);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto vzkaz, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto body, System.Threading.CancellationToken cancellationToken);
 
     }
 
@@ -80,6 +84,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<VzkazListDto> GetVzkazyAsync()
         {
@@ -87,6 +92,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<VzkazListDto> GetVzkazyAsync(System.Threading.CancellationToken cancellationToken)
         {
@@ -156,18 +162,20 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto vzkaz)
+        public virtual System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto body)
         {
-            return VlozVzkazAsync(vzkaz, System.Threading.CancellationToken.None);
+            return VlozVzkazAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto vzkaz, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task VlozVzkazAsync(VzkazInputDto body, System.Threading.CancellationToken cancellationToken)
         {
-            if (vzkaz == null)
-                throw new System.ArgumentNullException("vzkaz");
+            if (body == null)
+                throw new System.ArgumentNullException("body");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -175,7 +183,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(vzkaz, JsonSerializerSettings);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
                     var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
@@ -365,38 +373,48 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface IOsobaWebApiClient
     {
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto osobaInputDto);
+        System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto body);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto osobaInputDto, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto body, System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<OsobaListDto> GetAktivniOsobyAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<OsobaListDto> GetAktivniOsobyAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<OsobaListDto> GetNeaktivniOsobyAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<OsobaListDto> GetNeaktivniOsobyAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task SmazNeaktivniOsobuAsync(int osobaId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task SmazNeaktivniOsobuAsync(int osobaId, System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AktivujNeaktivniOsobuAsync(int osobaId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AktivujNeaktivniOsobuAsync(int osobaId, System.Threading.CancellationToken cancellationToken);
 
@@ -434,18 +452,20 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto osobaInputDto)
+        public virtual System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto body)
         {
-            return VlozOsobuAsync(osobaInputDto, System.Threading.CancellationToken.None);
+            return VlozOsobuAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto osobaInputDto, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task VlozOsobuAsync(OsobaInputDto body, System.Threading.CancellationToken cancellationToken)
         {
-            if (osobaInputDto == null)
-                throw new System.ArgumentNullException("osobaInputDto");
+            if (body == null)
+                throw new System.ArgumentNullException("body");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -453,7 +473,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(osobaInputDto, JsonSerializerSettings);
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
                     var content_ = new System.Net.Http.ByteArrayContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
@@ -511,6 +531,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<OsobaListDto> GetAktivniOsobyAsync()
         {
@@ -518,6 +539,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<OsobaListDto> GetAktivniOsobyAsync(System.Threading.CancellationToken cancellationToken)
         {
@@ -587,6 +609,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<OsobaListDto> GetNeaktivniOsobyAsync()
         {
@@ -594,6 +617,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<OsobaListDto> GetNeaktivniOsobyAsync(System.Threading.CancellationToken cancellationToken)
         {
@@ -663,6 +687,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task SmazNeaktivniOsobuAsync(int osobaId)
         {
@@ -670,6 +695,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task SmazNeaktivniOsobuAsync(int osobaId, System.Threading.CancellationToken cancellationToken)
         {
@@ -737,6 +763,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task AktivujNeaktivniOsobuAsync(int osobaId)
         {
@@ -744,6 +771,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task AktivujNeaktivniOsobuAsync(int osobaId, System.Threading.CancellationToken cancellationToken)
         {
@@ -945,17 +973,21 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface IReportWebApiClient
     {
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ReportTerminu> GetReportTerminuAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ReportTerminu> GetReportTerminuAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ReportOsob> GetReportOsobAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ReportOsob> GetReportOsobAsync(System.Threading.CancellationToken cancellationToken);
 
@@ -993,6 +1025,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<ReportTerminu> GetReportTerminuAsync()
         {
@@ -1000,6 +1033,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ReportTerminu> GetReportTerminuAsync(System.Threading.CancellationToken cancellationToken)
         {
@@ -1069,6 +1103,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<ReportOsob> GetReportOsobAsync()
         {
@@ -1076,6 +1111,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ReportOsob> GetReportOsobAsync(System.Threading.CancellationToken cancellationToken)
         {
@@ -1282,6 +1318,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         /// <br/>Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
         /// </summary>
         /// <param name="profile">Název profilu k seedování.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task SeedDataAsync(string profile);
 
@@ -1291,6 +1328,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         /// <br/>Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
         /// </summary>
         /// <param name="profile">Název profilu k seedování.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task SeedDataAsync(string profile, System.Threading.CancellationToken cancellationToken);
 
@@ -1333,6 +1371,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         /// <br/>Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
         /// </summary>
         /// <param name="profile">Název profilu k seedování.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task SeedDataAsync(string profile)
         {
@@ -1345,6 +1384,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         /// <br/>Název profilu nemá obsahovat "Profile", vyhledává se dle názvu typu bez ohledu na velikost písmen.
         /// </summary>
         /// <param name="profile">Název profilu k seedování.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task SeedDataAsync(string profile, System.Threading.CancellationToken cancellationToken)
         {
@@ -1545,31 +1585,39 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.7.1.0 (NJsonSchema v11.6.1.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface ITerminWebApiClient
     {
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TerminListDto> GetTerminyAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TerminListDto> GetTerminyAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TerminDetailDto> GetDetailTerminuAsync(int terminId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PrihlasitAsync(int terminId, int osobaId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PrihlasitAsync(int terminId, int osobaId, System.Threading.CancellationToken cancellationToken);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task OdhlasitAsync(int terminId, int osobaId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task OdhlasitAsync(int terminId, int osobaId, System.Threading.CancellationToken cancellationToken);
 
@@ -1607,6 +1655,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<TerminListDto> GetTerminyAsync()
         {
@@ -1614,6 +1663,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<TerminListDto> GetTerminyAsync(System.Threading.CancellationToken cancellationToken)
         {
@@ -1683,6 +1733,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<TerminDetailDto> GetDetailTerminuAsync(int terminId)
         {
@@ -1690,6 +1741,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, System.Threading.CancellationToken cancellationToken)
         {
@@ -1763,6 +1815,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task PrihlasitAsync(int terminId, int osobaId)
         {
@@ -1770,6 +1823,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PrihlasitAsync(int terminId, int osobaId, System.Threading.CancellationToken cancellationToken)
         {
@@ -1844,6 +1898,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
             }
         }
 
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task OdhlasitAsync(int terminId, int osobaId)
         {
@@ -1851,6 +1906,7 @@ namespace KandaEu.Volejbal.Web.Client.WebApiClients
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task OdhlasitAsync(int terminId, int osobaId, System.Threading.CancellationToken cancellationToken)
         {

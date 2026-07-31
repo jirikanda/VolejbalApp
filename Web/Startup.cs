@@ -28,7 +28,7 @@ public class Startup
 	/// <summary>
 	/// Configure services.
 	/// </summary>
-	public void ConfigureServices(IServiceCollection services, IWebHostEnvironment _)
+	public void ConfigureServices(IServiceCollection services, IWebHostEnvironment environment)
 	{
 		services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -53,7 +53,13 @@ public class Startup
 		services.AddExceptionMonitoring(_configuration);
 		services.AddCustomizedErrorToJson();
 
-		services.AddCustomizedOpenApi();
+		// OpenAPI potřebujeme jen v Development (Scalar) a při build-time exportu dokumentu pro generátor klientů
+		// (OpenApiGenerateDocumentsOnBuild) - ten bootuje aplikaci nástrojem GetDocument.Insider mimo Development.
+		bool isBuildTimeOpenApiExport = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
+		if (environment.IsDevelopment() || isBuildTimeOpenApiExport)
+		{
+			services.AddCustomizedOpenApi();
+		}
 
 		services.AddApplicationInsightsTelemetry(_configuration);
 		services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) => { module.EnableSqlCommandTextInstrumentation = true; });
@@ -123,7 +129,10 @@ public class Startup
 												: job.ToString()
 		});
 
-		app.UseCustomizedOpenApiSwaggerUI();
+		if (app.Environment.IsDevelopment())
+		{
+			app.UseCustomizedOpenApiScalarUI();
+		}
 	}
 
 }

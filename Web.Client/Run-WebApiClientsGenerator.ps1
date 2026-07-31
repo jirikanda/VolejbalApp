@@ -25,7 +25,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Build projektu Web se nezdařil.' }
 	/additionalNamespaceUsages:KandaEu.Volejbal.Contracts.Nastenka.Dto,KandaEu.Volejbal.Contracts.Osoby.Dto,KandaEu.Volejbal.Contracts.Reporty.Dto,KandaEu.Volejbal.Contracts.Terminy.Dto
 if ($LASTEXITCODE -ne 0) { throw 'NSwag generování klientů se nezdařilo.' }
 
-# NSwag zapisuje výstup bez BOM - sjednocujeme s konvencí repa (UTF-8 s BOM).
+# NSwag zapisuje výstup bez BOM a s CRLF - sjednocujeme s konvencí repa (UTF-8 s BOM, LF).
 $outputPath = Join-Path $PSScriptRoot '_generated\WebApiClients.cs'
-$outputText = [System.IO.File]::ReadAllText($outputPath)
+$outputText = [System.IO.File]::ReadAllText($outputPath).Replace("`r`n", "`n")
 [System.IO.File]::WriteAllText($outputPath, $outputText, [System.Text.UTF8Encoding]::new($true))

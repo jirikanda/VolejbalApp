@@ -30,6 +30,7 @@
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.9" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.9" />
@@ -42,8 +43,9 @@
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.9" />
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48" />
     <PackageVersion Include="MSTest" Version="4.2.3" />
-    <PackageVersion Include="NSwag.AspNetCore" Version="14.7.1" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.16.17" />
 	  <!-- fix vulnerabilities -->
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
     <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.8" />
   </ItemGroup>
 </Project>
