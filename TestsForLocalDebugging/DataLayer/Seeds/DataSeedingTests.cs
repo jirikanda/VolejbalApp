@@ -13,7 +13,7 @@ public class DataSeedingTests : TestBase
 	protected override bool UseLocalDb => true;
 	protected override bool SeedData => false;
 
-	[Ignore]
+	[Ignore("Maže a znovu vytváří lokální databázi – spouštět jen ručně.")]
 	[TestMethod]
 	public void DataSeedRunner_SeedCoreProfile()
 	{
