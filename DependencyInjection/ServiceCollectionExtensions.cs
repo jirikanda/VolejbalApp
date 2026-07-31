@@ -10,14 +10,7 @@ using KandaEu.Volejbal.Entity;
 using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
-using Hangfire;
-using Hangfire.States;
-using Hangfire.Console.Extensions;
-using Hangfire.Console;
-using Havit.Hangfire.Extensions.Filters;
-using Microsoft.ApplicationInsights;
-using Havit.AspNetCore.ExceptionMonitoring.Services;
-using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+using KandaEu.Volejbal.Services.Jobs;
 using Havit.Data.EntityFrameworkCore;
 using KandaEu.Volejbal.DataLayer;
 
@@ -39,7 +32,7 @@ public static class ServiceCollectionExtensions
 		// background jobs
 		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
 		{
-			services.AddHostedService<EnsureTerminyStartupService>();
+			services.AddHostedService<RecurringJobsBackgroundService>(); // neblokující — EnsureTerminy + DeaktivaceOsob (při startu a opakovaně)
 		}
 
 		return services;
@@ -47,7 +40,7 @@ public static class ServiceCollectionExtensions
 
 	/// <summary>
 	/// Konfigurace pro MigrationTool - migrace schématu databáze a spuštění data seedů v deployment time.
-	/// Záměrně nepoužívá ConfigureForAll, tool potřebuje jen EF Core, DataLayer a MigrationService (bez Hangfire, Services a Facades).
+	/// Záměrně nepoužívá ConfigureForAll, tool potřebuje jen EF Core, DataLayer a MigrationService (bez Services a Facades).
 	/// </summary>
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	public static IServiceCollection ConfigureForMigrationTool(this IServiceCollection services, IConfiguration configuration)
@@ -88,8 +81,7 @@ public static class ServiceCollectionExtensions
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
 			DatabaseConnectionString = configuration.GetConnectionString("Database"),
-			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile },
-			InstallOnlyLimitedHangfireExtensions = true
+			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
 		};
 
 		return services.ConfigureForAll(installConfiguration);
@@ -100,7 +92,6 @@ public static class ServiceCollectionExtensions
 	{
 		InstallHavitEntityFramework(services, installConfiguration);
 		InstallHavitServices(services);
-		InstallHangfire(services, installConfiguration);
 		InstallByServiceAttribute(services, installConfiguration);
 
 		return services;
@@ -130,46 +121,6 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<ITimeService, ApplicationTimeService>();
 		services.AddSingleton<ICacheService, MemoryCacheService>();
 		services.AddSingleton(new MemoryCacheServiceOptions { UseCacheDependenciesSupport = false });
-	}
-
-	private static void InstallHangfire(IServiceCollection services, InstallConfiguration installConfiguration)
-	{
-		services.AddHangfire((serviceProvider, configuration) =>
-		{
-			configuration
-				.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-				.UseSimpleAssemblyNameTypeSerializer()
-				.UseRecommendedSerializerSettings()
-				.UseInMemoryStorage()
-				//.UseSqlServerStorage(() => new Microsoft.Data.SqlClient.SqlConnection(installConfiguration.DatabaseConnectionString), new SqlServerStorageOptions
-				//{
-				//	CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-				//	SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-				//	QueuePollInterval = TimeSpan.FromSeconds(5),
-				//	UseRecommendedIsolationLevel = true,
-				//	DisableGlobalLocks = true,
-				//	EnableHeavyMigrations = true
-				//})
-				.WithJobExpirationTimeout(TimeSpan.FromDays(30)) // historie hangfire
-				.UseFilter(new AutomaticRetryAttribute { Attempts = 0 }) // do not retry failed jobs						
-				.UseFilter(new ContinuationsSupportAttribute(new HashSet<string> { FailedState.StateName, DeletedState.StateName, SucceededState.StateName })) // only working with AutomaticRetryAttribute with Attempts = 0
-				.UseFilter(new CancelRecurringJobWhenAlreadyInQueueOrCurrentlyRunningFilter()); // joby se (v případě "nestihnutí" zpracování) nezařazují opakovaně
-
-			if (!installConfiguration.InstallOnlyLimitedHangfireExtensions)
-			{
-				// V TestsForLocalDebugging nemáme (a nepotřebujeme) závislost TelemetryClient (ApplicationInsights) ani IExceptionMonitoringService.
-
-				configuration
-					//.UseFilter(new SoftErrorNotificationFilter(serviceProvider.GetRequiredService<IMailingService>(), serviceProvider.GetRequiredService<IOptions<SoftErrorNotificationOptions>>()))
-					.UseFilter(new ExceptionMonitoringAttribute(serviceProvider.GetRequiredService<IExceptionMonitoringService>())) // zajistíme hlášení chyby v případě selhání jobu
-					.UseFilter(new ApplicationInsightAttribute(serviceProvider.GetRequiredService<TelemetryClient>()) { JobNameFunc = backgroundJob => Havit.Hangfire.Extensions.Helpers.JobNameHelper.TryGetSimpleName(backgroundJob.Job, out string simpleName) ? simpleName : backgroundJob.Job.ToString() });
-			}
-
-			configuration.UseConsole();
-		});
-
-		services.AddHangfireConsoleExtensions();
-		//services.AddHangfireSequenceRecurringJobScheduler(); // adds support for SequenceRecurringJobs
 	}
 
 	private static void InstallByServiceAttribute(IServiceCollection services, InstallConfiguration configuration)

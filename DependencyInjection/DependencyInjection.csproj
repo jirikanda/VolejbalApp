@@ -6,12 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hangfire.AspNetCore" />
-		<PackageReference Include="Hangfire.Console.Extensions" />
-		<PackageReference Include="Hangfire.InMemory" />
 		<PackageReference Include="Havit.Extensions.DependencyInjection" />
-		<PackageReference Include="Havit.Hangfire.Extensions" />
-		<PackageReference Include="Microsoft.ApplicationInsights" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
 	</ItemGroup>
 

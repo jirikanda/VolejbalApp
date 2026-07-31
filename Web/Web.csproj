@@ -14,7 +14,6 @@
   <ItemGroup>
 	<PackageReference Include="Havit.ApplicationInsights.DependencyCollector" />
 	<PackageReference Include="Havit.AspNetCore.Mvc" />
-	<PackageReference Include="Havit.Hangfire.Extensions" />
 	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
 	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
 	<PackageReference Include="Microsoft.Extensions.ApiDescription.Server">

@@ -1,6 +1,4 @@
 ﻿using System.Threading.RateLimiting;
-using Hangfire;
-using Hangfire.Dashboard;
 using Havit.ApplicationInsights.DependencyCollector;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
@@ -68,8 +66,6 @@ public class Startup
 		services.AddTransient<ErrorMonitoringFilter>();
 
 		services.ConfigureForWebAPI(_configuration);
-
-		services.AddCustomizedHangfireServer();
 	}
 
 	/// <summary>
@@ -99,9 +95,6 @@ public class Startup
 		app.UseRouting();
 		app.UseAntiforgery();
 		app.UseRateLimiter();
-
-		// výchozí stránku hangfire změníme na recurring jobs (na výchozí stránku se nyní není jak dostat, což nám nevadí)
-		app.UseRewriter(new Microsoft.AspNetCore.Rewrite.RewriteOptions().AddRedirect("^hangfire(/)?$", "hangfire/recurring"));
 	}
 
 	public void ConfigureEndpoints(WebApplication app)
@@ -113,21 +106,6 @@ public class Startup
 		app.MapRazorComponents<App>()
 			.AddInteractiveWebAssemblyRenderMode()
 			.AddAdditionalAssemblies(typeof(Client.Components.Routes).Assembly);
-
-		app.MapHangfireDashboard("/hangfire", new DashboardOptions
-		{
-			DefaultRecordsPerPage = 50,
-#if !DEBUG
-			IsReadOnlyFunc = _ => true,
-#endif
-			Authorization = new List<IDashboardAuthorizationFilter>() { }, // see https://sahansera.dev/securing-hangfire-dashboard-with-endpoint-routing-auth-policy-aspnetcore/
-			DisplayStorageConnectionString = false,
-			DashboardTitle = $"VolejbalApp",
-			StatsPollingInterval = 60_000, // once a minute
-			DisplayNameFunc = (_, job) => Havit.Hangfire.Extensions.Helpers.JobNameHelper.TryGetSimpleName(job, out string simpleName)
-												? simpleName
-												: job.ToString()
-		});
 
 		if (app.Environment.IsDevelopment())
 		{
