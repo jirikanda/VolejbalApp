@@ -1,0 +1,72 @@
+@using KandaEu.Volejbal.Contracts.Nastenka.Dto
+@using KandaEu.Volejbal.Web.Client.WebApiClients
+
+@inject INastenkaWebApiClient NastenkaWebApiClient
+@inject IOsobaWebApiClient OsobaWebApiClient
+
+@if ((_state.AktivniOsoby != null) && (_state.Vzkazy != null))
+{
+    <div class="msg-head">
+        <h2>Nástěnka</h2>
+        <span class="meta">@VzkazyCountLabel(_state.Vzkazy.Count)</span>
+    </div>
+
+    @if (_state.Vzkazy.Count == 0)
+    {
+        <p class="msg-note">Žádné aktuální zprávy.</p>
+    }
+    else
+    {
+        <div class="msg-list">
+            @foreach (var vzkaz in _state.Vzkazy)
+            {
+                <div class="msg @(vzkaz.IsObsolete ? "obsolete" : "")">
+                    <div class="meta">
+                        <span class="author">@vzkaz.Author</span>
+                        <span>&#183;</span>
+                        <span>@vzkaz.DatumVlozeni.ToString("d.M.yyyy HH:mm")</span>
+                    </div>
+                    <div class="body">@vzkaz.Zprava</div>
+                </div>
+            }
+        </div>
+@*         <div class="msg-older">
+            <button type="button">
+                Starší zprávy
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div> *@
+    }
+
+    <EditForm class="compose" Model="@_formData" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator />
+
+        <HxSelect TItem="KandaEu.Volejbal.Contracts.Osoby.Dto.OsobaDto"
+                  TValue="int?"
+                  Label="Kdo píše"
+                  Data="@_state.AktivniOsoby"
+                  @bind-Value="@_formData.AutorId"
+                  TextSelector="@(o => o.PrijmeniJmeno)"
+                  ValueSelector="@(o => (int?)o.Id)"
+                  NullText="&#8212; vyber autora &#8212;"
+                  Nullable="true"
+                  InputSize="InputSize.Regular" />
+
+        <HxInputTextArea Label="Vzkaz"
+                         @bind-Value="@_formData.Zprava"
+                         Placeholder="Co chceš ostatním vzkázat?" />
+
+        <button type="submit" class="btn primary-signed">Přidat vzkaz</button>
+    </EditForm>
+}
+
+@code {
+    private static string VzkazyCountLabel(int count) => count switch
+    {
+        1 => "1 vzkaz",
+        >= 2 and <= 4 => $"{count} vzkazy",
+        _ => $"{count} vzkazů"
+    };
+}

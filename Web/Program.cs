@@ -1,54 +1,60 @@
-using Blazored.LocalStorage;
-using Havit.Blazor.Components.Web;
-using KandaEu.Volejbal.Web.App_Start;
-using KandaEu.Volejbal.Web.Components;
+﻿using System.Runtime.InteropServices;
+using KandaEu.Volejbal.DependencyInjection.Configuration;
 
 namespace KandaEu.Volejbal.Web;
 
-public class Program
+public static class Program
 {
 	public static void Main(string[] args)
 	{
-		var builder = WebApplication.CreateBuilder(args);
+		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-		builder.Configuration.AddJsonFile("appsettings.Web.json", optional: false, reloadOnChange: false);
-		builder.Configuration.AddJsonFile($"appsettings.Web.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false);
-		builder.Configuration.AddEnvironmentVariables();
-
-		// Add services to the container.
-		builder.Services.AddRazorComponents()
-			.AddInteractiveServerComponents();
-
-		builder.Services.AddLocalization();
-
-		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(builder.Configuration);
-		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(builder.Configuration);
-		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(builder.Configuration);
-		builder.Services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(builder.Configuration);
-		builder.Services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(builder.Configuration);
-
-		builder.Services.AddBlazoredLocalStorage();
-		builder.Services.AddHxServices();
+		ConfigureConfigurationAndLogging(builder);
+		ConfigureServices(builder);
 
 		var app = builder.Build();
 
-		// Configure the HTTP request pipeline.
-		if (!app.Environment.IsDevelopment())
-		{
-			app.UseExceptionHandler("/Error");
-			// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-			app.UseHsts();
-		}
-
-		app.UseHttpsRedirection();
-
-		app.MapStaticAssets();
-		app.UseAntiforgery();
-
-		app.UseRequestLocalization("cs-CZ"); // https://learn.microsoft.com/en-us/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0#statically-set-the-server-side-culture
-		app.MapRazorComponents<App>()
-			.AddInteractiveServerRenderMode();
+		ConfigureMiddleware(app);
+		ConfigureEndpoints(app);
 
 		app.Run();
+	}
+
+	private static void ConfigureConfigurationAndLogging(WebApplicationBuilder builder)
+	{
+		builder.Configuration.AddJsonFile("appsettings.Web.json", optional: false);
+		builder.Configuration.AddJsonFile($"appsettings.Web.{builder.Environment.EnvironmentName}.json", optional: true);
+#if DEBUG
+		builder.Configuration.AddJsonFile($"appsettings.Web.{builder.Environment.EnvironmentName}.local.json", optional: true); // .gitignored
+#endif
+		builder.Configuration.AddEnvironmentVariables();
+		builder.Configuration.AddCustomizedAzureKeyVault();
+
+		builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+		builder.Logging.AddConsole();
+		builder.Logging.AddDebug();
+
+		if (!builder.Environment.IsDevelopment() && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		{
+			builder.Logging.AddEventLog();
+		}
+	}
+
+	private static void ConfigureServices(WebApplicationBuilder builder)
+	{
+		Startup startup = new Startup(builder.Configuration);
+		startup.ConfigureServices(builder.Services, builder.Environment);
+	}
+
+	private static void ConfigureMiddleware(WebApplication app)
+	{
+		Startup startup = new Startup(app.Configuration);
+		startup.ConfigureMiddleware(app);
+	}
+
+	private static void ConfigureEndpoints(WebApplication app)
+	{
+		Startup startup = new Startup(app.Configuration);
+		startup.ConfigureEndpoints(app);
 	}
 }

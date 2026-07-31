@@ -42,17 +42,8 @@ jobs:
       - name: Publish Web
         run: dotnet publish Web/Web.csproj --no-restore --configuration Release --output ./publish/Web
 
-      - name: Publish WebAPI
-        run: dotnet publish WebAPI/WebAPI.csproj --no-restore --configuration Release --output ./publish/WebAPI
-
       - name: Upload Web artifact
         uses: actions/upload-artifact@v4
         with:
           name: Web
           path: ./publish/Web
-
-      - name: Upload WebAPI artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: WebAPI
-          path: ./publish/WebAPI

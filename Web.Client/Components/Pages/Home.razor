@@ -1,0 +1,26 @@
+@page "/"
+
+<PageTitle>Volejbal &#183; Termíny</PageTitle>
+
+<div class="home-layout">
+    <main>
+        @if (ShowNastenkaLink)
+        {
+            <a class="mobile-msg-link" href="#zpravy">
+                <span class="pulse" aria-hidden="true"></span>
+                <span>Na nástěnce jsou nové vzkazy</span>
+                <span class="arr" aria-hidden="true">&#8595;</span>
+            </a>
+        }
+
+        <section class="section" style="margin-top: 0;">
+            <div class="section-head"><h2>Termín</h2></div>
+            <KandaEu.Volejbal.Web.Client.Components.Pages.Terminy.Terminy CurrentTerminIdChanged="HandleCurrentTerminIdChanged" />
+            <KandaEu.Volejbal.Web.Client.Components.Pages.Prihlasovani.Prihlasovani CurrentTerminId="@_currentTerminId" />
+        </section>
+    </main>
+
+    <aside class="msg-sidebar" id="zpravy">
+        <KandaEu.Volejbal.Web.Client.Components.Pages.Nastenka.NastenkaSidebar />
+    </aside>
+</div>
