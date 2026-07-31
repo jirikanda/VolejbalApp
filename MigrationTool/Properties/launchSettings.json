@@ -1,0 +1,8 @@
+﻿{
+  "profiles": {
+	"MigrationTool": {
+		"commandName": "Project",
+		"commandLineArgs": "--connectionstring \"Data Source=(localdb)\\mssqllocaldb;Initial Catalog=VolejbalApp;Application Name=VolejbalApp-MigrationTool;Trust Server Certificate=True\""
+	}
+  }
+}

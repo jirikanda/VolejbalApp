@@ -16,6 +16,7 @@
   <Project Path="DependencyInjection/DependencyInjection.csproj" />
   <Project Path="Entity/Entity.csproj" />
   <Project Path="Facades/Facades.csproj" />
+  <Project Path="MigrationTool/MigrationTool.csproj" />
   <Project Path="Model/Model.csproj" />
   <Project Path="Services/Services.csproj" />
   <Project Path="Tests/Tests.csproj" />

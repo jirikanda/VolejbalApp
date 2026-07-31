@@ -21,6 +21,10 @@ dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~VolejbalDbContext_Ch
 
 # Publish (matches build pipeline; the WASM client is bundled into the host output automatically)
 dotnet publish Web/Web.csproj --configuration Release --output ./publish/Web
+dotnet publish MigrationTool/MigrationTool.csproj --configuration Release --output ./publish/MigrationTool
+
+# Apply EF migrations + run data seeds (deployment-time; also needed before first local run)
+dotnet run --project MigrationTool -- --connectionstring "Data Source=(localdb)\mssqllocaldb;Initial Catalog=VolejbalApp;Application Name=VolejbalApp-MigrationTool;Trust Server Certificate=True"
 
 # Regenerate Repositories / DataSources / Metadata from Model/* entities
 # (writes into Model/_generated and DataLayer/_generated)
@@ -87,7 +91,14 @@ The repo is built on HAVIT's EF Core stack and conventions. Read these before ch
 - Blazor endpoints: `MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode().AddAdditionalAssemblies(...)` with the root document at [Web/Components/App.razor](Web/Components/App.razor). **Prerendering is off** (`new InteractiveWebAssemblyRenderMode(prerender: false)`) — the host renders only the static shell, all UI runs client-side; the host therefore does not register any client services.
 - In Development, `DelayRequestMiddleware` (artificial 500 ms) applies **only under `/api`** so it doesn't slow WASM asset downloads; `UseWebAssemblyDebugging()` is enabled.
 - **Hangfire uses in-memory storage** (`UseInMemoryStorage()` — see SQL Server config is commented out in `ServiceCollectionExtensions.InstallHangfire`). Jobs do not survive restart. `AutomaticRetryAttribute { Attempts = 0 }` — failed jobs are not retried.
-- **On startup**: `DatabaseMigrationHostedService` runs `Database.MigrateAsync()` + seeds `CoreProfile`, and `EnsureTerminyStartupService` materializes upcoming Termíny. Both are gated on having a non-empty `ConnectionStrings:Database` (so OpenAPI/NSwag tooling can run without a DB).
+- **The app does NOT migrate or seed the database at runtime.** Schema migrations + data seeds run via the **`MigrationTool`** console project at deployment time (see below). On startup only `EnsureTerminyStartupService` materializes upcoming Termíny (gated on a non-empty `ConnectionStrings:Database`, so OpenAPI tooling can run without a DB) — it assumes the schema already exists.
+
+### MigrationTool (deployment-time migrations + seeds)
+
+- Console app ([MigrationTool/Program.cs](MigrationTool/Program.cs)) intended for the deployment pipeline: applies EF Core migrations and runs `CoreProfile` data seeds, then exits. Published as a separate CI artifact.
+- Wiring: `ConfigureForMigrationTool` in [DependencyInjection/ServiceCollectionExtensions.cs](DependencyInjection/ServiceCollectionExtensions.cs) (deliberately minimal — EF Core + DataLayer + [Services/Infrastructure/MigrationTool/MigrationService.cs](Services/Infrastructure/MigrationTool/MigrationService.cs); no Hangfire/Services/Facades).
+- Parameters: `--connectionstring <cs>` (maps to `ConnectionStrings:Database`), optional `--commandtimeout <seconds>` (default 300); environment variables work too (`ConnectionStrings__Database`).
+- **Local dev**: after cloning or adding a migration, run the MigrationTool (F5 profile uses LocalDB) — the Web app no longer creates/updates the DB for you. `TestsForLocalDebugging` is unaffected (it migrates+seeds itself per test).
 
 ### Web.Client (Blazor WebAssembly)
 

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Havit.Services.Caching;
 using KandaEu.Volejbal.Services.Infrastructure;
+using KandaEu.Volejbal.Services.Infrastructure.MigrationTool;
 using KandaEu.Volejbal.Entity;
 using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,9 +39,31 @@ public static class ServiceCollectionExtensions
 		// background jobs
 		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
 		{
-			services.AddHostedService<DatabaseMigrationHostedService>();
 			services.AddHostedService<EnsureTerminyStartupService>();
 		}
+
+		return services;
+	}
+
+	/// <summary>
+	/// Konfigurace pro MigrationTool - migrace schématu databáze a spuštění data seedů v deployment time.
+	/// Záměrně nepoužívá ConfigureForAll, tool potřebuje jen EF Core, DataLayer a MigrationService (bez Hangfire, Services a Facades).
+	/// </summary>
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	public static IServiceCollection ConfigureForMigrationTool(this IServiceCollection services, IConfiguration configuration)
+	{
+		InstallConfiguration installConfiguration = new InstallConfiguration
+		{
+			DatabaseConnectionString = configuration.GetConnectionString("Database"),
+			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
+		};
+
+		InstallHavitEntityFramework(services, installConfiguration);
+		InstallHavitServices(services);
+		services.AddMemoryCache();
+		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly, installConfiguration.ServiceProfiles);
+
+		services.AddSingleton<IMigrationService, MigrationService>();
 
 		return services;
 	}
