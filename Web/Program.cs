@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using KandaEu.Volejbal.DependencyInjection.Configuration;
 
 namespace KandaEu.Volejbal.Web;
 
@@ -28,7 +27,6 @@ public static class Program
 		builder.Configuration.AddJsonFile($"appsettings.Web.{builder.Environment.EnvironmentName}.local.json", optional: true); // .gitignored
 #endif
 		builder.Configuration.AddEnvironmentVariables();
-		builder.Configuration.AddCustomizedAzureKeyVault();
 
 		builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 		builder.Logging.AddConsole();

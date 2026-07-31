@@ -116,7 +116,7 @@ Two test projects, deliberately separated:
 
 ## Configuration
 
-- Web (host): `appsettings.Web.json` + environment override + (Debug only) `*.local.json` (gitignored) + env vars + Azure Key Vault (URI from `ConnectionStrings:AzureKeyVault`). See [DependencyInjection/Configuration/KeyVaultConfig.cs](DependencyInjection/Configuration/KeyVaultConfig.cs).
+- Web (host): `appsettings.Web.json` + environment override + (Debug only) `*.local.json` (gitignored) + env vars. Secrets (connection strings, AI) are supplied via environment variables in production — no Key Vault.
 - Web.Client has no configuration files — the API base address is the host origin.
 - The Entity project has its own `appsettings.json` (used by `VolejbalDesignTimeDbContextFactory` for EF tooling and the code generator).
 
