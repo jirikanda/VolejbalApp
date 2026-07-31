@@ -4,6 +4,9 @@
 		<OutputType>Exe</OutputType>
 		<AssemblyName>KandaEu.Volejbal.MigrationTool</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.MigrationTool</RootNamespace>
+
+		<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64) -->
+		<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
 	</PropertyGroup>
 
 	<ItemGroup>

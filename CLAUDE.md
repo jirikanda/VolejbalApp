@@ -131,4 +131,5 @@ Two test projects, deliberately separated:
 
 ## CI / deployment
 
-- [.github/workflows/build.yml](.github/workflows/build.yml) — runs on push/PR to `master`: restore → build (Release) → test → publish `Web` (single artifact; the WASM client is bundled into the host's `wwwroot/_framework`).
+- [.github/workflows/build.yml](.github/workflows/build.yml) — runs on push/PR to `master`: restore → build (Release) → test → publish `Web` + `MigrationTool` artifacts for **linux-x64 with ReadyToRun** (framework-dependent). The WASM client is bundled into the host's `wwwroot/_framework`.
+- ReadyToRun gotchas (learned the hard way): `PublishReadyToRun` is set in [Web/Web.csproj](Web/Web.csproj) and [MigrationTool/MigrationTool.csproj](MigrationTool/MigrationTool.csproj) conditioned on `RuntimeIdentifier != ''` — passing `-p:PublishReadyToRun=true` on the CLI would flow into `Web.Client` (browser-wasm) and fail with NETSDK1095. Similarly, never `dotnet restore` the whole solution with `--runtime` — Web.Client would demand a non-existent Mono runtime pack; the publish steps do their own RID-specific restore instead.

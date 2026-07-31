@@ -39,11 +39,14 @@ jobs:
       - name: Test
         run: dotnet test Tests/Tests.csproj --no-build --configuration Release --verbosity normal
 
+      # ReadyToRun se aktivuje v csproj podle RID - globální -p:PublishReadyToRun by rozbilo Web.Client (browser-wasm).
+      # RID-specific restore si dělají publish kroky samy (bez --no-restore) - restore celé solution s --runtime
+      # by u Web.Client (browser-wasm) vyžadoval neexistující Mono runtime pack pro linux-x64.
       - name: Publish Web
-        run: dotnet publish Web/Web.csproj --no-restore --configuration Release --output ./publish/Web
+        run: dotnet publish Web/Web.csproj --configuration Release --runtime linux-x64 --self-contained false --output ./publish/Web
 
       - name: Publish MigrationTool
-        run: dotnet publish MigrationTool/MigrationTool.csproj --no-restore --configuration Release --output ./publish/MigrationTool
+        run: dotnet publish MigrationTool/MigrationTool.csproj --configuration Release --runtime linux-x64 --self-contained false --output ./publish/MigrationTool
 
       - name: Upload Web artifact
         uses: actions/upload-artifact@v4

@@ -6,6 +6,9 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>1701;1702;1705;1591</NoWarn>
 	<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
+
+	<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64); nesmí se předávat jako globální CLI vlastnost, protékala by do Web.Client (browser-wasm), který R2R nepodporuje -->
+	<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>
