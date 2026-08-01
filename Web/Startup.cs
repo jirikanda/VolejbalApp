@@ -46,8 +46,6 @@ public class Startup
 			options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
 		}));
 
-		services.AddCustomizedMailing(_configuration);
-
 		services.AddExceptionMonitoring(_configuration);
 		services.AddCustomizedErrorToJson();
 
