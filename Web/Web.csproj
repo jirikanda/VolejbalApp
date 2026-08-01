@@ -9,6 +9,12 @@
 
 	<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64); nesmí se předávat jako globální CLI vlastnost, protékala by do Web.Client (browser-wasm), který R2R nepodporuje -->
 	<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
+
+	<!-- Workstation GC místo Server GC (SDK default) - Server GC alokuje heap + vyhrazené vlákno na každé CPU jádro,
+	     což je pro málo vytíženou službu na omezeném kontejneru (ACA 0.25-0.5 vCPU) zbytečná režie.
+	     Změřeno (24jádrový dev stroj): 54 -> 29 vláken, private bytes ~90 -> ~69 MB. -->
+	<ServerGarbageCollection>false</ServerGarbageCollection>
+	<ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>
