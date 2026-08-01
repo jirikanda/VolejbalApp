@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   - package-ecosystem: "nuget"
     directory: "/"
@@ -6,34 +7,44 @@ updates:
       interval: "daily"
       time: "06:00"
       timezone: "Europe/Prague"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 6
     # Reviewers řízeni přes .github/CODEOWNERS
     commit-message:
-      prefix: "deps"
+      prefix: "Nuget packages update"
       include: "scope"
+    #cooldown:
+    #  default-days: 7
+    #  semver-major-days: 14
+    ignore:
+      # Balíčky, které přes Dependabot neřešíme.
+      - dependency-name: "Aspose.*"
+      - dependency-name: "Microsoft.ApplicationInsights*"
     groups:
-      minor-and-patch:
+      # Proč skupiny s "patterns" a proč v tomto pořadí:
+      # Dependabot NuGet updater u velké solution analyzuje a restoruje každý balíček zvlášť napříč všemi projekty
+      # (včetně .sln, testů a tools). U velké solution se tak celý běh nemusí vejít do 55minutového limitu jobu.
+      #
+      # Cílem skupin NENÍ zkrátit celkový běh (víc skupin = víc discovery/analýza průchodů, běh se spíš prodlouží),
+      # ale dostat první PR ven co nejdříve: PR vzniká hned po dokončení každé skupiny. Programátor tak má PR k merge
+      # i když běh spadne na timeout, a další běh už zmergované balíčky odbaví rychlou cestou "already at version".
+      # Repo se tak dokonverguje během několika dní.
+      #
+      # Skupiny běží v pořadí z tohoto souboru a balíček spadne do PRVNÍ odpovídající skupiny. Konkrétní pattern
+      # skupiny proto musí být nad catch-all skupinami, jinak by je catch-all minor "spolkla".
+      microsoft-aspnetcore-and-efcore-and-extensions-dependencies:
+        patterns:
+          - "Microsoft.AspNetCore.*"
+          - "Microsoft.Extensions.*"
+          - "Microsoft.VisualStudio.Threading.Analyzers"
+          - "Microsoft.EntityFrameworkCore*"
+          - "System.*"
         update-types:
           - "minor"
           - "patch"
-      major-dotnet-platform:
-        patterns:
-          - "Microsoft.AspNetCore.*"
-          - "Microsoft.EntityFrameworkCore.*"
-          - "Microsoft.Extensions.*"
-          - "System.*"
-        exclude-patterns:
-          - "Microsoft.ApplicationInsights"
+      minor-dependencies:
         update-types:
-          - "major"
-      major-other:
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "Microsoft.AspNetCore.*"
-          - "Microsoft.EntityFrameworkCore.*"
-          - "Microsoft.Extensions.*"
-          - "System.*"
-          - "Microsoft.ApplicationInsights"
+          - "minor"
+          - "patch"
+      major-dependencies:
         update-types:
           - "major"
