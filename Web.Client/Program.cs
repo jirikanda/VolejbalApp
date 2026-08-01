@@ -14,8 +14,6 @@ public class Program
 
 		// Root komponenty (Routes, HeadOutlet) neregistrujeme - aktivuje je blazor.web.js podle markerů vyrenderovaných hostem.
 
-		builder.Services.AddLocalization();
-
 		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(builder.HostEnvironment.BaseAddress);
 		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(builder.HostEnvironment.BaseAddress);
 		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(builder.HostEnvironment.BaseAddress);

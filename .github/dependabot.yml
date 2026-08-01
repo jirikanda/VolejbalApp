@@ -35,7 +35,6 @@ updates:
         patterns:
           - "Microsoft.AspNetCore.*"
           - "Microsoft.Extensions.*"
-          - "Microsoft.VisualStudio.Threading.Analyzers"
           - "Microsoft.EntityFrameworkCore*"
           - "System.*"
         update-types:
