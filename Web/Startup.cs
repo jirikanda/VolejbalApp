@@ -3,6 +3,7 @@ using Havit.ApplicationInsights.DependencyCollector;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
 using KandaEu.Volejbal.Web.Components;
+using KandaEu.Volejbal.Web.Infrastructure;
 using KandaEu.Volejbal.Web.Infrastructure.ConfigurationExtensions;
 using KandaEu.Volejbal.Web.Infrastructure.Middlewares;
 using Microsoft.ApplicationInsights.DependencyCollector;
@@ -64,6 +65,11 @@ public class Startup
 		services.AddTransient<ErrorMonitoringFilter>();
 
 		services.ConfigureForWebAPI(_configuration);
+
+		if (!String.IsNullOrEmpty(_configuration.GetConnectionString("Database"))) // při build-time exportu OpenAPI dokumentu (GetDocument.Insider) nemáme connection string
+		{
+			services.AddHostedService<WarmupBackgroundService>();
+		}
 	}
 
 	/// <summary>
