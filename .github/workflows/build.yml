@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  packages: write # push container image do ghcr.io (jen mimo PR, viz krok níže)
 
 jobs:
   build:
@@ -59,3 +60,33 @@ jobs:
         with:
           name: MigrationTool
           path: ./publish/MigrationTool
+
+      # Container image pro Web (nasazuje se na Azure Container Apps, viz deploy/main.bicep) - přes vestavěnou
+      # kontejnerizaci .NET SDK, žádný Dockerfile. Jen na push do master / ruční spuštění, ne na PR - nechceme
+      # pushovat image za každý PR build. GITHUB_TOKEN stačí (packages: write výše), žádný extra secret netřeba.
+      #
+      # Tag je jen commit SHA, záměrně žádný "latest" - CI (tenhle krok) jen publikuje image, nic nedeployuje.
+      # Nasazení (CD) je oddělený ruční krok (viz .github/workflows/deploy.yml), který explicitně vybírá SHA -
+      # floating "latest" tag by byl implicitní deploy target bez záměrného rozhodnutí, co jde do produkce.
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute container image repository name
+        if: github.event_name != 'pull_request'
+        id: image
+        run: echo "repository=${GITHUB_REPOSITORY_OWNER,,}/volejbal-web" >> "$GITHUB_OUTPUT"
+
+      # Bez --no-restore ze stejného důvodu jako "Publish Web" výše (RID-specific restore).
+      - name: Build and push Web container image
+        if: github.event_name != 'pull_request'
+        run: |
+          dotnet publish Web/Web.csproj --configuration Release --os linux --arch x64 \
+            -t:PublishContainer \
+            -p:ContainerRegistry=ghcr.io \
+            -p:ContainerRepository=${{ steps.image.outputs.repository }} \
+            -p:ContainerImageTag=${{ github.sha }}
