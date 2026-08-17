@@ -1,0 +1,24 @@
+# Build výstupy
+**/bin/
+**/obj/
+publish/
+./publish/
+
+# IDE / VS
+.vs/
+.vscode/
+**/*.user
+
+# Git / CI
+.git/
+.github/
+
+# Lokální konfigurace (gitignored, nemá patřit do image)
+**/*.local.json
+
+# Testy nejsou potřeba v image
+Tests/
+TestsForLocalDebugging/
+
+# Ostatní
+**/.DS_Store

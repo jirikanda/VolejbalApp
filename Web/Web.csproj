@@ -1,41 +1,50 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-	<AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
-	<RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<NoWarn>1701;1702;1705;1591</NoWarn>
-	<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
+	<PropertyGroup>
+		<AssemblyName>KandaEu.Volejbal.Web</AssemblyName>
+		<RootNamespace>KandaEu.Volejbal.Web</RootNamespace>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
 
-	<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64); nesmí se předávat jako globální CLI vlastnost, protékala by do Web.Client (browser-wasm), který R2R nepodporuje -->
-	<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
+		<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64); nesmí se předávat jako globální CLI vlastnost, protékala by do Web.Client (browser-wasm), který R2R nepodporuje -->
+		<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
 
-	<!-- Workstation GC místo Server GC (SDK default) - Server GC alokuje heap + vyhrazené vlákno na každé CPU jádro,
+		<!-- Workstation GC místo Server GC (SDK default) - Server GC alokuje heap + vyhrazené vlákno na každé CPU jádro,
 	     což je pro málo vytíženou službu na omezeném kontejneru (ACA 0.25-0.5 vCPU) zbytečná režie.
 	     Změřeno (24jádrový dev stroj): 54 -> 29 vláken, private bytes ~90 -> ~69 MB. -->
-	<ServerGarbageCollection>false</ServerGarbageCollection>
-	<ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
-  </PropertyGroup>
+		<ServerGarbageCollection>false</ServerGarbageCollection>
+		<ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+	</PropertyGroup>
 
-  <ItemGroup>
-	<PackageReference Include="Havit.ApplicationInsights.DependencyCollector" />
-	<PackageReference Include="Havit.AspNetCore.Mvc" />
-	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
-	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
-	<PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
-	  <PrivateAssets>all</PrivateAssets>
-	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	</PackageReference>
-	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-	  <PackageReference Include="Scalar.AspNetCore" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Havit.ApplicationInsights.DependencyCollector" />
+		<PackageReference Include="Havit.AspNetCore.Mvc" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+		<PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Scalar.AspNetCore" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<ProjectReference Include="..\Contracts\Contracts.csproj" />
-	<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
-	<ProjectReference Include="..\Facades\Facades.csproj" />
-	<ProjectReference Include="..\Services\Services.csproj" />
-	<ProjectReference Include="..\Web.Client\Web.Client.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Contracts\Contracts.csproj" />
+		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
+		<ProjectReference Include="..\Facades\Facades.csproj" />
+		<ProjectReference Include="..\Services\Services.csproj" />
+		<ProjectReference Include="..\Web.Client\Web.Client.csproj" />
+	</ItemGroup>
+
+	<!-- Odstraníme složku BlazorDebugProxy - ta obsahuje souboru užitečné jen v rámci ladění pomocí .UseWebAssemblyDebugging(). To v produkci nepotřebujeme. -->
+	<Target Name="RemoveBlazorDebugProxy" AfterTargets="ComputeFilesToPublish">
+		<ItemGroup>
+			<ResolvedFileToPublish
+			  Remove="@(ResolvedFileToPublish)"
+			  Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('BlazorDebugProxy'))" />
+		</ItemGroup>
+	</Target>
 
 </Project>
