@@ -1,4 +1,4 @@
-* text=auto eol=lf
+* text=auto
 
 # 
 *.ascx text
@@ -51,3 +51,13 @@
 *.props text eol=crlf
 *.filters text eol=crlf
 *.vcxitems text eol=crlf
+
+.github/workflows/*.lock.yml linguist-generated=true merge=ours
+
+# Dependabot (NuGet) commituje přes GitHub API bez git clean filtru a konce řádků přebírá ze svého
+# checkoutu. S eol=crlf by tak do repozitáře zapsal CRLF bloby a soubor by se pak po pullu všem
+# tvářil jako změněný (git by ho chtěl renormalizovat zpět na LF). Pro soubory, které dependabot
+# edituje, proto eol nevynucujeme - normalizace na LF v repu (text) zůstává a na Windows
+# s core.autocrlf=true (default) je ve working tree CRLF i tak.
+Directory.Packages.props text !eol
+*.csproj text !eol
