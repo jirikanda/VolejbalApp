@@ -22,7 +22,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Havit.Data.EntityFrameworkCore" />
-		<PackageReference Include="Havit.Data.EntityFrameworkCore.CodeGenerator" />
+		<PackageReference Include="Havit.Data.EntityFrameworkCore.CodeGenerator" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
 		  <PrivateAssets>all</PrivateAssets>
