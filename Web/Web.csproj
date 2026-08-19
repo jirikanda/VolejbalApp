@@ -15,6 +15,7 @@
 	     Změřeno (24jádrový dev stroj): 54 -> 29 vláken, private bytes ~90 -> ~69 MB. -->
 		<ServerGarbageCollection>false</ServerGarbageCollection>
 		<ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
 	<ItemGroup>
