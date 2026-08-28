@@ -26,7 +26,7 @@ Image vzniká přes vestavěnou kontejnerizaci .NET SDK (`dotnet publish -t:Publ
 
 Job **`deploy`** (`needs: build`): Azure login přes OIDC → `az deployment group create` s bicep šablonou → výpis URL.
 
-Rozdělení na dva joby není kosmetika: `environment: production` je na `deploy` jobu, takže případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku.
+Rozdělení na dva joby není kosmetika: `environment: Production` je na `deploy` jobu, takže případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku.
 
 Nasazuje se **celá šablona**, ne jen výměna image. ARM v incremental módu projde nezměněné resources jako no-op, takže to stojí minutu navíc — výměnou za to nemůže infrastruktura začít odpovídat něčemu jinému než šabloně.
 
@@ -56,7 +56,7 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    az ad app federated-credential create --id "$APP_ID" --parameters '{
      "name": "github-volejbal-production",
      "issuer": "https://token.actions.githubusercontent.com",
-     "subject": "repo:jirikanda@5111719/VolejbalApp@169379851:environment:production",
+     "subject": "repo:jirikanda@5111719/VolejbalApp@169379851:environment:Production",
      "audiences": ["api://AzureADTokenExchange"]
    }'
 
@@ -69,7 +69,7 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
 
    > **Pozor na `subject`.** Skládá se ze dvou věcí, které se obě dají snadno splést; když nesedí, login skončí na `AADSTS70021: No matching federated identity record found`.
    >
-   > **1. `environment`, ne `ref`.** Job `deploy` má `environment: production`, a když job cílí na environment, GitHub do tokenu dá claim `…:environment:production` — **ne** `ref:refs/heads/master`. Kdyby z `deploy.yml` někdy zmizel `environment: production`, je potřeba credential přenastavit.
+   > **1. `environment`, ne `ref`.** Job `deploy` má `environment: Production`, a když job cílí na environment, GitHub do tokenu dá claim `…:environment:Production` — **ne** `ref:refs/heads/master`. Kdyby z `deploy.yml` někdy zmizel `environment: Production`, je potřeba credential přenastavit.
    >
    > **2. Immutable subject — jména *i* ID.** Repozitář má zapnuté [immutable subject claims](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims), takže prefix je `repo:jirikanda@5111719/VolejbalApp@169379851`, ne jen `repo:jirikanda/VolejbalApp`. `5111719` je ID účtu, `169379851` ID repozitáře. Díky ID přežije subject přejmenování účtu i repozitáře — u jmenné varianty by po přejmenování mohl trust policy nečekaně splnit někdo jiný, kdo si uvolněné jméno zabere.
    >
@@ -78,10 +78,10 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    > gh api repos/jirikanda/VolejbalApp/actions/oidc/customization/sub
    > ```
 
-3. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `production`):
+3. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `Production`):
    - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše (nejsou to tajemství v pravém smyslu, ale držíme je jednotně mezi secrets).
    - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Jediný secret s tajemstvím — GHCR pull i Azure login žádné heslo nepotřebují.
-4. Volitelně: v *Settings → Environments* vytvořit environment `production` a přidat *required reviewers* — pak se `deploy` job zastaví a počká na schválení.
+4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Proto je `Production` s velkým P jak v [deploy.yml](../.github/workflows/deploy.yml), tak v subjectu credentialu. Volitelně sem přidejte *required reviewers* — pak se `deploy` job zastaví a počká na schválení.
 
 Výstup workflow (`containerAppUrl`) je veřejná adresa (`https://<app>.<region>.azurecontainerapps.io`), dokud není navázaná custom doména.
 

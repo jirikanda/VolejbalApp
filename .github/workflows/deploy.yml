@@ -84,12 +84,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    # environment: production drží pohromadě dvě věci: umožňuje přidat required reviewers
+    # environment: Production drží pohromadě dvě věci: umožňuje přidat required reviewers
     # (Settings -> Environments), takže se pipeline zastaví až TĚSNĚ PŘED nasazením (build i testy
     # už jsou v tu chvíli hotové), a určuje subject federated credentialu v Entra ID
-    # ("repo:jirikanda@5111719/VolejbalApp@169379851:environment:production" - repozitář má zapnuté
+    # ("repo:jirikanda@5111719/VolejbalApp@169379851:environment:Production" - repozitář má zapnuté
     # immutable subject claims, proto ta ID). Odebrání tohoto řádku rozbije Azure login.
-    environment: production
+    environment: Production
     permissions:
       contents: read
       id-token: write # OIDC token pro azure/login (federated credentials - žádné heslo v secrets)
