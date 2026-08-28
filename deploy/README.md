@@ -11,25 +11,39 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + 
 
 Application Insights je **workspace-based** nad tímtéž Log Analytics workspace, který používá Container Apps Environment pro logy kontejneru — telemetrie aplikace i logy tak končí na jednom místě. Connection string se do Container App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
-## Container image — CI ano, CD ne
+## Dva workflow
 
-`.github/workflows/build-production.yml` (workflow *Build Production*) běží na push do branch **`release/production`** (nebo ruční `workflow_dispatch`; PR trigger tam záměrně není) a kromě build+test zabuildí `Web` přes vestavěnou kontejnerizaci .NET SDK (`dotnet publish -t:PublishContainer`, žádný Dockerfile) a pushne na `ghcr.io/<github-user>/volejbal-web`. Tag je jen commit SHA — **záměrně žádný `latest`**: tenhle krok jen publikuje image, nic nedeployuje, a floating tag by byl implicitní deploy target bez záměrného rozhodnutí, co jde do produkce. Autentizace jde přes automatický `GITHUB_TOKEN` (`packages: write`), žádný extra secret v CI netřeba.
+- **`Build`** ([.github/workflows/build.yml](../.github/workflows/build.yml)) — CI pro `master` a PR do masteru: restore → build → test. Nic nepublikuje ani nenasazuje.
+- **`Deploy to Azure Container Apps`** ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml)) — **výhradně ruční** (`workflow_dispatch`), spouští se nad `master`. Dělá celou cestu do produkce.
 
-`.github/workflows/build.yml` (workflow *Build*, master + PR do masteru) dělá jen restore/build/test — nic nepublikuje ani nepushuje.
+Ruční spuštění deploye je samo o sobě rozhodnutí, co jde do produkce — proto workflow nemá žádný `imageTag` input: staví se právě odbavený commit a image se taguje jeho SHA.
 
-Package `volejbal-web` je v GHCR nastavený jako **veřejný**, takže ho Container App pullne anonymně — `main.bicep` proto nemá `registries` blok ani žádný secret s PAT. GHCR dává novým packages defaultně privátní viditelnost; kdyby se package někdy vrátil na privátní (nebo vznikl nový), pull by začal padat na `UNAUTHORIZED` a bylo by potřeba do šablony doplnit `registries` + secret s classic PAT se scope `read:packages`.
+### Co Deploy dělá
 
-Skutečné nasazení (CD) je oddělený **ruční** workflow — viz níže.
+Job **`build`**: restore → build → test → publish `MigrationTool` jako artefakt → build a push container image do `ghcr.io/<owner>/volejbal-web:<commit-sha>`.
 
-## Nasazení — ruční workflow (`.github/workflows/deploy.yml`)
+Image vzniká přes vestavěnou kontejnerizaci .NET SDK (`dotnet publish -t:PublishContainer`, žádný Dockerfile); WASM klient je v něm zabalený v `wwwroot/_framework`. Push autentizuje automatický `GITHUB_TOKEN` (`packages: write`), žádný extra secret netřeba.
 
-Standardní cesta: záložka *Actions* → *Deploy to Azure Container Apps* → *Run workflow*, zadat commit SHA image, který se má nasadit (najdete ho v běhu workflow *Build Production*, který image pushnul).
+Job **`deploy`** (`needs: build`): Azure login přes OIDC → `az deployment group create` s bicep šablonou → výpis URL.
 
-### Jednorázová příprava
+Rozdělení na dva joby není kosmetika: `environment: production` je na `deploy` jobu, takže případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku.
+
+Nasazuje se **celá šablona**, ne jen výměna image. ARM v incremental módu projde nezměněné resources jako no-op, takže to stojí minutu navíc — výměnou za to nemůže infrastruktura začít odpovídat něčemu jinému než šabloně.
+
+### Jak se Container App dozví o novém image
+
+Sama, není potřeba jí nic říkat. Změna `containerImage` je změna v `template` Container App, a jakákoli změna template vytvoří **novou revizi**; při `activeRevisionsMode: 'Single'` na ni ACA překlopí veškerý provoz, jakmile naběhne, a starou deaktivuje.
+
+Pozor na rozdíl proti secretům: ty jsou vlastnost aplikace, ne revize, takže změna hodnoty secretu sama o sobě novou revizi **nevyrobí** ani běžící kontejner nerestartuje. Při běžném deployi to nevadí (mění se i image tag), ale kdybyste měnil jen connection string, musíte si revizi vynutit.
+
+### Package v GHCR
+
+Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App pullne anonymně — `main.bicep` proto nemá `registries` blok ani žádný secret s PAT. GHCR dává novým packages defaultně privátní viditelnost; kdyby se package někdy vrátil na privátní (nebo vznikl nový), pull by začal padat na `UNAUTHORIZED` a bylo by potřeba do šablony doplnit `registries` + secret s classic PAT se scope `read:packages`.
+
+## Jednorázová příprava
 
 1. Existující resource group (`az group create -n JkVolejbalRG -l germanywestcentral`) — název musí sedět s `RESOURCE_GROUP` v [deploy.yml](../.github/workflows/deploy.yml).
-2. Branch `release/production` v repozitáři — bez ní se *Build Production* nikdy nespustí a není co nasazovat.
-3. Service principal pro `azure/login` s **federated credentials (OIDC)** — bez hesla, není co rotovat:
+2. Service principal pro `azure/login` s **federated credentials (OIDC)** — bez hesla, není co rotovat:
    ```bash
    SUB_ID=$(az account show --query id -o tsv)
    TENANT_ID=$(az account show --query tenantId -o tsv)
@@ -53,36 +67,52 @@ Standardní cesta: záložka *Actions* → *Deploy to Azure Container Apps* → 
    echo "AZURE_CLIENT_ID=$APP_ID"; echo "AZURE_TENANT_ID=$TENANT_ID"; echo "AZURE_SUBSCRIPTION_ID=$SUB_ID"
    ```
 
-   > **Pozor na `subject`.** Job v `deploy.yml` má `environment: production`, a když job cílí na environment, GitHub do OIDC tokenu dá claim `repo:<owner>/<repo>:environment:production` — **ne** `ref:refs/heads/master`. Federated credential nastavený na branch by se nespároval a login by skončil na `AADSTS70021: No matching federated identity record found`. Kdyby z `deploy.yml` někdy zmizel `environment: production`, je potřeba federated credential přenastavit.
+   > **Pozor na `subject`.** Job `deploy` má `environment: production`, a když job cílí na environment, GitHub do OIDC tokenu dá claim `repo:<owner>/<repo>:environment:production` — **ne** `ref:refs/heads/master`. Federated credential nastavený na branch by se nespároval a login by skončil na `AADSTS70021: No matching federated identity record found`. Kdyby z `deploy.yml` někdy zmizel `environment: production`, je potřeba federated credential přenastavit.
 
-4. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `production`, viz níže):
+3. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `production`):
    - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše (nejsou to tajemství v pravém smyslu, ale držíme je jednotně mezi secrets).
    - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Jediný secret s tajemstvím — GHCR pull i Azure login žádné heslo nepotřebují.
-5. Volitelně: v *Settings → Environments* vytvořit environment `production` a přidat *required reviewers* — pak `deploy.yml` (má `environment: production`) počká na schválení, než doopravdy nasadí.
+4. Volitelně: v *Settings → Environments* vytvořit environment `production` a přidat *required reviewers* — pak se `deploy` job zastaví a počká na schválení.
 
 Výstup workflow (`containerAppUrl`) je veřejná adresa (`https://<app>.<region>.azurecontainerapps.io`), dokud není navázaná custom doména.
 
+## Postup nasazení
+
+1. **Zmigrovat databázi**, pokud přibyla migrace — viz níže. Musí být hotové **dřív**, než naběhne nový kód.
+2. *Actions* → *Deploy to Azure Container Apps* → *Run workflow* (branch `master`).
+
 ### Ruční nasazení bez GitHub Actions (alternativa)
+
+Předpokládá, že image s daným SHA už v GHCR je:
 
 ```bash
 az deployment group create \
   --resource-group JkVolejbalRG \
   --template-file deploy/main.bicep \
+  --name jk-volejbal \
   --parameters \
     containerImage='ghcr.io/<github-user>/volejbal-web:<commit-sha>' \
     databaseConnectionString='<connection string>'
 ```
 
-### Aktualizace image (redeploy)
+Tohle je zároveň cesta k **rollbacku** — workflow vždy nasazuje aktuální commit, takže návrat na starší verzi znamená buď tenhle příkaz se starším SHA, nebo revert v `master` a nový běh workflow.
 
-Opakované spuštění workflow (nebo `az deployment group create` výše) s jiným `imageTag`/`containerImage` vytvoří novou revizi Container App a přepne na ni provoz. Bez potřeby měnit secrets, pokud se connection stringy nezměnily.
+### Ověření šablony před nasazením
+
+```bash
+az bicep build --file deploy/main.bicep --stdout > /dev/null   # jen syntaxe, nepotřebuje login
+az deployment group what-if --resource-group JkVolejbalRG --name jk-volejbal --template-file deploy/main.bicep --parameters containerImage="ghcr.io/jirikanda/volejbal-web:dummy" databaseConnectionString="Server=x;Database=y;User Id=z;Password=q"
+```
+
+What-if nepullne image ani se nepřipojí k databázi, takže fiktivní hodnoty parametrů stačí.
 
 ## Poznámky
 
 - **`ASPNETCORE_FORWARDEDHEADERS_ENABLED=true`** je nutný — ACA ingress terminuje TLS a do kontejneru posílá HTTP; bez tohohle by `app.UseHttpsRedirection()` (viz [Web/Startup.cs](../Web/Startup.cs)) způsobil nekonečnou smyčku redirectů, protože by appka nerozpoznala, že originální request byl HTTPS.
 - **`maxReplicas: 1` je závazné, ne jen výchozí hodnota** — [Services/Jobs/RecurringJobsBackgroundService.cs](../Services/Jobs/RecurringJobsBackgroundService.cs) je in-process plánovač bez distribuovaného zámku; dvě repliky by znamenaly, že se joby (EnsureTerminy, DeaktivaceOsob) spouští duplicitně.
 - **`minReplicas: 0`** (scale-to-zero) znamená, že po period nečinnosti aplikace "usne" a další request ji probudí (cold start). [Web/Infrastructure/WarmupBackgroundService.cs](../Web/Infrastructure/WarmupBackgroundService.cs) po startu sám zavolá klíčové endpointy, aby EF Core/MVC pipeline byly zahřáté ještě před prvním reálným requestem.
-- Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). *Build Production* ho publikuje jako artefakt `MigrationTool` (linux-x64, framework-dependent), ale **žádná pipeline ho nespouští** — aplikace schéma za běhu nemigruje, takže před prvním startem a před každým deployem s novou migrací musí někdo artefakt stáhnout a spustit proti produkčnímu connection stringu:
+- Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho publikuje jako artefakt `MigrationTool` (linux-x64, framework-dependent), ale **záměrně ho nespouští** — aplikace schéma za běhu nemigruje, takže artefakt musíte stáhnout a spustit sám proti produkčnímu connection stringu, **před** deployem nové verze:
   ```bash
   ./KandaEu.Volejbal.MigrationTool --connectionstring "<connection string>"
   ```
+  Artefakt z posledního běhu najdete v souhrnu workflow. Automatizace tohohle kroku by znamenala vyřešit, jak se runner dostane k databázi po síti.

@@ -1,44 +1,118 @@
 name: Deploy to Azure Container Apps
 
-# Záměrně jen ruční spuštění - CI (build-production.yml) publikuje image na každý push do release/production,
-# ale nasazení do produkce je oddělené a vyžaduje explicitní volbu, který commit SHA jde ven.
+# Záměrně jen ruční spuštění, očekává se nad master. Jeden workflow dělá celou cestu:
+# build + test (totéž co CI v build.yml), push container image do ghcr.io a nasazení bicep šablony.
+#
+# Image se vždy staví z právě odbaveného commitu a taguje jeho SHA - proto tu není žádný
+# imageTag input: co je v branchi, to se nasadí. Ruční spuštění je samo o sobě to rozhodnutí,
+# co jde do produkce (dřív ho zastupoval ruční výběr SHA).
 on:
   workflow_dispatch:
-    inputs:
-      imageTag:
-        description: "Commit SHA image (ghcr.io/<owner>/volejbal-web), který se má nasadit - viz běhy workflow Build Production"
-        required: true
-        type: string
-
-permissions:
-  contents: read
-  id-token: write # OIDC token pro azure/login (federated credentials - žádné heslo service principalu v secrets)
-
-env:
-  RESOURCE_GROUP: JkVolejbalRG
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment: production # viz Settings -> Environments - sem lze přidat required reviewers jako schvalovací krok
+    permissions:
+      contents: read
+      packages: write # push container image do ghcr.io
+    outputs:
+      image: ${{ steps.image.outputs.reference }}
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore VolejbalApp.slnx
+
+      - name: Build
+        run: dotnet build VolejbalApp.slnx --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Tests/Tests.csproj --no-build --configuration Release --verbosity normal
+
+      # ReadyToRun se aktivuje v csproj podle RID - globální -p:PublishReadyToRun by rozbilo Web.Client (browser-wasm).
+      # RID-specific restore si dělá publish krok sám (bez --no-restore) - restore celé solution s --runtime
+      # by u Web.Client (browser-wasm) vyžadoval neexistující Mono runtime pack pro linux-x64.
+      - name: Publish MigrationTool
+        run: dotnet publish MigrationTool/MigrationTool.csproj --configuration Release --runtime linux-x64 --self-contained false --output ./publish/MigrationTool
+
+      # MigrationTool se ZÁMĚRNĚ nespouští automaticky - migrace schématu se pouští ručně
+      # z tohoto artefaktu, a to PŘED nasazením nové verze aplikace (viz deploy/README.md).
+      - name: Upload MigrationTool artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: MigrationTool
+          path: ./publish/MigrationTool
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute container image reference
+        id: image
+        run: |
+          echo "repository=${GITHUB_REPOSITORY_OWNER,,}/volejbal-web" >> "$GITHUB_OUTPUT"
+          echo "reference=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/volejbal-web:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      # Container image přes vestavěnou kontejnerizaci .NET SDK, žádný Dockerfile. WASM klient
+      # je v image zabalený v host wwwroot/_framework. GITHUB_TOKEN stačí (packages: write výše).
+      # Bez --no-restore ze stejného důvodu jako "Publish MigrationTool" výše (RID-specific restore).
+      - name: Build and push Web container image
+        run: |
+          dotnet publish Web/Web.csproj --configuration Release --os linux --arch x64 \
+            -t:PublishContainer \
+            -p:ContainerRegistry=ghcr.io \
+            -p:ContainerRepository=${{ steps.image.outputs.repository }} \
+            -p:ContainerImageTag=${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # environment: production drží pohromadě dvě věci: umožňuje přidat required reviewers
+    # (Settings -> Environments), takže se pipeline zastaví až TĚSNĚ PŘED nasazením (build i testy
+    # už jsou v tu chvíli hotové), a určuje subject federated credentialu v Entra ID
+    # ("repo:<owner>/<repo>:environment:production"). Odebrání tohoto řádku rozbije Azure login.
+    environment: production
+    permissions:
+      contents: read
+      id-token: write # OIDC token pro azure/login (federated credentials - žádné heslo v secrets)
+    env:
+      RESOURCE_GROUP: JkVolejbalRG
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       # Federated credentials (OIDC) - GitHub vydá krátkodobý token, Entra ID ho vymění za Azure token.
-      # Žádné heslo/certifikát v secrets, není co rotovat. Federated credential v Entra ID musí mít
-      # subject "repo:<owner>/<repo>:environment:production" - job níže běží pod environment: production,
-      # a v tom případě je environment claim, ne branch/ref (viz deploy/README.md).
+      # Žádné heslo/certifikát v secrets, není co rotovat.
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@7ddb5af1ef8758cf1353cf3b42f940aee27ba21c # v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Compute image reference
-        id: image
-        run: echo "reference=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/volejbal-web:${{ inputs.imageTag }}" >> "$GITHUB_OUTPUT"
-
+      # Nasazuje se celá šablona, ne jen výměna image: ARM v incremental módu projde nezměněné
+      # resources (Log Analytics, App Insights, ACA environment) jako no-op, takže to stojí minutu
+      # navíc, ale infrastruktura nemůže začít odpovídat něčemu jinému než šabloně.
+      #
+      # Nový image tag = změna v template Container App = ACA vyrobí novou revizi a při
+      # activeRevisionsMode: Single na ni překlopí provoz. Nic dalšího Container App říkat netřeba.
       - name: Deploy Bicep template
         run: |
           az deployment group create \
@@ -46,7 +120,7 @@ jobs:
             --template-file deploy/main.bicep \
             --name jk-volejbal \
             --parameters \
-              containerImage='${{ steps.image.outputs.reference }}' \
+              containerImage='${{ needs.build.outputs.image }}' \
               databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}'
 
       - name: Show deployed URL
