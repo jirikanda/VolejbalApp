@@ -1,7 +1,7 @@
 name: Build
 
 # CI pro master a PR do masteru - jen ověření, že se to sestaví a projdou testy.
-# Publish (artefakty, container image) i nasazení dělá deploy.yml, spouštěný výhradně ručně.
+# Container image i nasazení dělá deploy.yml, spouštěný výhradně ručně.
 on:
   push:
     branches: [ "master" ]

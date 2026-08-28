@@ -20,7 +20,7 @@ Ruční spuštění deploye je samo o sobě rozhodnutí, co jde do produkce — 
 
 ### Co Deploy dělá
 
-Job **`build`**: restore → build → test → publish `MigrationTool` jako artefakt → build a push container image do `ghcr.io/<owner>/volejbal-web:<commit-sha>`.
+Job **`build`**: restore → build → test → build a push container image do `ghcr.io/<owner>/volejbal-web:<commit-sha>`.
 
 Image vzniká přes vestavěnou kontejnerizaci .NET SDK (`dotnet publish -t:PublishContainer`, žádný Dockerfile); WASM klient je v něm zabalený v `wwwroot/_framework`. Push autentizuje automatický `GITHUB_TOKEN` (`packages: write`), žádný extra secret netřeba.
 
@@ -126,8 +126,8 @@ What-if nepullne image ani se nepřipojí k databázi, takže fiktivní hodnoty 
 - **`ASPNETCORE_FORWARDEDHEADERS_ENABLED=true`** je nutný — ACA ingress terminuje TLS a do kontejneru posílá HTTP; bez tohohle by `app.UseHttpsRedirection()` (viz [Web/Startup.cs](../Web/Startup.cs)) způsobil nekonečnou smyčku redirectů, protože by appka nerozpoznala, že originální request byl HTTPS.
 - **`maxReplicas: 1` je závazné, ne jen výchozí hodnota** — [Services/Jobs/RecurringJobsBackgroundService.cs](../Services/Jobs/RecurringJobsBackgroundService.cs) je in-process plánovač bez distribuovaného zámku; dvě repliky by znamenaly, že se joby (EnsureTerminy, DeaktivaceOsob) spouští duplicitně.
 - **`minReplicas: 0`** (scale-to-zero) znamená, že po period nečinnosti aplikace "usne" a další request ji probudí (cold start). [Web/Infrastructure/WarmupBackgroundService.cs](../Web/Infrastructure/WarmupBackgroundService.cs) po startu sám zavolá klíčové endpointy, aby EF Core/MVC pipeline byly zahřáté ještě před prvním reálným requestem.
-- Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho publikuje jako artefakt `MigrationTool` (linux-x64, framework-dependent), ale **záměrně ho nespouští** — aplikace schéma za běhu nemigruje, takže artefakt musíte stáhnout a spustit sám proti produkčnímu connection stringu, **před** deployem nové verze:
-  ```bash
-  ./KandaEu.Volejbal.MigrationTool --connectionstring "<connection string>"
+- Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho **záměrně nepublikuje ani nespouští** — aplikace schéma za běhu nemigruje, takže ho musíte pustit sám z lokálního repa proti produkčnímu connection stringu, **před** spuštěním deploye:
+  ```powershell
+  dotnet run --project MigrationTool -- --connectionstring "<connection string>"
   ```
-  Artefakt z posledního běhu najdete v souhrnu workflow. Automatizace tohohle kroku by znamenala vyřešit, jak se runner dostane k databázi po síti.
+  Automatizace tohohle kroku by znamenala vyřešit, jak se runner dostane k databázi po síti — u Azure SQL firewall pravidlo pro dynamickou IP hosted runneru, což je nepříjemné.

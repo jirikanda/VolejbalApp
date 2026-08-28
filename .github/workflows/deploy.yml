@@ -43,19 +43,9 @@ jobs:
       - name: Test
         run: dotnet test Tests/Tests.csproj --no-build --configuration Release --verbosity normal
 
-      # ReadyToRun se aktivuje v csproj podle RID - globální -p:PublishReadyToRun by rozbilo Web.Client (browser-wasm).
-      # RID-specific restore si dělá publish krok sám (bez --no-restore) - restore celé solution s --runtime
-      # by u Web.Client (browser-wasm) vyžadoval neexistující Mono runtime pack pro linux-x64.
-      - name: Publish MigrationTool
-        run: dotnet publish MigrationTool/MigrationTool.csproj --configuration Release --runtime linux-x64 --self-contained false --output ./publish/MigrationTool
-
-      # MigrationTool se ZÁMĚRNĚ nespouští automaticky - migrace schématu se pouští ručně
-      # z tohoto artefaktu, a to PŘED nasazením nové verze aplikace (viz deploy/README.md).
-      - name: Upload MigrationTool artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: MigrationTool
-          path: ./publish/MigrationTool
+      # MigrationTool se tu ZÁMĚRNĚ nepublikuje ani nespouští - migrace schématu se pouští ručně
+      # z lokálního repa (dotnet run --project MigrationTool), a to PŘED spuštěním tohoto
+      # workflow, pokud přibyla migrace. Viz deploy/README.md.
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
@@ -72,7 +62,11 @@ jobs:
 
       # Container image přes vestavěnou kontejnerizaci .NET SDK, žádný Dockerfile. WASM klient
       # je v image zabalený v host wwwroot/_framework. GITHUB_TOKEN stačí (packages: write výše).
-      # Bez --no-restore ze stejného důvodu jako "Publish MigrationTool" výše (RID-specific restore).
+      #
+      # Bez --no-restore: tenhle krok si dělá vlastní RID-specific restore. Restore celé solution
+      # s --runtime nejde - u Web.Client (browser-wasm) by vyžadoval neexistující Mono runtime pack
+      # pro linux-x64. ReadyToRun se aktivuje v csproj podle RID; globální -p:PublishReadyToRun
+      # na CLI by protekl do Web.Client a spadl na NETSDK1095.
       - name: Build and push Web container image
         run: |
           dotnet publish Web/Web.csproj --configuration Release --os linux --arch x64 \
