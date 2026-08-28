@@ -27,7 +27,7 @@ Standardní cesta: záložka *Actions* → *Deploy to Azure Container Apps* → 
 
 ### Jednorázová příprava
 
-1. Existující resource group (`az group create -n JkVolejbalRG -l westeurope`) — název musí sedět s `RESOURCE_GROUP` v [deploy.yml](../.github/workflows/deploy.yml).
+1. Existující resource group (`az group create -n JkVolejbalRG -l germanywestcentral`) — název musí sedět s `RESOURCE_GROUP` v [deploy.yml](../.github/workflows/deploy.yml).
 2. Branch `release/production` v repozitáři — bez ní se *Build Production* nikdy nespustí a není co nasazovat.
 3. Service principal pro `azure/login` s **federated credentials (OIDC)** — bez hesla, není co rotovat:
    ```bash
