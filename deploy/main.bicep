@@ -3,7 +3,6 @@
 //
 // Mimo scope této šablony:
 // - databáze (hostovaná jinde) - připojení jen přes connection string parametr
-// - Application Insights (už existuje) - jen přebírá connection string parametr
 // - migrace/seed databáze (MigrationTool) - řeší se mimo tuto šablonu
 // - custom doména volejbal.kanda.eu - přidá se ručně po ověření provozu
 
@@ -11,28 +10,23 @@
 param location string = resourceGroup().location
 
 @description('Název Container Apps Environment.')
-param environmentName string = 'volejbal-env'
+param environmentName string = 'jk-volejbal-ca-env'
 
 @description('Název Container App.')
-param containerAppName string = 'volejbal-web'
+param containerAppName string = 'jk-volejbal-ca-web'
 
 @description('Plně kvalifikovaná reference na image, např. ghcr.io/<github-user>/volejbal-web:latest.')
 param containerImage string
-
-@description('Uživatelské jméno pro pull z ghcr.io. Nechte prázdné, pokud je image veřejný (pak se registries blok v Container App vynechá).')
-param ghcrUsername string = ''
-
-@description('GitHub PAT (classic, scope read:packages) pro pull z ghcr.io. Nechte prázdné pro veřejný image.')
-@secure()
-param ghcrPat string = ''
 
 @description('Connection string k databázi (hostované mimo tuto šablonu).')
 @secure()
 param databaseConnectionString string
 
-@description('Connection string k existujícímu Application Insights.')
-@secure()
-param applicationInsightsConnectionString string
+@description('Název Application Insights (vytváří tato šablona jako workspace-based nad Log Analytics workspace níže).')
+param applicationInsightsName string = 'jk-volejbal-appinsights'
+
+@description('Název Log Analytics workspace (sdílí ho Container Apps Environment pro logy kontejneru i Application Insights).')
+param logAnalyticsName string = 'jk-volejbal-logs'
 
 @description('Počet dní uchování logů v Log Analytics.')
 param logAnalyticsRetentionDays int = 30
@@ -40,16 +34,26 @@ param logAnalyticsRetentionDays int = 30
 @description('ASP.NET Core prostředí (ovlivňuje appsettings.Web.{env}.json a chování aplikace).')
 param aspNetCoreEnvironment string = 'Production'
 
-var hasRegistryCredentials = !empty(ghcrUsername)
-
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
-  name: '${environmentName}-logs'
+  name: logAnalyticsName
   location: location
   properties: {
     sku: {
       name: 'PerGB2018'
     }
     retentionInDays: logAnalyticsRetentionDays
+  }
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: applicationInsightsName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    // Workspace-based App Insights - sdílí Log Analytics workspace s Container Apps Environment,
+    // takže logy kontejneru i telemetrie aplikace končí na jednom místě.
+    WorkspaceResourceId: logAnalytics.id
   }
 }
 
@@ -80,31 +84,18 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
         transport: 'auto'
         allowInsecure: false
       }
-      registries: hasRegistryCredentials ? [
+      // Žádný registries blok - image v ghcr.io je veřejný, ACA ho pullne anonymně.
+      // Kdyby package někdy zprivátněl, je potřeba sem doplnit registries + secret s PAT.
+      secrets: [
         {
-          server: 'ghcr.io'
-          username: ghcrUsername
-          passwordSecretRef: 'ghcr-pat'
+          name: 'db-connectionstring'
+          value: databaseConnectionString
         }
-      ] : []
-      secrets: concat(
-        hasRegistryCredentials ? [
-          {
-            name: 'ghcr-pat'
-            value: ghcrPat
-          }
-        ] : [],
-        [
-          {
-            name: 'db-connectionstring'
-            value: databaseConnectionString
-          }
-          {
-            name: 'appinsights-connectionstring'
-            value: applicationInsightsConnectionString
-          }
-        ]
-      )
+        {
+          name: 'appinsights-connectionstring'
+          value: appInsights.properties.ConnectionString
+        }
+      ]
     }
     template: {
       containers: [

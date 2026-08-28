@@ -12,9 +12,10 @@ on:
 
 permissions:
   contents: read
+  id-token: write # OIDC token pro azure/login (federated credentials - žádné heslo service principalu v secrets)
 
 env:
-  RESOURCE_GROUP: volejbal # TODO: název resource group
+  RESOURCE_GROUP: JkVolejbalRG
 
 jobs:
   deploy:
@@ -23,10 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Federated credentials (OIDC) - GitHub vydá krátkodobý token, Entra ID ho vymění za Azure token.
+      # Žádné heslo/certifikát v secrets, není co rotovat. Federated credential v Entra ID musí mít
+      # subject "repo:<owner>/<repo>:environment:production" - job níže běží pod environment: production,
+      # a v tom případě je environment claim, ne branch/ref (viz deploy/README.md).
       - name: Azure login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Compute image reference
         id: image
@@ -37,18 +44,15 @@ jobs:
           az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file deploy/main.bicep \
-            --name volejbal-web \
+            --name jk-volejbal \
             --parameters \
               containerImage='${{ steps.image.outputs.reference }}' \
-              ghcrUsername='${{ github.repository_owner }}' \
-              ghcrPat='${{ secrets.GHCR_PAT }}' \
-              databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}' \
-              applicationInsightsConnectionString='${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}'
+              databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}'
 
       - name: Show deployed URL
         run: |
           az deployment group show \
             --resource-group "$RESOURCE_GROUP" \
-            --name volejbal-web \
+            --name jk-volejbal \
             --query properties.outputs.containerAppUrl.value \
             -o tsv

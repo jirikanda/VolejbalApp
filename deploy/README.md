@@ -1,6 +1,15 @@
 # Nasazení na Azure Container Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + REST API v jedné aplikaci). Databáze, Application Insights a custom doména jsou mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + REST API v jedné aplikaci). Vytváří Log Analytics workspace, Application Insights, Container Apps Environment a Container App. Databáze a custom doména jsou mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
+
+| Resource | Typ | Název |
+| --- | --- | --- |
+| Log Analytics workspace | `Microsoft.OperationalInsights/workspaces` | `jk-volejbal-logs` |
+| Application Insights | `Microsoft.Insights/components` | `jk-volejbal-appinsights` |
+| Container Apps Environment | `Microsoft.App/managedEnvironments` | `jk-volejbal-ca-env` |
+| Container App | `Microsoft.App/containerApps` | `jk-volejbal-ca-web` |
+
+Application Insights je **workspace-based** nad tímtéž Log Analytics workspace, který používá Container Apps Environment pro logy kontejneru — telemetrie aplikace i logy tak končí na jednom místě. Connection string se do Container App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
 ## Container image — CI ano, CD ne
 
@@ -8,7 +17,7 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + 
 
 `.github/workflows/build.yml` (workflow *Build*, master + PR do masteru) dělá jen restore/build/test — nic nepublikuje ani nepushuje.
 
-Image je v GHCR defaultně **privátní** — buď ho v nastavení package na GitHubu zveřejněte (pak `ghcrPat` secret v deploy workflow nastavit nemusíte), nebo vytvořte GitHub classic PAT se scope `read:packages`, který Container App použije k pull.
+Package `volejbal-web` je v GHCR nastavený jako **veřejný**, takže ho Container App pullne anonymně — `main.bicep` proto nemá `registries` blok ani žádný secret s PAT. GHCR dává novým packages defaultně privátní viditelnost; kdyby se package někdy vrátil na privátní (nebo vznikl nový), pull by začal padat na `UNAUTHORIZED` a bylo by potřeba do šablony doplnit `registries` + secret s classic PAT se scope `read:packages`.
 
 Skutečné nasazení (CD) je oddělený **ruční** workflow — viz níže.
 
@@ -18,19 +27,37 @@ Standardní cesta: záložka *Actions* → *Deploy to Azure Container Apps* → 
 
 ### Jednorázová příprava
 
-1. Existující resource group (`az group create -n volejbal -l westeurope`) — název musí sedět s `RESOURCE_GROUP` v [deploy.yml](../.github/workflows/deploy.yml).
+1. Existující resource group (`az group create -n JkVolejbalRG -l westeurope`) — název musí sedět s `RESOURCE_GROUP` v [deploy.yml](../.github/workflows/deploy.yml).
 2. Branch `release/production` v repozitáři — bez ní se *Build Production* nikdy nespustí a není co nasazovat.
-3. Service principal pro `azure/login` a jeho uložení jako GitHub secret `AZURE_CREDENTIALS`:
+3. Service principal pro `azure/login` s **federated credentials (OIDC)** — bez hesla, není co rotovat:
    ```bash
-   az ad sp create-for-rbac --name volejbal-deploy --role Contributor \
-     --scopes /subscriptions/$(az account show --query id -o tsv)/resourceGroups/volejbal \
-     --json-auth
+   SUB_ID=$(az account show --query id -o tsv)
+   TENANT_ID=$(az account show --query tenantId -o tsv)
+
+   # app registration + service principal
+   APP_ID=$(az ad app create --display-name volejbal-deploy --query appId -o tsv)
+   az ad sp create --id "$APP_ID"
+
+   # federated credential - subject MUSÍ odpovídat tomu, jak job běží (viz poznámka níže)
+   az ad app federated-credential create --id "$APP_ID" --parameters '{
+     "name": "github-volejbal-production",
+     "issuer": "https://token.actions.githubusercontent.com",
+     "subject": "repo:jirikanda/VolejbalApp:environment:production",
+     "audiences": ["api://AzureADTokenExchange"]
+   }'
+
+   # oprávnění na resource group
+   az role assignment create --assignee "$APP_ID" --role Contributor \
+     --scope "/subscriptions/$SUB_ID/resourceGroups/JkVolejbalRG"
+
+   echo "AZURE_CLIENT_ID=$APP_ID"; echo "AZURE_TENANT_ID=$TENANT_ID"; echo "AZURE_SUBSCRIPTION_ID=$SUB_ID"
    ```
-   Celý JSON výstup → repo *Settings → Secrets and variables → Actions → New repository secret* → `AZURE_CREDENTIALS`.
-4. Další secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `production`, viz níže):
-   - `GHCR_PAT` — GitHub classic PAT se scope `read:packages` (nechte secret prázdný/nevytvářejte, pokud je package veřejný).
-   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu).
-   - `APPLICATIONINSIGHTS_CONNECTION_STRING` — connection string k existujícímu Application Insights.
+
+   > **Pozor na `subject`.** Job v `deploy.yml` má `environment: production`, a když job cílí na environment, GitHub do OIDC tokenu dá claim `repo:<owner>/<repo>:environment:production` — **ne** `ref:refs/heads/master`. Federated credential nastavený na branch by se nespároval a login by skončil na `AADSTS70021: No matching federated identity record found`. Kdyby z `deploy.yml` někdy zmizel `environment: production`, je potřeba federated credential přenastavit.
+
+4. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `production`, viz níže):
+   - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše (nejsou to tajemství v pravém smyslu, ale držíme je jednotně mezi secrets).
+   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Jediný secret s tajemstvím — GHCR pull i Azure login žádné heslo nepotřebují.
 5. Volitelně: v *Settings → Environments* vytvořit environment `production` a přidat *required reviewers* — pak `deploy.yml` (má `environment: production`) počká na schválení, než doopravdy nasadí.
 
 Výstup workflow (`containerAppUrl`) je veřejná adresa (`https://<app>.<region>.azurecontainerapps.io`), dokud není navázaná custom doména.
@@ -39,14 +66,11 @@ Výstup workflow (`containerAppUrl`) je veřejná adresa (`https://<app>.<region
 
 ```bash
 az deployment group create \
-  --resource-group volejbal \
+  --resource-group JkVolejbalRG \
   --template-file deploy/main.bicep \
   --parameters \
     containerImage='ghcr.io/<github-user>/volejbal-web:<commit-sha>' \
-    ghcrUsername='<github-user>' \
-    ghcrPat='<pat>' \
-    databaseConnectionString='<connection string>' \
-    applicationInsightsConnectionString='<connection string>'
+    databaseConnectionString='<connection string>'
 ```
 
 ### Aktualizace image (redeploy)
