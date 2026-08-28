@@ -78,9 +78,15 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    > gh api repos/jirikanda/VolejbalApp/actions/oidc/customization/sub
    > ```
 
-3. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `Production`):
-   - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše (nejsou to tajemství v pravém smyslu, ale držíme je jednotně mezi secrets).
-   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Jediný secret s tajemstvím — GHCR pull i Azure login žádné heslo nepotřebují.
+3. `Settings → Secrets and variables → Actions` — pozor, jde o **dvě různé záložky**:
+
+   **Variables:**
+   - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše. Jsou to identifikátory, ne tajemství; jako variables jsou navíc čitelné v logu běhu, což ladění usnadňuje. Ve workflow se na ně sahá přes `vars.*`.
+
+   **Secrets:**
+   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Jediné skutečné tajemství — GHCR pull i Azure login žádné heslo nepotřebují. Ve workflow `secrets.*`.
+
+   > Kdyby se některá z hodnot přesunula mezi záložkami, je potřeba změnit i prefix v [deploy.yml](../.github/workflows/deploy.yml). `secrets.X` u proměnné uložené jako variable se vyhodnotí na **prázdný řetězec** — workflow nespadne na chybějící hodnotu, ale `azure/login` selže na nesrozumitelnou chybu.
 4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Proto je `Production` s velkým P jak v [deploy.yml](../.github/workflows/deploy.yml), tak v subjectu credentialu. Volitelně sem přidejte *required reviewers* — pak se `deploy` job zastaví a počká na schválení.
 
 Výstup workflow (`containerAppUrl`) je veřejná adresa (`https://<app>.<region>.azurecontainerapps.io`), dokud není navázaná custom doména.
