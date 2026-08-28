@@ -1,12 +1,12 @@
 name: Deploy to Azure Container Apps
 
-# Záměrně jen ruční spuštění - CI (build.yml) publikuje image na každý push do master,
+# Záměrně jen ruční spuštění - CI (build-production.yml) publikuje image na každý push do release/production,
 # ale nasazení do produkce je oddělené a vyžaduje explicitní volbu, který commit SHA jde ven.
 on:
   workflow_dispatch:
     inputs:
       imageTag:
-        description: "Commit SHA image (ghcr.io/<owner>/volejbal-web), který se má nasadit - viz běhy workflow Build"
+        description: "Commit SHA image (ghcr.io/<owner>/volejbal-web), který se má nasadit - viz běhy workflow Build Production"
         required: true
         type: string
 
