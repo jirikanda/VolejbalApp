@@ -87,7 +87,8 @@ jobs:
     # environment: production drží pohromadě dvě věci: umožňuje přidat required reviewers
     # (Settings -> Environments), takže se pipeline zastaví až TĚSNĚ PŘED nasazením (build i testy
     # už jsou v tu chvíli hotové), a určuje subject federated credentialu v Entra ID
-    # ("repo:<owner>/<repo>:environment:production"). Odebrání tohoto řádku rozbije Azure login.
+    # ("repo:jirikanda@5111719/VolejbalApp@169379851:environment:production" - repozitář má zapnuté
+    # immutable subject claims, proto ta ID). Odebrání tohoto řádku rozbije Azure login.
     environment: production
     permissions:
       contents: read

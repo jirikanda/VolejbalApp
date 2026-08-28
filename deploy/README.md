@@ -56,7 +56,7 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    az ad app federated-credential create --id "$APP_ID" --parameters '{
      "name": "github-volejbal-production",
      "issuer": "https://token.actions.githubusercontent.com",
-     "subject": "repo:jirikanda/VolejbalApp:environment:production",
+     "subject": "repo:jirikanda@5111719/VolejbalApp@169379851:environment:production",
      "audiences": ["api://AzureADTokenExchange"]
    }'
 
@@ -67,7 +67,16 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    echo "AZURE_CLIENT_ID=$APP_ID"; echo "AZURE_TENANT_ID=$TENANT_ID"; echo "AZURE_SUBSCRIPTION_ID=$SUB_ID"
    ```
 
-   > **Pozor na `subject`.** Job `deploy` má `environment: production`, a když job cílí na environment, GitHub do OIDC tokenu dá claim `repo:<owner>/<repo>:environment:production` — **ne** `ref:refs/heads/master`. Federated credential nastavený na branch by se nespároval a login by skončil na `AADSTS70021: No matching federated identity record found`. Kdyby z `deploy.yml` někdy zmizel `environment: production`, je potřeba federated credential přenastavit.
+   > **Pozor na `subject`.** Skládá se ze dvou věcí, které se obě dají snadno splést; když nesedí, login skončí na `AADSTS70021: No matching federated identity record found`.
+   >
+   > **1. `environment`, ne `ref`.** Job `deploy` má `environment: production`, a když job cílí na environment, GitHub do tokenu dá claim `…:environment:production` — **ne** `ref:refs/heads/master`. Kdyby z `deploy.yml` někdy zmizel `environment: production`, je potřeba credential přenastavit.
+   >
+   > **2. Immutable subject — jména *i* ID.** Repozitář má zapnuté [immutable subject claims](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims), takže prefix je `repo:jirikanda@5111719/VolejbalApp@169379851`, ne jen `repo:jirikanda/VolejbalApp`. `5111719` je ID účtu, `169379851` ID repozitáře. Díky ID přežije subject přejmenování účtu i repozitáře — u jmenné varianty by po přejmenování mohl trust policy nečekaně splnit někdo jiný, kdo si uvolněné jméno zabere.
+   >
+   > Aktuální podobu prefixu ověříte kdykoli:
+   > ```bash
+   > gh api repos/jirikanda/VolejbalApp/actions/oidc/customization/sub
+   > ```
 
 3. Secrets (`Settings → Secrets and variables → Actions`, případně jako environment secrets pod `production`):
    - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše (nejsou to tajemství v pravém smyslu, ale držíme je jednotně mezi secrets).
