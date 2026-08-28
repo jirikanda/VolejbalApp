@@ -99,20 +99,24 @@ public class Startup
 		}
 		app.UseExceptionHandler(_ => { /* NOOP */ });
 
-		// UseHttpsRedirection tu ZÁMĚRNĚ není. Přesměrování HTTP -> HTTPS dělá ingress Azure Container
-		// Apps (allowInsecure: false, viz deploy/main.bicep) ještě před kontejnerem; dokumentace ASP.NET
-		// Core to pro nasazení za reverzní proxy s TLS terminací přímo doporučuje.
+		// V kontejneru je UseHttpsRedirection fakticky no-op a přesměrování HTTP -> HTTPS řeší ingress
+		// Azure Container Apps (allowInsecure: false, viz deploy/main.bicep) ještě před kontejnerem -
+		// dokumentace ASP.NET Core to za reverzní proxy s TLS terminací přímo doporučuje. Middleware
+		// totiž potřebuje znát cílový HTTPS port; Kestrel v kontejneru poslouchá jen na HTTP a žádný
+		// https_port nastavený není, takže jen jednou zaloguje "Failed to determine the https port
+		// for redirect" a request nepřesměruje. Ochranu prohlížeče drží UseHsts() výše.
 		//
-		// V kontejneru by stejně nic nedělalo: middleware potřebuje znát cílový HTTPS port, Kestrel tam
-		// poslouchá jen na HTTP a žádný https_port nastavený není - jen by jednou zalogovalo
-		// "Failed to determine the https port for redirect".
+		// Necháváme ho tu kvůli lokálnímu běhu (profil poslouchá na https:44398 i http:9901, tam
+		// přesměrování funguje) a pro případ hostování mimo ACA.
 		//
-		// A kdyby port znalo, aktivně by škodilo: health probes chodí z ACA přímo na kontejner po HTTP
-		// (mimo ingress, tedy bez X-Forwarded-Proto) a dostaly by 307. ACA bere jako úspěch cokoli
-		// v rozsahu 200-399, takže by probe procházel i u úplně rozbité aplikace.
-		//
-		// Ochranu prohlížeče drží UseHsts() výše. Lokálně (profil poslouchá na https:44398 i http:9901)
-		// se tím ztrácí přesměrování z HTTP portu - v Development bez dopadu.
+		// Výjimka pro health endpoint je pojistka, ne dnešní nutnost: kdyby middleware kdykoli ožil
+		// (stačí nastavit ASPNETCORE_HTTPS_PORTS nebo hostovat s HTTPS bindingem), odbavoval by probes
+		// 307 redirectem. Probes chodí z ACA přímo na kontejner po HTTP mimo ingress, takže nenesou
+		// X-Forwarded-Proto, a ACA bere jako úspěch cokoli v rozsahu 200-399 - probe by pak procházel
+		// i u úplně rozbité aplikace. Takové selhání je tiché, proto ho blokujeme předem.
+		app.UseWhen(
+			context => !context.Request.Path.StartsWithSegments(HealthCheckEndpoints.Path),
+			appBuilder => appBuilder.UseHttpsRedirection());
 		app.UseAuthentication();
 
 		app.UseRequestLocalization();
