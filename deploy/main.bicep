@@ -38,6 +38,13 @@ param logAnalyticsDailyQuotaGb string = '0.25'
 @description('ASP.NET Core prostředí (ovlivňuje appsettings.Web.{env}.json a chování aplikace).')
 param aspNetCoreEnvironment string = 'Production'
 
+// Port, na kterém naslouchá Kestrel v kontejneru (default ASP.NET Core images). Sdílené mezi ingress
+// a health probes - kdyby se rozešly, probes by tloukly na hluchý port a replika by nikdy nenaběhla.
+var containerPort = 8080
+
+// Cesta health endpointu; musí souhlasit s HealthCheckEndpoints.Path ve Web/Infrastructure/HealthChecks.
+var healthCheckPath = '/health'
+
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsName
   location: location
@@ -87,7 +94,7 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
       activeRevisionsMode: 'Single'
       ingress: {
         external: true
-        targetPort: 8080
+        targetPort: containerPort
         transport: 'auto'
         allowInsecure: false
       }
@@ -135,6 +142,51 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'ApplicationInsights__ConnectionString'
               secretRef: 'appinsights-connectionstring'
+            }
+          ]
+          // Explicitní probes místo výchozích. Výchozí readiness probe je TCP s initialDelaySeconds 3
+          // a periodSeconds 5 - v Single revision mode se provoz překlápí až po jeho úspěchu, takže
+          // připravená replika čeká na routování zbytečně dlouho. To je přímá daň na studeném startu.
+          probes: [
+            {
+              // Startup probe rozhoduje o délce studeného startu: dokud neuspěje, readiness ani liveness
+              // neběží a replika nedostane provoz. Ptáme se každou sekundu, takže se na provoz přepne
+              // do ~1 s od chvíle, kdy aplikace skutečně umí odpovědět.
+              // failureThreshold 60 x periodSeconds 1 = minuta na náběh, pak je start prohlášen za neúspěšný.
+              type: 'Startup'
+              httpGet: {
+                path: healthCheckPath
+                port: containerPort
+              }
+              initialDelaySeconds: 1
+              periodSeconds: 1
+              timeoutSeconds: 2
+              failureThreshold: 60
+            }
+            {
+              // Readiness běží až po úspěšném startup probe, takže na studený start nemá vliv - proto
+              // řídší interval. Každé volání je request navíc (viz IgnoreHealthChecksTelemetryProcessor).
+              type: 'Readiness'
+              httpGet: {
+                path: healthCheckPath
+                port: containerPort
+              }
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+            }
+            {
+              // Liveness restartuje zaseknutý kontejner. Záměrně nejřidší a s tolerancí tří selhání -
+              // při maxReplicas: 1 znamená restart výpadek celé aplikace, takže planý poplach je drahý.
+              type: 'Liveness'
+              httpGet: {
+                path: healthCheckPath
+                port: containerPort
+              }
+              initialDelaySeconds: 10
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
             }
           ]
         }
