@@ -126,8 +126,10 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: aspNetCoreEnvironment
             }
             {
-              // Bez tohohle by za ACA ingress (TLS terminuje na edge, do kontejneru chodí HTTP)
-              // způsobil app.UseHttpsRedirection() nekonečnou smyčku redirectů - viz deploy/README.md.
+              // ACA ingress terminuje TLS a do kontejneru posílá HTTP. Bez zpracování X-Forwarded-*
+              // by aplikace každý request viděla jako nešifrovaný, což má dva konkrétní dopady:
+              // UseHsts() hlavičku nepřidává na non-HTTPS requesty, takže by HSTS tiše nikdy nefungoval,
+              // a do telemetrie by se místo IP klienta zapisovala interní adresa ingressu.
               name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED'
               value: 'true'
             }

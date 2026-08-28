@@ -99,13 +99,20 @@ public class Startup
 		}
 		app.UseExceptionHandler(_ => { /* NOOP */ });
 
-		// Health probes chodí z ACA přímo na kontejner po HTTP (mimo ingress), takže nenesou
-		// X-Forwarded-Proto a UseHttpsRedirection by je odbavil 307 redirectem. ACA přitom považuje
-		// za úspěch cokoli v rozsahu 200-399, takže by probe procházel i u úplně rozbité aplikace.
-		// Proto na health cestě redirect přeskakujeme.
-		app.UseWhen(
-			context => !context.Request.Path.StartsWithSegments(HealthCheckEndpoints.Path),
-			appBuilder => appBuilder.UseHttpsRedirection());
+		// UseHttpsRedirection tu ZÁMĚRNĚ není. Přesměrování HTTP -> HTTPS dělá ingress Azure Container
+		// Apps (allowInsecure: false, viz deploy/main.bicep) ještě před kontejnerem; dokumentace ASP.NET
+		// Core to pro nasazení za reverzní proxy s TLS terminací přímo doporučuje.
+		//
+		// V kontejneru by stejně nic nedělalo: middleware potřebuje znát cílový HTTPS port, Kestrel tam
+		// poslouchá jen na HTTP a žádný https_port nastavený není - jen by jednou zalogovalo
+		// "Failed to determine the https port for redirect".
+		//
+		// A kdyby port znalo, aktivně by škodilo: health probes chodí z ACA přímo na kontejner po HTTP
+		// (mimo ingress, tedy bez X-Forwarded-Proto) a dostaly by 307. ACA bere jako úspěch cokoli
+		// v rozsahu 200-399, takže by probe procházel i u úplně rozbité aplikace.
+		//
+		// Ochranu prohlížeče drží UseHsts() výše. Lokálně (profil poslouchá na https:44398 i http:9901)
+		// se tím ztrácí přesměrování z HTTP portu - v Development bez dopadu.
 		app.UseAuthentication();
 
 		app.UseRequestLocalization();
