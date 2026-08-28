@@ -31,6 +31,10 @@ param logAnalyticsName string = 'jk-volejbal-logs'
 @description('Počet dní uchování logů v Log Analytics.')
 param logAnalyticsRetentionDays int = 30
 
+// Jako string kvůli json() níže - bicep nemá typ pro desetinná čísla (stejný důvod jako u cpu: json('0.25')).
+@description('Denní strop ingestace do Log Analytics v GB. Pojistka proti utržené fakturaci, ne nástroj běžné optimalizace - při dosažení se sběr dat na zbytek dne ZASTAVÍ a přijdete o výhled na aplikaci (viz deploy/README.md). "-1" = bez limitu.')
+param logAnalyticsDailyQuotaGb string = '0.25'
+
 @description('ASP.NET Core prostředí (ovlivňuje appsettings.Web.{env}.json a chování aplikace).')
 param aspNetCoreEnvironment string = 'Production'
 
@@ -42,6 +46,9 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
       name: 'PerGB2018'
     }
     retentionInDays: logAnalyticsRetentionDays
+    workspaceCapping: {
+      dailyQuotaGb: json(logAnalyticsDailyQuotaGb)
+    }
   }
 }
 

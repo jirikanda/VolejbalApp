@@ -11,6 +11,22 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + 
 
 Application Insights je **workspace-based** nad tímtéž Log Analytics workspace, který používá Container Apps Environment pro logy kontejneru — telemetrie aplikace i logy tak končí na jednom místě. Connection string se do Container App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
+### Denní strop ingestace
+
+Workspace má `workspaceCapping.dailyQuotaGb` nastavený na **0,25 GB/den** (parametr `logAnalyticsDailyQuotaGb`, `-1` = bez limitu). Protože je App Insights workspace-based, je efektivní strop **minimum ze stropu na App Insights a na workspace** — na workspace tedy pokrývá jak telemetrii aplikace, tak konzoli kontejneru jedním nastavením.
+
+> **Není to nástroj běžné optimalizace, je to pojistka.** Při dosažení stropu se sběr **všech** billable dat na zbytek 24hodinového okna **zastaví** — v tu chvíli nevidíte ani telemetrii, ani logy kontejneru, tedy zrovna když se nejspíš něco děje. Dokumentace Azure Monitoru to říká natvrdo: cílem je stropu **nikdy nedosáhnout**, má chytat jen nečekané špičky. Na trvalé snižování objemu slouží [sampling](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sampling) nebo ingestion-time transformace.
+>
+> Hodina resetu je pro každý workspace jiná a **nedá se nastavit**. Strop navíc nezastaví sběr přesně na hodnotě — nějaký přesah se očekává a účtuje se.
+
+Rozumné je nastavit si upozornění, že strop padl — jinak se to pozná až podle chybějících dat:
+
+```
+_LogOperation | where Category =~ "Ingestion" | where Detail contains "OverQuota"
+```
+
+V bicepu je parametr typu `string` a prochází přes `json()`, protože **bicep nemá typ pro desetinná čísla** — stejný důvod, proč je v šabloně `cpu: json('0.25')`.
+
 ## Dva workflow
 
 - **`Build`** ([.github/workflows/build.yml](../.github/workflows/build.yml)) — CI pro `master` a PR do masteru: restore → build → test. Nic nepublikuje ani nenasazuje.
