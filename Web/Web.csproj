@@ -10,6 +10,22 @@
 		<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64); nesmí se předávat jako globální CLI vlastnost, protékala by do Web.Client (browser-wasm), který R2R nepodporuje -->
 		<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
 
+		<!-- Base image pro dotnet publish -t:PublishContainer. Chiseled je proti výchozímu aspnet:10.0 (Debian)
+	     výrazně menší - 67 vs. 91 MB komprimovaně - a kratší pull je přímá úspora na studeném startu při
+	     scale-to-zero (viz deploy/main.bicep, minReplicas: 0).
+
+	     Přípona -extra je POVINNÁ, ne kosmetika: holé -chiseled neobsahuje ICU ani tzdata. Aplikace potřebuje
+	     obojí - cs-CZ přes AddCustomizedRequestLocalization() a časovou zónu z proměnné TZ=Europe/Prague,
+	     kterou nastavuje bicep šablona. Bez -extra by runtime spadl do invariantní kultury a UTC.
+
+	     Existuje ještě varianta -composite-extra: framework je v ní zkompilovaný do jednoho R2R bloku
+	     místo do zvlášť R2R kompilovaných assembly. Microsoft ji dokumentuje jako úsporu místa při
+	     zachování výkonu běžného R2R ("smaller size on disk while keeping the performance of the
+	     default ReadyToRun setting"), ne jako zrychlení startu; platí se za ni tím, že do frameworku
+	     už nejde podstrčit vlastní verze jednotlivých assembly. Změřeno na MCR je komprimovaně
+	     prakticky stejně velká (66,9 vs. 67,4 MB), takže na pull nemá vliv. Nepřecházet bez měření. -->
+		<ContainerFamily>noble-chiseled-extra</ContainerFamily>
+
 		<!-- Workstation GC místo Server GC (SDK default) - Server GC alokuje heap + vyhrazené vlákno na každé CPU jádro,
 	     což je pro málo vytíženou službu na omezeném kontejneru (ACA 0.25-0.5 vCPU) zbytečná režie.
 	     Změřeno (24jádrový dev stroj): 54 -> 29 vláken, private bytes ~90 -> ~69 MB. -->

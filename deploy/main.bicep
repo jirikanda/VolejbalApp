@@ -45,7 +45,7 @@ var containerPort = 8080
 // Cesta health endpointu; musí souhlasit s HealthCheckEndpoints.Path ve Web/Infrastructure/HealthChecks.
 var healthCheckPath = '/health'
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2025-07-01' = {
   name: logAnalyticsName
   location: location
   properties: {
@@ -71,7 +71,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2026-01-01' = {
   name: environmentName
   location: location
   properties: {
@@ -85,7 +85,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
   }
 }
 
-resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
+resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
   name: containerAppName
   location: location
   properties: {
@@ -152,15 +152,17 @@ resource webApp 'Microsoft.App/containerApps@2024-03-01' = {
           probes: [
             {
               // Startup probe rozhoduje o délce studeného startu: dokud neuspěje, readiness ani liveness
-              // neběží a replika nedostane provoz. Ptáme se každou sekundu, takže se na provoz přepne
-              // do ~1 s od chvíle, kdy aplikace skutečně umí odpovědět.
+              // neběží a replika nedostane provoz. Ptáme se každou sekundu a bez úvodní prodlevy
+              // (initialDelaySeconds: 0), takže se na provoz přepne do ~1 s od chvíle, kdy aplikace
+              // skutečně umí odpovědět. Nemá smysl čekat: /health nemá registrované žádné checky,
+              // takže odpovídá 200 v okamžiku, kdy Kestrel začne poslouchat.
               // failureThreshold 60 x periodSeconds 1 = minuta na náběh, pak je start prohlášen za neúspěšný.
               type: 'Startup'
               httpGet: {
                 path: healthCheckPath
                 port: containerPort
               }
-              initialDelaySeconds: 1
+              initialDelaySeconds: 0
               periodSeconds: 1
               timeoutSeconds: 2
               failureThreshold: 60
