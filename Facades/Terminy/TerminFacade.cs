@@ -41,6 +41,10 @@ public class TerminFacade(
 		List<Prihlaska> prihlaskyIncludingDeleted = await _prihlaskaDataSource.DataIncludingDeleted
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
 			.Where(prihlaska => prihlaska.TerminId == terminId)
+			// Přihlášky/odhlášky smazaných osob přeskakujeme - jinak by se smazaná osoba, která se
+			// z termínu kdy odhlásila, objevila mezi nepřihlášenými a šla by znovu přihlásit
+			// (do neprihlaseni níže se nedostane, ta jde přes GetAllAktivniAsync, ale do odhlaseni ano).
+			.Where(prihlaska => prihlaska.Osoba.Deleted == null)
 			.Include(prihlaska => prihlaska.Osoba)
 			.ToListAsync(cancellationToken);
 
@@ -48,7 +52,10 @@ public class TerminFacade(
 		List<Prihlaska> odhlasky = prihlaskyIncludingDeleted.Where(prihlaska => prihlaska.Deleted != null).ToList();
 
 		List<Osoba> prihlaseni = prihlasky.Select(item => item.Osoba).ToList();
-		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().Except(prihlaseni).ToList();
+		// Neaktivní osoby se k přihlášení nenabízejí - stejné pravidlo jako u neprihlaseni níže,
+		// které jde přes GetAllAktivniAsync. Filtrovat je už v dotazu výše nelze: osoba deaktivovaná
+		// poté, co se na termín přihlásila, musí zůstat vidět mezi přihlášenými.
+		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().Except(prihlaseni).Where(osoba => osoba.Aktivni).ToList();
 
 		List<Osoba> neprihlaseni = (await _osobaRepository.GetAllAktivniAsync(cancellationToken))
 			.Except(prihlaseni /* in memory */)

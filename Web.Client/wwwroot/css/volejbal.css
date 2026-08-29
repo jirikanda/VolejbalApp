@@ -13,6 +13,7 @@
     --signed-soft: oklch(0.93 0.06 145);
     --pending: oklch(0.72 0.20 78);
     --pending-soft: oklch(0.95 0.06 82);
+    --pending-strong: oklch(0.54 0.15 62);
     --declined: oklch(0.60 0.24 22);
     --declined-soft: oklch(0.93 0.06 22);
     --accent: oklch(0.52 0.24 255);
@@ -49,6 +50,7 @@
     --signed-soft: oklch(0.24 0.08 145);
     --pending: oklch(0.78 0.20 80);
     --pending-soft: oklch(0.24 0.07 80);
+    --pending-strong: oklch(0.82 0.18 80);
     --declined: oklch(0.70 0.22 22);
     --declined-soft: oklch(0.24 0.08 22);
     --accent: oklch(0.72 0.22 255);
@@ -544,17 +546,23 @@ body::before {
 /* ─── PLAYER MANAGEMENT ─── */
 .mgmt-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
 @media (max-width: 900px) { .mgmt-grid { grid-template-columns: 1fr; } }
-.deactivated {
+.person-list {
     background: var(--surface); border: 1px solid var(--line);
     border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm);
 }
-.deactivated h3, .new-form h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; letter-spacing: -0.015em; }
-.deactivated p.descr, .new-form p.descr { margin: 0 0 18px; color: var(--ink-3); font-size: 13px; }
-.deactivated table { width: 100%; border-collapse: collapse; }
-.deactivated tr + tr td { border-top: 1px solid var(--line); }
-.deactivated td { padding: 13px 0; font-size: 14px; }
-.deactivated td.actions { text-align: right; }
-.deactivated td.name { font-weight: 500; }
+.person-list h3, .new-form h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; letter-spacing: -0.015em; }
+.person-list p.descr, .new-form p.descr { margin: 0 0 18px; color: var(--ink-3); font-size: 13px; }
+.person-list table { width: 100%; border-collapse: collapse; }
+.person-list tr + tr td { border-top: 1px solid var(--line); }
+.person-list td { padding: 13px 0; font-size: 14px; }
+.person-list td.actions { text-align: right; }
+.person-list td.name { font-weight: 500; }
+.person-list tr.inactive td.name { color: var(--ink-3); font-weight: 400; }
+.person-list td.name .state-tag {
+    margin-left: 8px; padding: 2px 7px; border-radius: 999px;
+    font: 600 10px/1.6 var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--pending-strong); background: var(--pending-soft);
+}
 .text-btn {
     appearance: none; border: 0; background: transparent;
     font: 600 12px/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em;
@@ -565,6 +573,8 @@ body::before {
 .text-btn.activate:hover { background: var(--signed-soft); }
 .text-btn.del { color: var(--declined); }
 .text-btn.del:hover { background: var(--declined-soft); }
+.text-btn.deactivate { color: var(--pending-strong); }
+.text-btn.deactivate:hover { background: var(--pending-soft); }
 .new-form {
     background: var(--surface); border: 1px solid var(--line);
     border-radius: var(--radius); padding: 22px;

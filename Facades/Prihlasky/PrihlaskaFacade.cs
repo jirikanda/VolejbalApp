@@ -50,10 +50,6 @@ public class PrihlaskaFacade(
 		termin.ThrowIfDeleted();
 		termin.ThrowIfPast(_timeService.GetCurrentDate());
 
-		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
-		osoba.ThrowIfDeleted();
-		osoba.ThrowIfNotAktivni();
-
 		Prihlaska prihlaska = await _prihlaskaRepository.GetPrihlaskaAsync(terminId, osobaId, cancellationToken);
 		if (prihlaska != null)
 		{

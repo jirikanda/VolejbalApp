@@ -1,0 +1,57 @@
+@using KandaEu.Volejbal.Contracts.Osoby.Dto
+
+<div class="person-list">
+    <h3>Hráči</h3>
+    <p class="descr">Neaktivní hráči se nenabízejí k přihlášení na termíny. Aktivovat či deaktivovat se dá kdykoli.</p>
+
+    @if (_osoby != null)
+    {
+        @if (_osoby.Osoby.Count == 0)
+        {
+            <div class="empty-block" style="padding: 24px 16px;">
+                <strong>Žádní hráči</strong>
+                Zatím není evidován žádný hráč.
+            </div>
+        }
+        else
+        {
+            <table>
+                <tbody>
+                    @foreach (OsobaDto osoba in _osoby.Osoby)
+                    {
+                        <tr class="@(osoba.Aktivni ? null : "inactive")">
+                            <td class="name">
+                                @osoba.PrijmeniJmeno
+                                @if (!osoba.Aktivni)
+                                {
+                                    <span class="state-tag">neaktivní</span>
+                                }
+                            </td>
+                            <td class="actions">
+                                @if (osoba.Aktivni)
+                                {
+                                    <button type="button" class="text-btn deactivate" @onclick="@(async () => await DeaktivovatAsync(osoba))">deaktivovat</button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="text-btn activate" @onclick="@(async () => await AktivovatAsync(osoba))">aktivovat</button>
+                                    <button type="button" class="text-btn del" @onclick="@(async () => await SmazatAsync(osoba))">smazat</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+</div>
+
+<HxModal @ref="_deleteModal" Title="Smazat osobu" Size="ModalSize.Small">
+    <BodyTemplate>
+        Opravdu chceš smazat osobu &ldquo;@_osobaKeSmazani?.PrijmeniJmeno&rdquo;?
+    </BodyTemplate>
+    <FooterTemplate>
+        <HxButton Text="Zrušit" Color="ThemeColor.Secondary" OnClick="@(async () => await _deleteModal.HideAsync())" />
+        <HxButton Text="Smazat" Color="ThemeColor.Danger" OnClick="PotvrditSmazaniAsync" />
+    </FooterTemplate>
+</HxModal>

@@ -9,15 +9,18 @@ public class OsobaController(IOsobaFacade _osobaFacade)
 	[HttpPost("api/osoby")]
 	public async Task VlozOsobuAsync(OsobaInputDto osobaInputDto, CancellationToken cancellationToken) => await _osobaFacade.VlozOsobuAsync(osobaInputDto, cancellationToken);
 
+	[HttpGet("api/osoby")]
+	public async Task<OsobaListDto> GetOsobyAsync(CancellationToken cancellationToken) => await _osobaFacade.GetOsobyAsync(cancellationToken);
+
 	[HttpGet("api/osoby/aktivni")]
 	public async Task<OsobaListDto> GetAktivniOsobyAsync(CancellationToken cancellationToken) => await _osobaFacade.GetAktivniOsobyAsync(cancellationToken);
 
-	[HttpGet("api/osoby/neaktivni")]
-	public async Task<OsobaListDto> GetNeaktivniOsobyAsync(CancellationToken cancellationToken) => await _osobaFacade.GetNeaktivniOsobyAsync(cancellationToken);
+	[HttpDelete("api/osoby/{osobaId}")]
+	public async Task SmazOsobuAsync(int osobaId, CancellationToken cancellationToken) => await _osobaFacade.SmazOsobuAsync(osobaId, cancellationToken);
 
-	[HttpDelete("api/osoby/neaktivni/{osobaId}")]
-	public async Task SmazNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken) => await _osobaFacade.SmazNeaktivniOsobuAsync(osobaId, cancellationToken);
+	[HttpPost("api/osoby/{osobaId}/aktivovat")]
+	public async Task AktivujOsobuAsync(int osobaId, CancellationToken cancellationToken) => await _osobaFacade.AktivujOsobuAsync(osobaId, cancellationToken);
 
-	[HttpPost("api/osoby/neaktivni/{osobaId}/aktivovat")]
-	public async Task AktivujNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken) => await _osobaFacade.AktivujNeaktivniOsobuAsync(osobaId, cancellationToken);
+	[HttpPost("api/osoby/{osobaId}/deaktivovat")]
+	public async Task DeaktivujOsobuAsync(int osobaId, CancellationToken cancellationToken) => await _osobaFacade.DeaktivujOsobuAsync(osobaId, cancellationToken);
 }

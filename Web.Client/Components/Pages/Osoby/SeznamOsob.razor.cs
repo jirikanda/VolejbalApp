@@ -1,10 +1,10 @@
-using Havit.Blazor.Components.Web.Bootstrap;
+﻿using Havit.Blazor.Components.Web.Bootstrap;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Web.Client.Components.ProgressComponent;
 
 namespace KandaEu.Volejbal.Web.Client.Components.Pages.Osoby;
 
-public partial class AktivaceDeaktivovaneOsoby
+public partial class SeznamOsob
 {
 	[Inject]
 	protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
@@ -20,13 +20,19 @@ public partial class AktivaceDeaktivovaneOsoby
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		_osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetNeaktivniOsobyAsync());
+		_osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetOsobyAsync());
 	}
 
 	protected async Task AktivovatAsync(OsobaDto osoba)
 	{
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujNeaktivniOsobuAsync(osoba.Id));
-		_osoby.Osoby.Remove(osoba);
+		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujOsobuAsync(osoba.Id));
+		osoba.Aktivni = true;
+	}
+
+	protected async Task DeaktivovatAsync(OsobaDto osoba)
+	{
+		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.DeaktivujOsobuAsync(osoba.Id));
+		osoba.Aktivni = false;
 	}
 
 	protected async Task SmazatAsync(OsobaDto osoba)
@@ -38,7 +44,7 @@ public partial class AktivaceDeaktivovaneOsoby
 	protected async Task PotvrditSmazaniAsync()
 	{
 		await _deleteModal.HideAsync();
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazNeaktivniOsobuAsync(_osobaKeSmazani.Id));
+		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazOsobuAsync(_osobaKeSmazani.Id));
 		_osoby.Osoby.Remove(_osobaKeSmazani);
 		_osobaKeSmazani = null;
 	}

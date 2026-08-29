@@ -22,11 +22,12 @@ public class OsobaFacade(
 		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 
-	public async Task AktivujNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken)
+	public async Task AktivujOsobuAsync(int osobaId, CancellationToken cancellationToken)
 	{
 		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
 
-		CheckNeaktivniNesmazana(osoba);
+		osoba.ThrowIfDeleted();
+		osoba.ThrowIfAktivni();
 
 		osoba.Aktivni = true;
 
@@ -34,49 +35,62 @@ public class OsobaFacade(
 		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 
-	public async Task SmazNeaktivniOsobuAsync(int osobaId, CancellationToken cancellationToken)
+	public async Task DeaktivujOsobuAsync(int osobaId, CancellationToken cancellationToken)
 	{
 		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
 
-		CheckNeaktivniNesmazana(osoba);
+		osoba.ThrowIfDeleted();
+		osoba.ThrowIfNotAktivni();
+
+		osoba.Aktivni = false;
+
+		_unitOfWork.AddForUpdate(osoba);
+		await _unitOfWork.CommitAsync(cancellationToken);
+	}
+
+	/// <summary>
+	/// Smaže osobu. Mazat lze jen osobu, která je již deaktivovaná — aby smazání nebylo jednokrokové.
+	/// </summary>
+	public async Task SmazOsobuAsync(int osobaId, CancellationToken cancellationToken)
+	{
+		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+
+		osoba.ThrowIfDeleted();
+		osoba.ThrowIfAktivni();
 
 		_unitOfWork.AddForDelete(osoba);
 		await _unitOfWork.CommitAsync(cancellationToken);
 	}
 
-	private void CheckNeaktivniNesmazana(Osoba osoba)
+	/// <summary>
+	/// Všechny nesmazané osoby, aktivní i neaktivní (pro obrazovku správy hráčů).
+	/// </summary>
+	public async Task<OsobaListDto> GetOsobyAsync(CancellationToken cancellationToken)
 	{
-		osoba.ThrowIfDeleted();
-		osoba.ThrowIfAktivni();
+		return await GetOsobyAsync(null, cancellationToken);
 	}
-
 
 	public async Task<OsobaListDto> GetAktivniOsobyAsync(CancellationToken cancellationToken)
 	{
-		return await GetOsobyByAktivniAsync(true, cancellationToken);
+		return await GetOsobyAsync(true, cancellationToken);
 	}
 
-	public async Task<OsobaListDto> GetNeaktivniOsobyAsync(CancellationToken cancellationToken)
+	private async Task<OsobaListDto> GetOsobyAsync(bool? aktivni, CancellationToken cancellationToken)
 	{
-		return await GetOsobyByAktivniAsync(false, cancellationToken);
-	}
-
-	public async Task<OsobaListDto> GetOsobyByAktivniAsync(bool aktivni, CancellationToken cancellationToken)
-	{
-		var result = new OsobaListDto
+		OsobaListDto result = new OsobaListDto
 		{
 			Osoby = await _osobaDataSource.Data
-				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyByAktivniAsync)))
-				.Where(osoba => osoba.Aktivni == aktivni)
+				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyAsync)))
+				.Where(osoba => (aktivni == null) || (osoba.Aktivni == aktivni.Value))
 				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)
 				.Select(item => new OsobaDto
 				{
 					Id = item.Id,
-					PrijmeniJmeno = item.PrijmeniJmeno
+					PrijmeniJmeno = item.PrijmeniJmeno,
+					Aktivni = item.Aktivni
 				})
 				.ToListAsync(cancellationToken)
 		};
 		return result;
 	}
 }
-

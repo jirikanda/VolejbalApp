@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
 		// background jobs
 		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
 		{
-			services.AddHostedService<RecurringJobsBackgroundService>(); // neblokující — EnsureTerminy + DeaktivaceOsob (při startu a opakovaně)
+			services.AddHostedService<RecurringJobsBackgroundService>(); // neblokující — EnsureTerminy (při startu a pak každou hodinu)
 		}
 
 		return services;

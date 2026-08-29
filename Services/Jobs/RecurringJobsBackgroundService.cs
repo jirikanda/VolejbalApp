@@ -10,36 +10,27 @@ namespace KandaEu.Volejbal.Services.Jobs;
 /// a jeho inicializace prodlužovala start aplikace, což se počítá při scale-to-zero cold startech na ACA).
 /// Běží na pozadí (BackgroundService + Task.Yield), start webserveru neblokuje.
 ///
-/// - Při startu: EnsureTerminy (materializace termínů) + DeaktivaceOsob (idempotentní catch-up —
-///   při scale-to-zero aplikace ve 4:00 typicky spí, úloha se dožene při nejbližším probuzení).
+/// - Při startu: EnsureTerminy (materializace termínů).
 /// - Každou hodinu běhu: EnsureTerminy.
-/// - Jednou denně po 4:00 místního času (pokud aplikace zrovna běží): DeaktivaceOsob.
+///
+/// Poznámka: <see cref="IDeaktivaceOsobJob"/> se záměrně neplánuje — osoby se deaktivují ručně
+/// ve správě hráčů, automatická deaktivace po dvou měsících neúčasti byla zrušena.
+/// Kód jobu zůstává k dispozici pro případné ruční/jednorázové použití.
 /// </summary>
 public class RecurringJobsBackgroundService(
 	IServiceProvider _serviceProvider,
 	ILogger<RecurringJobsBackgroundService> _logger) : BackgroundService
 {
-	private static readonly TimeZoneInfo s_timeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		await Task.Yield(); // uvolníme startup — zbytek běží na pozadí, aplikace mezitím začne obsluhovat requesty
 
 		await RunJobAsync<IEnsureTerminyJob>(stoppingToken);
-		await RunJobAsync<IDeaktivaceOsobJob>(stoppingToken);
-		DateTime lastDeaktivaceDate = GetCurrentLocalTime().Date;
 
 		using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromHours(1));
 		while (await timer.WaitForNextTickAsync(stoppingToken))
 		{
 			await RunJobAsync<IEnsureTerminyJob>(stoppingToken);
-
-			DateTime now = GetCurrentLocalTime();
-			if ((now.Date > lastDeaktivaceDate) && (now.Hour >= 4))
-			{
-				await RunJobAsync<IDeaktivaceOsobJob>(stoppingToken);
-				lastDeaktivaceDate = now.Date;
-			}
 		}
 	}
 
@@ -63,6 +54,4 @@ public class RecurringJobsBackgroundService(
 			_logger.LogError(exception, "Job {job} selhal.", typeof(TJob).Name);
 		}
 	}
-
-	private static DateTime GetCurrentLocalTime() => TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, s_timeZone);
 }
