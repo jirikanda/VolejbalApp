@@ -149,7 +149,7 @@ What-if nepullne image ani se nepřipojí k databázi, takže fiktivní hodnoty 
   Endpoint je `/health` ([HealthCheckEndpoints.Path](../Web/Infrastructure/HealthChecks/HealthCheckEndpoints.cs)) a **nemá registrované žádné checky** — vrací 200, jakmile stojí pipeline. Kontrola databáze by prodloužila studený start a při `maxReplicas: 1` by z výpadku databáze udělala výpadek celé aplikace.
 
   Telemetrie health requestů se zahazuje ([IgnoreHealthChecksTelemetryProcessor](../Web/Infrastructure/ApplicationInsights/IgnoreHealthChecksTelemetryProcessor.cs)). Readiness + liveness dělají přes 11 000 requestů denně; bez filtru by ukusovaly z denního stropu ingestace.
-- **`minReplicas: 0`** (scale-to-zero) znamená, že po period nečinnosti aplikace "usne" a další request ji probudí (cold start). [Web/Infrastructure/WarmupBackgroundService.cs](../Web/Infrastructure/WarmupBackgroundService.cs) po startu sám zavolá klíčové endpointy, aby EF Core/MVC pipeline byly zahřáté ještě před prvním reálným requestem.
+- **`minReplicas: 0`** (scale-to-zero) znamená, že po period nečinnosti aplikace "usne" a další request ji probudí (cold start). Startovní běh `EnsureTerminy` v `RecurringJobsBackgroundService` přitom zahřeje EF Core model i connection pool, takže studený start nezdržuje ještě sestavování modelu.
 - Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho **záměrně nepublikuje ani nespouští** — aplikace schéma za běhu nemigruje, takže ho musíte pustit sám z lokálního repa proti produkčnímu connection stringu, **před** spuštěním deploye:
   ```powershell
   dotnet run --project MigrationTool -- --connectionstring "<connection string>"
