@@ -13,6 +13,13 @@ namespace KandaEu.Volejbal.Services.Jobs;
 /// - Při startu: EnsureTerminy (materializace termínů).
 /// - Každou hodinu běhu: EnsureTerminy.
 ///
+/// Startovní běh mimochodem zahřeje EF Core model a connection pool, takže je první request o tuhle
+/// položku levnější. Za warmup to ale považovat nelze: job jde přímo přes službu, ne přes Kestrel,
+/// takže routing, aktivace controlleru, serializace DTO ani compiled-query cache pro tvary dotazů,
+/// které API opravdu používá, zahřáté nejsou. Naměřeno ~100 ms na první request po probuzení
+/// (dřívější WarmupBackgroundService s loopback HTTP requesty ho stahovala na ~5–40 ms).
+/// Podrobnosti a důvod odstranění viz deploy/README.md, sekce k minReplicas: 0.
+///
 /// Poznámka: <see cref="IDeaktivaceOsobJob"/> se záměrně neplánuje — osoby se deaktivují ručně
 /// ve správě hráčů, automatická deaktivace po dvou měsících neúčasti byla zrušena.
 /// Kód jobu zůstává k dispozici pro případné ruční/jednorázové použití.
