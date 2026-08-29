@@ -1,4 +1,8 @@
-* text=auto
+# eol=lf: v pracovním stromu držíme LF na všech platformách, ať sedí s end_of_line = lf
+# v .editorconfig. Bez toho na Windows (core.autocrlf=true) checkout vyrobí CRLF a IDE0055
+# hlásí formátování v každém souboru - Release build s TreatWarningsAsErrors pak lokálně
+# neprojde, zatímco na Linuxu v CI ano. Projektové soubory zůstávají CRLF (eol=crlf níže).
+* text=auto eol=lf
 
 # 
 *.ascx text
