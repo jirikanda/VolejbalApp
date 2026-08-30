@@ -152,17 +152,17 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
           probes: [
             {
               // Startup probe rozhoduje o délce studeného startu: dokud neuspěje, readiness ani liveness
-              // neběží a replika nedostane provoz. Ptáme se každou sekundu a bez úvodní prodlevy
-              // (initialDelaySeconds: 0), takže se na provoz přepne do ~1 s od chvíle, kdy aplikace
-              // skutečně umí odpovědět. Nemá smysl čekat: /health nemá registrované žádné checky,
-              // takže odpovídá 200 v okamžiku, kdy Kestrel začne poslouchat.
+              // neběží a replika nedostane provoz. Ptáme se každou sekundu prakticky bez úvodní prodlevy
+              // (initialDelaySeconds: 1 - minimální povolená hodnota), takže se na provoz přepne do ~1 s
+              // od chvíle, kdy aplikace skutečně umí odpovědět. Nemá smysl čekat: /health nemá registrované
+              // žádné checky, takže odpovídá 200 v okamžiku, kdy Kestrel začne poslouchat.
               // failureThreshold 60 x periodSeconds 1 = minuta na náběh, pak je start prohlášen za neúspěšný.
               type: 'Startup'
               httpGet: {
                 path: healthCheckPath
                 port: containerPort
               }
-              initialDelaySeconds: 0
+              initialDelaySeconds: 1
               periodSeconds: 1
               timeoutSeconds: 2
               failureThreshold: 60
@@ -200,6 +200,50 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
         // je in-process plánovač bez distribuovaného zámku; dvě repliky = duplicitní běhy jobů.
         minReplicas: 0
         maxReplicas: 1
+        // Cool down period: jak dlouho po posledním triggeru (HTTP requestu) KEDA čeká, než škáluje
+        // na 0 replik. Výchozích 300 s (5 min) prodlouženo na 600 s (10 min), aby po náběhu appka
+        // zůstala teplá déle a neplatila se studeným startem tak často.
+        cooldownPeriod: 600
+        rules: [
+          {
+            // Jakmile přidáme vlastní (custom) scale rules níže, implicitní výchozí HTTP rule
+            // (concurrentRequests 10) se už automaticky nepoužije - musíme ji zopakovat explicitně,
+            // jinak by appka mimo cron okna nikdy neškálovala nahoru z 0 na příchozí request.
+            name: 'http-default'
+            http: {
+              metadata: {
+                concurrentRequests: '10'
+              }
+            }
+          }
+          {
+            // Cron scale rule (KEDA) drží alespoň 1 repliku v pondělí 12:00-21:00 Europe/Prague.
+            // IANA timezone řeší letní/zimní čas automaticky (CEST/CET), start/end jsou v lokálním čase.
+            name: 'cron-pondeli'
+            custom: {
+              type: 'cron'
+              metadata: {
+                timezone: 'Europe/Prague'
+                start: '0 13 * * 1'
+                end: '0 22 * * 1'
+                desiredReplicas: '1'
+              }
+            }
+          }
+          {
+            // Totéž pro úterý 8:00-19:00 Europe/Prague.
+            name: 'cron-utery'
+            custom: {
+              type: 'cron'
+              metadata: {
+                timezone: 'Europe/Prague'
+                start: '0 8 * * 2'
+                end: '0 19 * * 2'
+                desiredReplicas: '1'
+              }
+            }
+          }
+        ]
       }
     }
   }
