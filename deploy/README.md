@@ -1,6 +1,6 @@
 # Nasazení na Azure Container Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + REST API v jedné aplikaci). Vytváří Log Analytics workspace, Application Insights, Container Apps Environment a Container App. Databáze a custom doména jsou mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + REST API v jedné aplikaci). Vytváří Log Analytics workspace, Application Insights, Container Apps Environment, Container App a (volitelně, viz níže) binding custom domény + managed certifikát. Databáze je mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
 
 | Resource | Typ | Název |
 | --- | --- | --- |
@@ -8,6 +8,7 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + 
 | Application Insights | `Microsoft.Insights/components` | `jk-volejbal-appinsights` |
 | Container Apps Environment | `Microsoft.App/managedEnvironments` | `jk-volejbal-ca-env` |
 | Container App | `Microsoft.App/containerApps` | `jk-volejbal-ca-web` |
+| Managed certifikát (jen když `bindCustomDomain=true`) | `Microsoft.App/managedEnvironments/managedCertificates` | `volejbal-kanda-eu-cert` |
 
 Application Insights je **workspace-based** nad tímtéž Log Analytics workspace, který používá Container Apps Environment pro logy kontejneru — telemetrie aplikace i logy tak končí na jednom místě. Connection string se do Container App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
@@ -26,6 +27,21 @@ _LogOperation | where Category =~ "Ingestion" | where Detail contains "OverQuota
 ```
 
 V bicepu je parametr typu `string` a prochází přes `json()`, protože **bicep nemá typ pro desetinná čísla** — stejný důvod, proč je v šabloně `cpu: json('0.25')`.
+
+### Custom doména (`volejbal.kanda.eu`)
+
+DNS záznamy jsou nastavené a ověřené (2026-08-31 — CNAME na FQDN Container App, TXT `asuid.volejbal` sedí s `customDomainVerificationId`), takže `bindCustomDomain` má default `true` a šablona rovnou vytváří `managedCertificate` a binduje ho v `webApp.properties.configuration.ingress.customDomains`.
+
+Kdyby se v budoucnu bindovala další doména (nebo přesouvala na jiný Container App), je potřeba dvoufázový postup, protože Azure při vydávání managed certifikátu ověřuje vlastnictví domény přes DNS a záznamy musí existovat **dřív**, než se o certifikát vůbec požádá:
+
+1. Nasadit šablonu s `bindCustomDomain=false` a přečíst si výstup `containerAppUrl` a `customDomainVerificationId`:
+   ```bash
+   az deployment group show --resource-group JkVolejbalRG --name jk-volejbal --query properties.outputs
+   ```
+2. U registrátora domény nastavit:
+   - `CNAME` → FQDN z `containerAppUrl` (bez `https://`, tj. `<app>.<region>.azurecontainerapps.io`)
+   - `TXT` na `asuid.<subdoména>` → hodnota `customDomainVerificationId`
+3. Počkat na propagaci DNS a znovu nasadit s `--parameters bindCustomDomain=true`.
 
 ## Dva workflow
 
@@ -105,7 +121,7 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    > Kdyby se některá z hodnot přesunula mezi záložkami, je potřeba změnit i prefix v [deploy.yml](../.github/workflows/deploy.yml). `secrets.X` u proměnné uložené jako variable se vyhodnotí na **prázdný řetězec** — workflow nespadne na chybějící hodnotu, ale `azure/login` selže na nesrozumitelnou chybu.
 4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Proto je `Production` s velkým P jak v [deploy.yml](../.github/workflows/deploy.yml), tak v subjectu credentialu. Volitelně sem přidejte *required reviewers* — pak se `deploy` job zastaví a počká na schválení.
 
-Výstup workflow (`containerAppUrl`) je veřejná adresa (`https://<app>.<region>.azurecontainerapps.io`), dokud není navázaná custom doména.
+Výstup workflow (`containerAppUrl`) je adresa `https://<app>.<region>.azurecontainerapps.io` — funguje i po navázání custom domény, appka odpovídá na obou.
 
 ## Postup nasazení
 

@@ -4,7 +4,10 @@
 // Mimo scope této šablony:
 // - databáze (hostovaná jinde) - připojení jen přes connection string parametr
 // - migrace/seed databáze (MigrationTool) - řeší se mimo tuto šablonu
-// - custom doména volejbal.kanda.eu - přidá se ručně po ověření provozu
+//
+// Custom doména volejbal.kanda.eu (binding + managed certifikát) JE součástí šablony - řídí ji
+// parametr bindCustomDomain (výchozí true, DNS záznamy jsou ověřené) - viz komentář u toho parametru
+// a deploy/README.md pro dvoufázový postup, kdyby se bindovala jiná/další doména.
 
 @description('Lokace pro všechny resources.')
 param location string = resourceGroup().location
@@ -37,6 +40,17 @@ param logAnalyticsDailyQuotaGb string = '0.25'
 
 @description('ASP.NET Core prostředí (ovlivňuje appsettings.Web.{env}.json a chování aplikace).')
 param aspNetCoreEnvironment string = 'Production'
+
+@description('Vlastní doména vázaná na Container App.')
+param customDomainName string = 'volejbal.kanda.eu'
+
+@description('''Zapíná binding custom domény + managed certifikátu. Vyžaduje, aby DNS záznamy domény
+(CNAME na FQDN Container App + TXT asuid.<subdoména> na verifikační ID) existovaly DŘÍV, než se o
+certifikát požádá - Azure je při vydávání ověřuje, jinak deployment spadne. Pro volejbal.kanda.eu
+jsou záznamy ověřené a nastavené (2026-08-31), proto je default true. Postup pro případnou další
+doménu je v deploy/README.md: 1) nasadit s false a přečíst si výstup customDomainVerificationId,
+2) nastavit u domény DNS záznamy, 3) znovu nasadit s true.''')
+param bindCustomDomain bool = true
 
 // Port, na kterém naslouchá Kestrel v kontejneru (default ASP.NET Core images). Sdílené mezi ingress
 // a health probes - kdyby se rozešly, probes by tloukly na hluchý port a replika by nikdy nenaběhla.
@@ -85,6 +99,18 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2026-01-01'
   }
 }
 
+// Podmíněný na bindCustomDomain - vydání certifikátu Azure ověřuje přes DNS (viz komentář u parametru),
+// takže dokud nejsou záznamy hotové, resource se vůbec nemá zkoušet vytvořit.
+resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2026-01-01' = if (bindCustomDomain) {
+  parent: containerAppsEnvironment
+  name: '${replace(customDomainName, '.', '-')}-cert'
+  location: location
+  properties: {
+    subjectName: customDomainName
+    domainControlValidation: 'CNAME'
+  }
+}
+
 resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
   name: containerAppName
   location: location
@@ -97,6 +123,14 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
         targetPort: containerPort
         transport: 'auto'
         allowInsecure: false
+        // Prázdné pole, dokud bindCustomDomain není true - viz komentář u parametru a u managedCertificate.
+        customDomains: bindCustomDomain ? [
+          {
+            name: customDomainName
+            certificateId: managedCertificate.id
+            bindingType: 'SniEnabled'
+          }
+        ] : []
       }
       // Žádný registries blok - image v ghcr.io je veřejný, ACA ho pullne anonymně.
       // Kdyby package někdy zprivátněl, je potřeba sem doplnit registries + secret s PAT.
@@ -251,3 +285,6 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
 
 @description('Veřejná URL aplikace (azurecontainerapps.io, dokud není navázaná custom doména).')
 output containerAppUrl string = 'https://${webApp.properties.configuration.ingress.fqdn}'
+
+@description('Verifikační ID pro TXT záznam asuid.<subdoména> - potřeba před nastavením bindCustomDomain na true (viz deploy/README.md).')
+output customDomainVerificationId string = webApp.properties.customDomainVerificationId
