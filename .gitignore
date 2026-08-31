@@ -252,11 +252,11 @@ paket-files/
 *.sln.iml
 
 # Dist folders are generated
-/Web/wwwroot/dist
-/Web/ClientApp/dist
-/Web/Web.rar
-/Web/package-lock.json
-Web/.vscode/launch.json
+/src/Web/wwwroot/dist
+/src/Web/ClientApp/dist
+/src/Web/Web.rar
+/src/Web/package-lock.json
+src/Web/.vscode/launch.json
 .vscode
 /WebAPI/App_Data
 .DS_Store

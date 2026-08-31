@@ -17,8 +17,8 @@ publish/
 **/*.local.json
 
 # Testy nejsou potřeba v image
-Tests/
-TestsForLocalDebugging/
+src/Tests/
+src/TestsForLocalDebugging/
 
 # Ostatní
 **/.DS_Store

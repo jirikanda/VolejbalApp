@@ -56,7 +56,7 @@ param bindCustomDomain bool = true
 // a health probes - kdyby se rozešly, probes by tloukly na hluchý port a replika by nikdy nenaběhla.
 var containerPort = 8080
 
-// Cesta health endpointu; musí souhlasit s HealthCheckEndpoints.Path ve Web/Infrastructure/HealthChecks.
+// Cesta health endpointu; musí souhlasit s HealthCheckEndpoints.Path ve src/Web/Infrastructure/HealthChecks.
 var healthCheckPath = '/health'
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2025-07-01' = {

@@ -41,7 +41,7 @@ jobs:
         run: dotnet build VolejbalApp.slnx --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test Tests/Tests.csproj --no-build --configuration Release --verbosity normal
+        run: dotnet test src/Tests/Tests.csproj --no-build --configuration Release --verbosity normal
 
       # MigrationTool se tu ZÁMĚRNĚ nepublikuje ani nespouští - migrace schématu se pouští ručně
       # z lokálního repa (dotnet run --project MigrationTool), a to PŘED spuštěním tohoto
@@ -69,7 +69,7 @@ jobs:
       # na CLI by protekl do Web.Client a spadl na NETSDK1095.
       - name: Build and push Web container image
         run: |
-          dotnet publish Web/Web.csproj --configuration Release --os linux --arch x64 \
+          dotnet publish src/Web/Web.csproj --configuration Release --os linux --arch x64 \
             -t:PublishContainer \
             -p:ContainerRegistry=ghcr.io \
             -p:ContainerRepository=${{ steps.image.outputs.repository }} \
