@@ -38,7 +38,6 @@
 		<PackageReference Include="Havit.ApplicationInsights.DependencyCollector" />
 		<PackageReference Include="Havit.AspNetCore.Mvc" />
 		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
 		<PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -52,16 +51,6 @@
 		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
 		<ProjectReference Include="..\Facades\Facades.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
-		<ProjectReference Include="..\Web.Client\Web.Client.csproj" />
 	</ItemGroup>
-
-	<!-- Odstraníme složku BlazorDebugProxy - ta obsahuje souboru užitečné jen v rámci ladění pomocí .UseWebAssemblyDebugging(). To v produkci nepotřebujeme. -->
-	<Target Name="RemoveBlazorDebugProxy" AfterTargets="ComputeFilesToPublish">
-		<ItemGroup>
-			<ResolvedFileToPublish
-			  Remove="@(ResolvedFileToPublish)"
-			  Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').StartsWith('BlazorDebugProxy'))" />
-		</ItemGroup>
-	</Target>
 
 </Project>

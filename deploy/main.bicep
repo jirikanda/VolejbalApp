@@ -1,13 +1,16 @@
-// Azure Container Apps hosting pro VolejbalApp (Web = Blazor WASM host + REST API v jednom).
+// Azure Container Apps hosting pro VolejbalApp Web (REST API) + Azure Static Web Apps hosting
+// pro Web.Client (Blazor WASM frontend, samostatně nasazovaný, viz deploy.yml job deploy-frontend).
 // Deployment scope: resource group (předpokládá existující RG, viz deploy/README.md).
 //
 // Mimo scope této šablony:
 // - databáze (hostovaná jinde) - připojení jen přes connection string parametr
 // - migrace/seed databáze (MigrationTool) - řeší se mimo tuto šablonu
+// - doména pro Web (API) - běží jen na defaultním *.azurecontainerapps.io hostname; případná
+//   vlastní doména přijde až s Azure Functions (budoucí náhrada Web jako API), pokud bude potřeba
 //
-// Custom doména volejbal.kanda.eu (binding + managed certifikát) JE součástí šablony - řídí ji
-// parametr bindCustomDomain (výchozí true, DNS záznamy jsou ověřené) - viz komentář u toho parametru
-// a deploy/README.md pro dvoufázový postup, kdyby se bindovala jiná/další doména.
+// Custom doména volejbal.kanda.eu (binding + automatický cert) JE součástí šablony, ale patří
+// Static Web App (frontend), ne Container App - řídí ji proměnná bindCustomDomain (zatím false,
+// protože DNS ještě neukazuje na SWA) - viz komentář u ní a deploy/README.md pro dvoufázový postup.
 
 @description('Lokace pro všechny resources.')
 param location string = resourceGroup().location
@@ -41,16 +44,22 @@ param logAnalyticsDailyQuotaGb string = '0.25'
 @description('ASP.NET Core prostředí (ovlivňuje appsettings.Web.{env}.json a chování aplikace).')
 param aspNetCoreEnvironment string = 'Production'
 
-@description('Vlastní doména vázaná na Container App.')
-param customDomainName string = 'volejbal.kanda.eu'
+// Název Static Web App (frontend Web.Client, nasazovaný samostatně přes deploy.yml job deploy-frontend).
+var staticWebAppName = 'JkVolejbalSWA'
 
-@description('''Zapíná binding custom domény + managed certifikátu. Vyžaduje, aby DNS záznamy domény
-(CNAME na FQDN Container App + TXT asuid.<subdoména> na verifikační ID) existovaly DŘÍV, než se o
-certifikát požádá - Azure je při vydávání ověřuje, jinak deployment spadne. Pro volejbal.kanda.eu
-jsou záznamy ověřené a nastavené (2026-08-31), proto je default true. Postup pro případnou další
-doménu je v deploy/README.md: 1) nasadit s false a přečíst si výstup customDomainVerificationId,
-2) nastavit u domény DNS záznamy, 3) znovu nasadit s true.''')
-param bindCustomDomain bool = true
+// Lokace Static Web App - NEZÁVISLÁ na parametru location (Germany West Central).
+// Azure Static Web Apps v Germany West Central není dostupné, nejbližší podporovaný region je West Europe.
+var staticWebAppLocation = 'westeurope'
+
+// Vlastní doména vázaná na Static Web App (frontend).
+var customDomainName = 'volejbal.kanda.eu'
+
+// Zapíná binding custom domény na Static Web App. Vyžaduje, aby DNS CNAME volejbal.kanda.eu už
+// ukazoval na staticWebApp.properties.defaultHostname DŘÍV, než se tenhle resource nasadí - SWA
+// validaci (cname-delegation) i vydání certifikátu dělá automaticky, ale až v okamžiku, kdy CNAME
+// skutečně existuje. Dvoufázový postup (viz deploy/README.md): nasadit s false, ověřit deploy-frontend
+// job, přepsat DNS, tady přepnout na true a nasadit znovu.
+var bindCustomDomain = false
 
 // Port, na kterém naslouchá Kestrel v kontejneru (default ASP.NET Core images). Sdílené mezi ingress
 // a health probes - kdyby se rozešly, probes by tloukly na hluchý port a replika by nikdy nenaběhla.
@@ -99,15 +108,25 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2026-01-01'
   }
 }
 
-// Podmíněný na bindCustomDomain - vydání certifikátu Azure ověřuje přes DNS (viz komentář u parametru),
-// takže dokud nejsou záznamy hotové, resource se vůbec nemá zkoušet vytvořit.
-resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2026-01-01' = if (bindCustomDomain) {
-  parent: containerAppsEnvironment
-  name: '${replace(customDomainName, '.', '-')}-cert'
-  location: location
+// Static Web App (frontend Web.Client) - obsah nasazuje samostatný GH Actions job (deploy-frontend),
+// ne nativní SWA<->GitHub integrace, proto žádný repositoryUrl/branch/buildProperties.
+resource staticWebApp 'Microsoft.Web/staticSites@2025-05-01' = {
+  name: staticWebAppName
+  location: staticWebAppLocation
+  sku: {
+    name: 'Free'
+    tier: 'Free'
+  }
+  properties: {}
+}
+
+// Podmíněný na bindCustomDomain - SWA ověřuje vlastnictví domény přes DNS (viz komentář u parametru),
+// takže dokud CNAME neukazuje na staticWebApp, resource se vůbec nemá zkoušet vytvořit.
+resource staticWebAppCustomDomain 'Microsoft.Web/staticSites/customDomains@2025-05-01' = if (bindCustomDomain) {
+  parent: staticWebApp
+  name: customDomainName
   properties: {
-    subjectName: customDomainName
-    domainControlValidation: 'CNAME'
+    validationMethod: 'cname-delegation'
   }
 }
 
@@ -123,14 +142,6 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
         targetPort: containerPort
         transport: 'auto'
         allowInsecure: false
-        // Prázdné pole, dokud bindCustomDomain není true - viz komentář u parametru a u managedCertificate.
-        customDomains: bindCustomDomain ? [
-          {
-            name: customDomainName
-            certificateId: managedCertificate.id
-            bindingType: 'SniEnabled'
-          }
-        ] : []
       }
       // Žádný registries blok - image v ghcr.io je veřejný, ACA ho pullne anonymně.
       // Kdyby package někdy zprivátněl, je potřeba sem doplnit registries + secret s PAT.
@@ -178,6 +189,17 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
             {
               name: 'ApplicationInsights__ConnectionString'
               secretRef: 'appinsights-connectionstring'
+            }
+            {
+              // CORS allow-list pro Web.Client (SWA) - defaultní hostname je vždy platný cíl,
+              // custom doména (viz staticWebAppCustomDomain) se přidává preventivně i před vlastním
+              // DNS cutoverem, aby po přepnutí bindCustomDomain na true nebylo potřeba měnit ještě CORS.
+              name: 'Cors__AllowedOrigins__0'
+              value: 'https://${staticWebApp.properties.defaultHostname}'
+            }
+            {
+              name: 'Cors__AllowedOrigins__1'
+              value: 'https://${customDomainName}'
             }
           ]
           // Explicitní probes místo výchozích. Výchozí readiness probe je TCP s initialDelaySeconds 3
@@ -283,8 +305,11 @@ resource webApp 'Microsoft.App/containerApps@2026-01-01' = {
   }
 }
 
-@description('Veřejná URL aplikace (azurecontainerapps.io, dokud není navázaná custom doména).')
+@description('Veřejná URL Web (API) - defaultní azurecontainerapps.io hostname, žádná custom doména se sem neváže.')
 output containerAppUrl string = 'https://${webApp.properties.configuration.ingress.fqdn}'
 
-@description('Verifikační ID pro TXT záznam asuid.<subdoména> - potřeba před nastavením bindCustomDomain na true (viz deploy/README.md).')
-output customDomainVerificationId string = webApp.properties.customDomainVerificationId
+@description('Defaultní hostname Static Web App (frontend) - veřejná URL frontendu, dokud nemá custom doménu, a cíl DNS CNAME při nastavování bindCustomDomain (viz deploy/README.md).')
+output staticWebAppDefaultHostname string = staticWebApp.properties.defaultHostname
+
+@description('Název Static Web App - čte ho deploy-frontend job, aby název nemusel být napsaný zvlášť i ve workflow.')
+output staticWebAppName string = staticWebApp.name

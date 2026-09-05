@@ -2,6 +2,8 @@
 using Blazored.LocalStorage;
 using Havit.Blazor.Components.Web;
 using KandaEu.Volejbal.Web.Client.App_Start;
+using KandaEu.Volejbal.Web.Client.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace KandaEu.Volejbal.Web.Client;
@@ -12,13 +14,17 @@ public class Program
 	{
 		WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-		// Root komponenty (Routes, HeadOutlet) neregistrujeme - aktivuje je blazor.web.js podle markerů vyrenderovaných hostem.
+		builder.RootComponents.Add<HeadOutlet>("head::after");
+		builder.RootComponents.Add<Routes>("#app");
 
-		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(builder.HostEnvironment.BaseAddress);
-		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(builder.HostEnvironment.BaseAddress);
-		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(builder.HostEnvironment.BaseAddress);
-		builder.Services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(builder.HostEnvironment.BaseAddress);
-		builder.Services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(builder.HostEnvironment.BaseAddress);
+		string apiBaseUrl = builder.Configuration["ApiBaseUrl"]
+			?? throw new InvalidOperationException("Configuration value 'ApiBaseUrl' is not set.");
+
+		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(apiBaseUrl);
+		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(apiBaseUrl);
+		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(apiBaseUrl);
+		builder.Services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(apiBaseUrl);
+		builder.Services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(apiBaseUrl);
 
 		builder.Services.AddBlazoredLocalStorage();
 		builder.Services.AddHxServices();

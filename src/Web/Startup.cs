@@ -2,7 +2,6 @@
 using Havit.ApplicationInsights.DependencyCollector;
 using Havit.AspNetCore.Mvc.ExceptionMonitoring.Filters;
 using KandaEu.Volejbal.DependencyInjection;
-using KandaEu.Volejbal.Web.Components;
 using KandaEu.Volejbal.Web.Infrastructure.ApplicationInsights;
 using KandaEu.Volejbal.Web.Infrastructure.ConfigurationExtensions;
 using KandaEu.Volejbal.Web.Infrastructure.HealthChecks;
@@ -37,8 +36,7 @@ public class Startup
 
 		services.AddCustomizedRequestLocalization();
 		services.AddCustomizedMvc(_configuration);
-		services.AddRazorComponents()
-			.AddInteractiveWebAssemblyComponents();
+		services.AddCustomizedCors(_configuration);
 		services.AddAuthorization();
 		services.AddRateLimiter(c => c.AddFixedWindowLimiter("DefaultAPI", options =>
 		{
@@ -83,8 +81,7 @@ public class Startup
 		if (app.Environment.IsDevelopment())
 		{
 			app.UseDeveloperExceptionPage();
-			app.UseWebAssemblyDebugging();
-			// jen na API - jinak by 500 ms delay brzdil i download WASM assetů
+			// Jen na API - simulace latence má platit pro volání z frontendu, ne pro health probe a Scalar UI.
 			app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder => appBuilder.UseMiddleware<DelayRequestMiddleware>());
 		}
 		else
@@ -117,23 +114,17 @@ public class Startup
 
 		app.UseErrorToJson();
 		app.UseRouting();
-		app.UseAntiforgery();
+		app.UseCors();
 		app.UseRateLimiter();
 	}
 
 	public void ConfigureEndpoints(WebApplication app)
 	{
-		app.MapStaticAssets();
-
 		app.MapControllers().RequireRateLimiting("DefaultAPI");
 
 		// Mimo MapControllers, takže se na něj nevztahuje rate limit "DefaultAPI" - probe každých
 		// pár sekund by jinak ukusoval z limitu určeného pro API.
 		app.MapHealthChecks(HealthCheckEndpoints.Path);
-
-		app.MapRazorComponents<App>()
-			.AddInteractiveWebAssemblyRenderMode()
-			.AddAdditionalAssemblies(typeof(Client.Components.Routes).Assembly);
 
 		if (app.Environment.IsDevelopment())
 		{

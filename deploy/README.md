@@ -1,14 +1,14 @@
-# Nasazení na Azure Container Apps
+# Nasazení na Azure Container Apps + Azure Static Web Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (Blazor WASM host + REST API v jedné aplikaci). Vytváří Log Analytics workspace, Application Insights, Container Apps Environment, Container App a (volitelně, viz níže) binding custom domény + managed certifikát. Databáze je mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Web` (REST API, Container App) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, Container Apps Environment, Container App, Static Web App a (volitelně, viz níže) binding custom domény na Static Web App. Databáze je mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
 
 | Resource | Typ | Název |
 | --- | --- | --- |
 | Log Analytics workspace | `Microsoft.OperationalInsights/workspaces` | `jk-volejbal-logs` |
 | Application Insights | `Microsoft.Insights/components` | `jk-volejbal-appinsights` |
 | Container Apps Environment | `Microsoft.App/managedEnvironments` | `jk-volejbal-ca-env` |
-| Container App | `Microsoft.App/containerApps` | `jk-volejbal-ca-web` |
-| Managed certifikát (jen když `bindCustomDomain=true`) | `Microsoft.App/managedEnvironments/managedCertificates` | `volejbal-kanda-eu-cert` |
+| Container App (`Web`, API) | `Microsoft.App/containerApps` | `jk-volejbal-ca-web` |
+| Static Web App (`Web.Client`, frontend) | `Microsoft.Web/staticSites` | `JkVolejbalSWA` |
 
 Application Insights je **workspace-based** nad tímtéž Log Analytics workspace, který používá Container Apps Environment pro logy kontejneru — telemetrie aplikace i logy tak končí na jednom místě. Connection string se do Container App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
@@ -30,23 +30,24 @@ V bicepu je parametr typu `string` a prochází přes `json()`, protože **bicep
 
 ### Custom doména (`volejbal.kanda.eu`)
 
-DNS záznamy jsou nastavené a ověřené (2026-08-31 — CNAME na FQDN Container App, TXT `asuid.volejbal` sedí s `customDomainVerificationId`), takže `bindCustomDomain` má default `true` a šablona rovnou vytváří `managedCertificate` a binduje ho v `webApp.properties.configuration.ingress.customDomains`.
+Doména patří **Static Web App** (frontend), ne Container App — `Web` (API) běží jen na defaultním `*.azurecontainerapps.io` hostname (viz `containerAppUrl` output). Static Web App validuje vlastnictví domény metodou `cname-delegation`: stačí, aby CNAME už ukazoval na `staticWebApp.properties.defaultHostname`, žádný TXT token navíc netřeba (na rozdíl od dřívějšího ACA postupu) a certifikát si SWA vydá sama automaticky.
 
-Kdyby se v budoucnu bindovala další doména (nebo přesouvala na jiný Container App), je potřeba dvoufázový postup, protože Azure při vydávání managed certifikátu ověřuje vlastnictví domény přes DNS a záznamy musí existovat **dřív**, než se o certifikát vůbec požádá:
+Proměnná `bindCustomDomain` v šabloně je zatím `false`, protože při prvním nasazení nové Static Web App na ni ještě DNS neukazuje. Postup (i pro budoucí přesun na jinou/další doménu):
 
-1. Nasadit šablonu s `bindCustomDomain=false` a přečíst si výstup `containerAppUrl` a `customDomainVerificationId`:
+1. Nasadit šablonu (`bindCustomDomain = false`) a přečíst si výstup `staticWebAppDefaultHostname`:
    ```bash
    az deployment group show --resource-group JkVolejbalRG --name jk-volejbal --query properties.outputs
    ```
-2. U registrátora domény nastavit:
-   - `CNAME` → FQDN z `containerAppUrl` (bez `https://`, tj. `<app>.<region>.azurecontainerapps.io`)
-   - `TXT` na `asuid.<subdoména>` → hodnota `customDomainVerificationId`
-3. Počkat na propagaci DNS a znovu nasadit s `--parameters bindCustomDomain=true`.
+2. Spustit job `deploy-frontend` (viz níže) a ověřit, že appka na `https://<staticWebAppDefaultHostname>` funguje a volá produkční API.
+3. Teprve pak u registrátora domény přepsat `CNAME` `volejbal.kanda.eu` → `staticWebAppDefaultHostname` (dřív mířil na FQDN Container App — jde o ostré přepnutí produkční domény, krátké okno možné nedostupnosti/neplatnosti, dokud DNS nepropaguje). Smazat i starý TXT záznam `asuid.volejbal` (byl jen pro dřívější ACA managed certifikát, teď zbytečný).
+4. Počkat na propagaci DNS, v [main.bicep](main.bicep) přepnout `bindCustomDomain` na `true`, commitnout a nasadit znovu. Ověřit `az staticwebapp hostname list --name JkVolejbalSWA --resource-group JkVolejbalRG`, že je doména `Ready`.
+
+**Manuální úklid po prvním nasazení této šablony** (odstranění custom domény z Container App vyrobilo v Azure osiřelý resource, protože ARM v incremental módu nemaže resources, které zmizely ze šablony): smazat starý `managedCertificate` (`az containerapp env certificate delete --name jk-volejbal-ca-env --resource-group JkVolejbalRG --certificate volejbal-kanda-eu-cert`), pokud tam ještě je.
 
 ## Dva workflow
 
 - **`Build`** ([.github/workflows/build.yml](../.github/workflows/build.yml)) — CI pro `master` a PR do masteru: restore → build → test. Nic nepublikuje ani nenasazuje.
-- **`Deploy to Azure Container Apps`** ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml)) — **výhradně ruční** (`workflow_dispatch`), spouští se nad `master`. Dělá celou cestu do produkce.
+- **`Deploy to Azure Container Apps`** ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml)) — **výhradně ruční** (`workflow_dispatch`), spouští se nad `master`. Dělá celou cestu do produkce, včetně frontendu.
 
 Ruční spuštění deploye je samo o sobě rozhodnutí, co jde do produkce — proto workflow nemá žádný `imageTag` input: staví se právě odbavený commit a image se taguje jeho SHA.
 
@@ -54,13 +55,17 @@ Ruční spuštění deploye je samo o sobě rozhodnutí, co jde do produkce — 
 
 Job **`build`**: restore → build → test → build a push container image do `ghcr.io/<owner>/volejbal-web:<commit-sha>`.
 
-Image vzniká přes vestavěnou kontejnerizaci .NET SDK (`dotnet publish -t:PublishContainer`, žádný Dockerfile); WASM klient je v něm zabalený v `wwwroot/_framework`. Push autentizuje automatický `GITHUB_TOKEN` (`packages: write`), žádný extra secret netřeba.
+Image vzniká přes vestavěnou kontejnerizaci .NET SDK (`dotnet publish -t:PublishContainer`, žádný Dockerfile) — obsahuje jen `Web` (API), `Web.Client` (frontend) se nasazuje samostatně, viz níže. Push autentizuje automatický `GITHUB_TOKEN` (`packages: write`), žádný extra secret netřeba.
 
-Job **`deploy`** (`needs: build`): Azure login přes OIDC → `az deployment group create` s bicep šablonou → výpis URL.
+Job **`deploy`** (`needs: build`): Azure login přes OIDC → `az deployment group create` s bicep šablonou (vytváří/aktualizuje i Static Web App resource, ne jen Container App) → výpis URL API.
 
-Rozdělení na dva joby není kosmetika: `environment: Production` je na `deploy` jobu, takže případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku.
+Job **`deploy-frontend`** (`needs: deploy`): `dotnet publish` na `Web.Client` → Azure login přes OIDC → zjištění deployment tokenu SWA → nahrání statického výstupu přes `Azure/static-web-apps-deploy`. Samostatný job, ne rozšíření `build`/`deploy` — publikace frontendu je nezávislá na kontejnerovém publish API, a stejně jako u rozdělení `build`/`deploy` nemá selhání jedné části vypadat jako selhání druhé.
 
-Nasazuje se **celá šablona**, ne jen výměna image. ARM v incremental módu projde nezměněné resources jako no-op, takže to stojí minutu navíc — výměnou za to nemůže infrastruktura začít odpovídat něčemu jinému než šabloně.
+Nahrávání obsahu do SWA samo o sobě OIDC cestu nemá — chce deployment token (API klíč resource). Ten se ale **nikam neukládá**: job si ho přečte za běhu (`az staticwebapp secrets list`) přes tentýž OIDC login jako bicep deploy a zamaskuje ho v logu (`::add-mask::`), takže žije jen v rámci jednoho běhu a není co rotovat. Federated credential se kvůli tomu měnit nemusí — subject je vázaný na `environment: Production`, který má i tenhle job.
+
+Rozdělení do jobů není kosmetika: `environment: Production` je na `deploy` i `deploy-frontend` jobu, takže případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku.
+
+Nasazuje se **celá šablona**, ne jen výměna image. ARM v incremental módu projde nezměněné resources jako no-op, takže to stojí minutu navíc — výměnou za to nemůže infrastruktura začít odpovídat něčemu jinému než šabloně. Pozor: incremental mode taky **nemaže** resources, které ze šablony zmizely (viz poznámka o manuálním úklidu `managedCertificate` výše).
 
 ### Jak se Container App dozví o novém image
 
@@ -116,12 +121,12 @@ Package `volejbal-web` je nastavený jako **veřejný**, takže ho Container App
    - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše. Jsou to identifikátory, ne tajemství; jako variables jsou navíc čitelné v logu běhu, což ladění usnadňuje. Ve workflow se na ně sahá přes `vars.*`.
 
    **Secrets:**
-   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Jediné skutečné tajemství — GHCR pull i Azure login žádné heslo nepotřebují. Ve workflow `secrets.*`.
+   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Ve workflow `secrets.*`. **Jediné skutečné tajemství** — GHCR pull, Azure login ani nasazení frontendu na SWA žádné uložené heslo nepotřebují (viz níže).
 
    > Kdyby se některá z hodnot přesunula mezi záložkami, je potřeba změnit i prefix v [deploy.yml](../.github/workflows/deploy.yml). `secrets.X` u proměnné uložené jako variable se vyhodnotí na **prázdný řetězec** — workflow nespadne na chybějící hodnotu, ale `azure/login` selže na nesrozumitelnou chybu.
-4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Proto je `Production` s velkým P jak v [deploy.yml](../.github/workflows/deploy.yml), tak v subjectu credentialu. Volitelně sem přidejte *required reviewers* — pak se `deploy` job zastaví a počká na schválení.
+4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Proto je `Production` s velkým P jak v [deploy.yml](../.github/workflows/deploy.yml), tak v subjectu credentialu. Volitelně sem přidejte *required reviewers* — pak se `deploy`/`deploy-frontend` job zastaví a počká na schválení.
 
-Výstup workflow (`containerAppUrl`) je adresa `https://<app>.<region>.azurecontainerapps.io` — funguje i po navázání custom domény, appka odpovídá na obou.
+Výstup workflow `containerAppUrl` je adresa `https://<app>.<region>.azurecontainerapps.io` API — žádná custom doména se na ni neváže. Výstup `staticWebAppDefaultHostname` je defaultní adresa frontendu, dokud nemá navázanou `volejbal.kanda.eu` (viz sekce o custom doméně výše).
 
 ## Postup nasazení
 
@@ -168,6 +173,7 @@ What-if nepullne image ani se nepřipojí k databázi, takže fiktivní hodnoty 
 - **`minReplicas: 0`** (scale-to-zero) znamená, že po periodě nečinnosti aplikace "usne" a další request ji probudí (cold start). Startovní běh `EnsureTerminy` v `RecurringJobsBackgroundService` přitom zahřeje EF Core model i connection pool, takže sestavování modelu už první request neplatí.
 
   **Zbytek studené cesty ale zahřátý není** a je to vědomé rozhodnutí, ne opomenutí. `EnsureTerminy` jde přímo přes službu, nikdy ne přes Kestrel — takže první reálný request stále platí routing, aktivaci controlleru, model binding, metadata System.Text.Json pro DTO a hlavně compiled-query cache EF Core pro *konkrétní tvary* dotazů (`EnsureTerminy` má úplně jiný tvar než `GetTerminyAsync`). Dřív to řešila `WarmupBackgroundService`, která po `ApplicationStarted` střílela loopback HTTP requesty na `/api/nastenka`, `/api/osoby/aktivni` a `/api/terminy`; **naměřeno tehdy: bez ní ~100 ms na první request, s ní ~5–40 ms** (tedy jako zahřátý). Byla odstraněna jako složitost navíc — u téhle aplikace se ~100 ms na probuzení unese. Kdyby se cold start někdy stal problémem, je tohle první místo, kam sáhnout (viz `git log -- src/Web/Infrastructure/WarmupBackgroundService.cs`).
+- **CORS a `ApiBaseUrl` jdou ruku v ruce.** `Web` (API) a `Web.Client` (frontend) běží na různých originech (SWA vs. ACA), takže `Web` potřebuje `Cors:AllowedOrigins` (nastavené v `main.bicep` na hostname Static Web App i na custom doménu, viz výše) a `Web.Client` potřebuje vědět, kam volat — to je commitnutá hodnota `ApiBaseUrl` v `src/Web.Client/wwwroot/appsettings.json` (produkční `containerAppUrl` hostname). Když se `Web` (API) přesune jinam (např. na Azure Functions), obě hodnoty je potřeba aktualizovat ručně — nic je nepropojuje automaticky.
 - Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho **záměrně nepublikuje ani nespouští** — aplikace schéma za běhu nemigruje, takže ho musíte pustit sám z lokálního repa proti produkčnímu connection stringu, **před** spuštěním deploye:
   ```powershell
   dotnet run --project src/MigrationTool -- --connectionstring "<connection string>"
