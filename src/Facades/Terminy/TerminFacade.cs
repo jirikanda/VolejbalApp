@@ -12,7 +12,7 @@ public class TerminFacade(
 	ITerminRepository _terminRepostory,
 	IPrihlaskaDataSource _prihlaskaDataSource,
 	IOsobaRepository _osobaRepository,
-	ITimeService _timeService) : ITerminFacade
+	ITimeService _timeService) : ITerminApi
 {
 	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken)
 	{

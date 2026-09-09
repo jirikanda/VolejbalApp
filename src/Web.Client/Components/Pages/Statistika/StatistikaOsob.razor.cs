@@ -6,7 +6,7 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Statistika;
 public partial class StatistikaOsob
 {
 	[Inject]
-	protected IReportWebApiClient ReportWebApiClient { get; set; }
+	protected IReportOsobApi ReportOsobApi { get; set; }
 
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
@@ -15,6 +15,6 @@ public partial class StatistikaOsob
 
 	protected override async Task OnInitializedAsync()
 	{
-		_report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportOsobAsync());
+		_report = await Progress.ExecuteInProgressAsync(() => ReportOsobApi.GetReportAsync());
 	}
 }

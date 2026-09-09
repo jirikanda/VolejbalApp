@@ -20,11 +20,7 @@ public class Program
 		string apiBaseUrl = builder.Configuration["ApiBaseUrl"]
 			?? throw new InvalidOperationException("Configuration value 'ApiBaseUrl' is not set.");
 
-		builder.Services.AddCustomizedHttpClient<ISystemWebApiClient, SystemWebApiClient>(apiBaseUrl);
-		builder.Services.AddCustomizedHttpClient<ITerminWebApiClient, TerminWebApiClient>(apiBaseUrl);
-		builder.Services.AddCustomizedHttpClient<IOsobaWebApiClient, OsobaWebApiClient>(apiBaseUrl);
-		builder.Services.AddCustomizedHttpClient<INastenkaWebApiClient, NastenkaWebApiClient>(apiBaseUrl);
-		builder.Services.AddCustomizedHttpClient<IReportWebApiClient, ReportWebApiClient>(apiBaseUrl);
+		builder.Services.AddApiClients(apiBaseUrl);
 
 		builder.Services.AddBlazoredLocalStorage();
 		builder.Services.AddHxServices();

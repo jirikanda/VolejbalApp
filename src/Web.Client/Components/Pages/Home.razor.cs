@@ -3,7 +3,7 @@
 public partial class Home
 {
 	[Inject]
-	protected INastenkaWebApiClient NastenkaWebApiClient { get; set; }
+	protected INastenkaApi NastenkaApi { get; set; }
 
 	[Inject]
 	protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
@@ -22,7 +22,7 @@ public partial class Home
 			lastVisit = await LocalStorageService.GetItemAsync<DateTime>("LastVisit");
 		}
 
-		if ((await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
+		if ((await NastenkaApi.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
 		{
 			ShowNastenkaLink = true;
 		}

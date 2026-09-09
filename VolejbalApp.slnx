@@ -5,12 +5,14 @@
   </Folder>
   <Folder Name="/.github/workflows/">
     <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/deploy.yml" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Project Path="src/Api/Api.csproj" />
   <Project Path="src/Contracts/Contracts.csproj" />
   <Project Path="src/DataLayer/DataLayer.csproj" />
   <Project Path="src/DependencyInjection/DependencyInjection.csproj" />
@@ -22,7 +24,6 @@
   <Project Path="src/Tests/Tests.csproj" />
   <Project Path="src/TestsForLocalDebugging/TestsForLocalDebugging.csproj" />
   <Project Path="src/Web.Client/Web.Client.csproj" />
-  <Project Path="src/Web/Web.csproj" />
   <Properties Name="Performance">
     <Property Name="HasPerformanceSessions" Value="true" />
   </Properties>

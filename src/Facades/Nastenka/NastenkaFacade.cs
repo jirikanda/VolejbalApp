@@ -9,7 +9,7 @@ public class NastenkaFacade(
 	IVzkazDataSource _vzkazDataSource,
 	ITimeService _timeService,
 	IUnitOfWork _unitOfWork,
-	IOsobaRepository _osobaRepository) : INastenkaFacade
+	IOsobaRepository _osobaRepository) : INastenkaApi
 {
 	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken)
 	{

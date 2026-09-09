@@ -1,8 +1,9 @@
 @using KandaEu.Volejbal.Contracts.Nastenka.Dto
-@using KandaEu.Volejbal.Web.Client.WebApiClients
+@using KandaEu.Volejbal.Contracts.Nastenka
+@using KandaEu.Volejbal.Contracts.Osoby
 
-@inject INastenkaWebApiClient NastenkaWebApiClient
-@inject IOsobaWebApiClient OsobaWebApiClient
+@inject INastenkaApi NastenkaApi
+@inject IOsobaApi OsobaApi
 
 @if ((_state.AktivniOsoby != null) && (_state.Vzkazy != null))
 {

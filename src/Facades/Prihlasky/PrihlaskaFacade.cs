@@ -9,7 +9,7 @@ public class PrihlaskaFacade(
 	ITimeService _timeService,
 	ITerminRepository _terminRepository,
 	IOsobaRepository _osobaRepository,
-	IPrihlaskaRepository _prihlaskaRepository) : IPrihlaskaFacade
+	IPrihlaskaRepository _prihlaskaRepository) : IPrihlaskaApi
 {
 	public async Task PrihlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken)
 	{

@@ -6,7 +6,7 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Osoby;
 public partial class ZalozeniNoveOsoby
 {
 	[Inject]
-	protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
+	protected IOsobaApi OsobaApi { get; set; }
 
 	[Inject]
 	protected NavigationManager NavigationManager { get; set; }
@@ -25,7 +25,7 @@ public partial class ZalozeniNoveOsoby
 			Email = _formData.Email
 		};
 
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.VlozOsobuAsync(novaOsoba));
+		await Progress.ExecuteInProgressAsync(async () => await OsobaApi.VlozOsobuAsync(novaOsoba));
 		NavigationManager.NavigateTo("/");
 	}
 }

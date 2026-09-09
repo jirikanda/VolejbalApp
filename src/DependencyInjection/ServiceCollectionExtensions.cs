@@ -10,7 +10,6 @@ using KandaEu.Volejbal.Entity;
 using KandaEu.Volejbal.Services.Infrastructure.TimeService;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection;
-using KandaEu.Volejbal.Services.Jobs;
 using Havit.Data.EntityFrameworkCore;
 using KandaEu.Volejbal.DataLayer;
 
@@ -29,11 +28,8 @@ public static class ServiceCollectionExtensions
 
 		services.ConfigureForAll(installConfiguration);
 
-		// background jobs
-		if (!String.IsNullOrEmpty(installConfiguration.DatabaseConnectionString)) // při spuštění Microsoft.Extensions.ApiDescription.Server nemáme connection string
-		{
-			services.AddHostedService<RecurringJobsBackgroundService>(); // neblokující — EnsureTerminy (při startu a pak každou hodinu)
-		}
+		// Pravidelné úlohy neběží in-process, ale jako Timer trigger v projektu Api
+		// (viz Api/Functions/RecurringJobsFunctions.cs).
 
 		return services;
 	}

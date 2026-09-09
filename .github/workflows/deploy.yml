@@ -1,11 +1,10 @@
-name: Deploy to Azure Container Apps
+name: Deploy to Azure
 
 # Záměrně jen ruční spuštění, očekává se nad master. Jeden workflow dělá celou cestu:
-# build + test (totéž co CI v build.yml), push container image do ghcr.io a nasazení bicep šablony.
+# build + test (totéž co CI v build.yml), nasazení bicep šablony a nahrání balíčků API i frontendu.
 #
-# Image se vždy staví z právě odbaveného commitu a taguje jeho SHA - proto tu není žádný
-# imageTag input: co je v branchi, to se nasadí. Ruční spuštění je samo o sobě to rozhodnutí,
-# co jde do produkce (dřív ho zastupoval ruční výběr SHA).
+# Nasazuje se vždy právě odbavený commit - proto tu není žádný input s verzí: co je v branchi, to se
+# nasadí. Ruční spuštění je samo o sobě to rozhodnutí, co jde do produkce.
 on:
   workflow_dispatch:
 
@@ -14,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # push container image do ghcr.io
-    outputs:
-      image: ${{ steps.image.outputs.reference }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -37,6 +33,12 @@ jobs:
       - name: Restore
         run: dotnet restore VolejbalApp.slnx
 
+      # Restore na úrovni solution nespustí restore hook Azure.Functions.Sdk, který generuje a obnovuje
+      # pomocný projekt s Functions extensions. Bez tohoto kroku build hlásí AZFW0108 a dělá
+      # restore-during-build ("may cause issues in some build environments").
+      - name: Restore Functions extensions
+        run: dotnet restore src/Api/Api.csproj
+
       - name: Build
         run: dotnet build VolejbalApp.slnx --no-restore --configuration Release
 
@@ -47,33 +49,29 @@ jobs:
       # z lokálního repa (dotnet run --project MigrationTool), a to PŘED spuštěním tohoto
       # workflow, pokud přibyla migrace. Viz deploy/README.md.
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+      # Bez --no-restore: tenhle krok si dělá vlastní RID-specific restore kvůli ReadyToRun, který se
+      # v csproj aktivuje podle RID. Restore celé solution s --runtime nejde - u Web.Client
+      # (browser-wasm) by vyžadoval neexistující Mono runtime pack pro linux-x64. Globální
+      # -p:PublishReadyToRun na CLI by protekl do Web.Client a spadl na NETSDK1095.
+      - name: Publish Api
+        run: |
+          dotnet publish src/Api/Api.csproj --configuration Release \
+            --runtime linux-x64 --self-contained false \
+            --output ./publish/Api
+
+      # Flex Consumption nasazuje zip do blob containeru, ne container image. Zipuje se obsah
+      # publish adresáře (host.json musí ležet v kořeni balíčku, ne v podadresáři).
+      - name: Package Api
+        run: |
+          cd ./publish/Api
+          zip -r ../../api.zip . > /dev/null
+
+      - name: Upload Api package
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Compute container image reference
-        id: image
-        run: |
-          echo "repository=${GITHUB_REPOSITORY_OWNER,,}/volejbal-web" >> "$GITHUB_OUTPUT"
-          echo "reference=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/volejbal-web:${{ github.sha }}" >> "$GITHUB_OUTPUT"
-
-      # Container image přes vestavěnou kontejnerizaci .NET SDK, žádný Dockerfile. WASM klient
-      # je v image zabalený v host wwwroot/_framework. GITHUB_TOKEN stačí (packages: write výše).
-      #
-      # Bez --no-restore: tenhle krok si dělá vlastní RID-specific restore. Restore celé solution
-      # s --runtime nejde - u Web.Client (browser-wasm) by vyžadoval neexistující Mono runtime pack
-      # pro linux-x64. ReadyToRun se aktivuje v csproj podle RID; globální -p:PublishReadyToRun
-      # na CLI by protekl do Web.Client a spadl na NETSDK1095.
-      - name: Build and push Web container image
-        run: |
-          dotnet publish src/Web/Web.csproj --configuration Release --os linux --arch x64 \
-            -t:PublishContainer \
-            -p:ContainerRegistry=ghcr.io \
-            -p:ContainerRepository=${{ steps.image.outputs.repository }} \
-            -p:ContainerImageTag=${{ github.sha }}
+          name: api-package
+          path: api.zip
+          retention-days: 7
 
   deploy:
     needs: build
@@ -93,6 +91,11 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Download Api package
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: api-package
+
       # Federated credentials (OIDC) - GitHub vydá krátkodobý token, Entra ID ho vymění za Azure token.
       # Žádné heslo/certifikát v secrets, není co rotovat.
       - name: Azure login
@@ -102,12 +105,12 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      # Nasazuje se celá šablona, ne jen výměna image: ARM v incremental módu projde nezměněné
-      # resources (Log Analytics, App Insights, ACA environment) jako no-op, takže to stojí minutu
-      # navíc, ale infrastruktura nemůže začít odpovídat něčemu jinému než šabloně.
+      # Nasazuje se celá šablona, ne jen aplikace: ARM v incremental módu projde nezměněné resources
+      # (Log Analytics, App Insights, storage) jako no-op, takže to stojí minutu navíc, ale
+      # infrastruktura nemůže začít odpovídat něčemu jinému než šabloně.
       #
-      # Nový image tag = změna v template Container App = ACA vyrobí novou revizi a při
-      # activeRevisionsMode: Single na ni překlopí provoz. Nic dalšího Container App říkat netřeba.
+      # Pořadí je závazné: šablona musí Function App vytvořit (a přiřadit jí role ke storage) dřív,
+      # než se do ní nahraje balíček.
       - name: Deploy Bicep template
         run: |
           az deployment group create \
@@ -115,19 +118,34 @@ jobs:
             --template-file deploy/main.bicep \
             --name jk-volejbal \
             --parameters \
-              containerImage='${{ needs.build.outputs.image }}' \
               databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}'
+
+      - name: Read Function App name
+        id: functionapp
+        run: |
+          NAME=$(az deployment group show \
+            --resource-group "$RESOURCE_GROUP" \
+            --name jk-volejbal \
+            --query properties.outputs.functionAppName.value -o tsv)
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Api package
+        uses: Azure/functions-action@c5060b3b8bb1ebbcb531abd00c822ecbaa8ea656 # v1.5.7
+        with:
+          app-name: ${{ steps.functionapp.outputs.name }}
+          package: api.zip
+          sku: flexconsumption
 
       - name: Show deployed URL
         run: |
           az deployment group show \
             --resource-group "$RESOURCE_GROUP" \
             --name jk-volejbal \
-            --query properties.outputs.containerAppUrl.value \
+            --query properties.outputs.functionAppUrl.value \
             -o tsv
 
-  # Samostatný job, ne rozšíření build/deploy: publish Web.Client je nezávislý na kontejnerovém
-  # publish Web (jiný dotnet publish, jiný artefakt) a build/deploy jsou rozdělené kvůli schvalování,
+  # Samostatný job, ne rozšíření build/deploy: publish Web.Client je nezávislý na publishi API
+  # (jiný dotnet publish, jiný artefakt) a build/deploy jsou rozdělené kvůli schvalování,
   # ne kvůli pohodlí - stejný důvod platí i tady, selhání frontendu se nemá tvářit jako selhání API.
   deploy-frontend:
     needs: deploy

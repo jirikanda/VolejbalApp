@@ -7,7 +7,7 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Osoby;
 public partial class SeznamOsob
 {
 	[Inject]
-	protected IOsobaWebApiClient OsobaWebApiClient { get; set; }
+	protected IOsobaApi OsobaApi { get; set; }
 
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
@@ -20,18 +20,18 @@ public partial class SeznamOsob
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		_osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.GetOsobyAsync());
+		_osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaApi.GetOsobyAsync());
 	}
 
 	protected async Task AktivovatAsync(OsobaDto osoba)
 	{
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.AktivujOsobuAsync(osoba.Id));
+		await Progress.ExecuteInProgressAsync(async () => await OsobaApi.AktivujOsobuAsync(osoba.Id));
 		osoba.Aktivni = true;
 	}
 
 	protected async Task DeaktivovatAsync(OsobaDto osoba)
 	{
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.DeaktivujOsobuAsync(osoba.Id));
+		await Progress.ExecuteInProgressAsync(async () => await OsobaApi.DeaktivujOsobuAsync(osoba.Id));
 		osoba.Aktivni = false;
 	}
 
@@ -44,7 +44,7 @@ public partial class SeznamOsob
 	protected async Task PotvrditSmazaniAsync()
 	{
 		await _deleteModal.HideAsync();
-		await Progress.ExecuteInProgressAsync(async () => await OsobaWebApiClient.SmazOsobuAsync(_osobaKeSmazani.Id));
+		await Progress.ExecuteInProgressAsync(async () => await OsobaApi.SmazOsobuAsync(_osobaKeSmazani.Id));
 		_osoby.Osoby.Remove(_osobaKeSmazani);
 		_osobaKeSmazani = null;
 	}

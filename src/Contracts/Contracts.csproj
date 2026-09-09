@@ -1,9 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Contracts</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Contracts</RootNamespace>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Refit je zde kvůli I*Api rozhraním: nesou HTTP atributy pro klienta a zároveň z nich dědí
+		     rozhraní fasád, takže shodu serveru s klientem vynutí kompilátor. Zdrojový generátor Refitu
+		     běží v assembly, kde rozhraní leží, proto musí být balíček referencovaný právě tady. -->
+		<PackageReference Include="Refit" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Model\Model.csproj" />

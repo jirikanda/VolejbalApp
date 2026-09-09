@@ -7,7 +7,10 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Prihlasovani;
 public partial class Prihlasovani : ComponentBase, IDisposable
 {
 	[Inject]
-	protected ITerminWebApiClient TerminWebApiClient { get; set; }
+	protected ITerminApi TerminApi { get; set; }
+
+	[Inject]
+	protected IPrihlaskaApi PrihlaskaApi { get; set; }
 
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
@@ -57,7 +60,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		CancellationToken cancellationToken = _cancellationTokenSource.Token;
 		try
 		{
-			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetDetailTerminuAsync(terminId, cancellationToken));
+			TerminDetailDto terminDetail = await Progress.ExecuteInProgressAsync(async () => await TerminApi.GetDetailTerminuAsync(terminId, cancellationToken));
 
 			State.Prihlaseni = terminDetail.Prihlaseni.ToList();
 			State.Neprihlaseni = terminDetail.Neprihlaseni.ToList();
@@ -81,7 +84,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;
 
-		await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.PrihlasitAsync(State.AktualniTerminId.Value, prihlasovanaOsoba.Osoba.Id));
+		await Progress.ExecuteInProgressAsync(async () => await PrihlaskaApi.PrihlasitAsync(State.AktualniTerminId.Value, prihlasovanaOsoba.Osoba.Id));
 
 		neprihlaseni.RemoveAll(neprihlaseny => neprihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id);
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id); // to se snad nemůže stát
@@ -96,7 +99,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;
 
-		await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.OdhlasitAsync(State.AktualniTerminId.Value, odhlasovanaOsobaDto.Id));
+		await Progress.ExecuteInProgressAsync(async () => await PrihlaskaApi.OdhlasitAsync(State.AktualniTerminId.Value, odhlasovanaOsobaDto.Id));
 
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == odhlasovanaOsobaDto.Id);
 		neprihlaseni.RemoveAll(item => item.Osoba.Id == odhlasovanaOsobaDto.Id);

@@ -14,8 +14,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Slouží jen EF tooling (VolejbalDesignTimeDbContextFactory, code generator), proto zůstává
+		     v build outputu, ale do publish nesmí: hostitelské aplikace načítají appsettings.json jako
+		     první konfigurační vrstvu, takže by se do nasazeného balíčku dostal zdejší LocalDB
+		     connection string. Přebily by ho sice proměnné prostředí, ale kdyby jednou chyběly,
+		     aplikace by místo hlasitého selhání tiše sáhla na neexistující lokální databázi. -->
 		<Content Include="appsettings.json">
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

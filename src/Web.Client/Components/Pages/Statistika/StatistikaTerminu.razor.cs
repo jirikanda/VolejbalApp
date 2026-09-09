@@ -6,7 +6,7 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Statistika;
 public partial class StatistikaTerminu
 {
 	[Inject]
-	protected IReportWebApiClient ReportWebApiClient { get; set; }
+	protected IReportTerminuApi ReportTerminuApi { get; set; }
 
 	[CascadingParameter]
 	protected Progress Progress { get; set; }
@@ -15,6 +15,6 @@ public partial class StatistikaTerminu
 
 	protected override async Task OnInitializedAsync()
 	{
-		_report = await Progress.ExecuteInProgressAsync(() => ReportWebApiClient.GetReportTerminuAsync());
+		_report = await Progress.ExecuteInProgressAsync(() => ReportTerminuApi.GetReportAsync());
 	}
 }

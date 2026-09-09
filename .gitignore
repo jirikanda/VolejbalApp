@@ -261,3 +261,6 @@ src/Web/.vscode/launch.json
 /WebAPI/App_Data
 .DS_Store
 /Utility/appsettings.Utility.Development.local.json
+
+# Azure Functions - lokální nastavení (obsahuje connection stringy)
+src/Api/local.settings.json

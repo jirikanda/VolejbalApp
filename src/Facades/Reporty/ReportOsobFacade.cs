@@ -7,7 +7,7 @@ namespace KandaEu.Volejbal.Facades.Reporty;
 [Service]
 public class ReportOsobFacade(
 	IOsobaDataSource _osobaDataSource,
-	ITimeService _timeService) : IReportOsobFacade
+	ITimeService _timeService) : IReportOsobApi
 {
 	public async Task<ReportOsob> GetReportAsync(CancellationToken cancellationToken)
 	{

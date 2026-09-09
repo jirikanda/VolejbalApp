@@ -18,7 +18,7 @@ public partial class NastenkaSidebar
 
 	private async Task OnValidSubmitAsync()
 	{
-		await NastenkaWebApiClient.VlozVzkazAsync(_formData.ToVzkazInputDto());
+		await NastenkaApi.VlozVzkazAsync(_formData.ToVzkazInputDto());
 		_formData.Zprava = "";
 		await LoadDataAsync();
 	}
@@ -30,8 +30,8 @@ public partial class NastenkaSidebar
 
 		await Progress.ExecuteInProgressAsync(async () =>
 		{
-			_state.AktivniOsoby = (await OsobaWebApiClient.GetAktivniOsobyAsync()).Osoby.ToList();
-			_state.Vzkazy = (await NastenkaWebApiClient.GetVzkazyAsync()).Vzkazy.ToList();
+			_state.AktivniOsoby = (await OsobaApi.GetAktivniOsobyAsync()).Osoby.ToList();
+			_state.Vzkazy = (await NastenkaApi.GetVzkazyAsync()).Vzkazy.ToList();
 		});
 	}
 }

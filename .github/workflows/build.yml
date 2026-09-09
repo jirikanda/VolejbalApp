@@ -35,6 +35,12 @@ jobs:
       - name: Restore
         run: dotnet restore VolejbalApp.slnx
 
+      # Restore na úrovni solution nespustí restore hook Azure.Functions.Sdk, který generuje a obnovuje
+      # pomocný projekt s Functions extensions. Bez tohoto kroku build hlásí AZFW0108 a dělá
+      # restore-during-build ("may cause issues in some build environments").
+      - name: Restore Functions extensions
+        run: dotnet restore src/Api/Api.csproj
+
       - name: Build
         run: dotnet build VolejbalApp.slnx --no-restore --configuration Release
 

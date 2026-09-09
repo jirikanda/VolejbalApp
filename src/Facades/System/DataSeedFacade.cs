@@ -10,7 +10,7 @@ namespace KandaEu.Volejbal.Facades.System;
 /// </summary>
 [Service]
 public class DataSeedFacade(
-	IDataSeedRunner _dataSeedRunner) : IDataSeedFacade
+	IDataSeedRunner _dataSeedRunner) : IDataSeedApi
 {
 	/// <summary>
 	/// Provede seedování dat daného profilu.

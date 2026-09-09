@@ -1,0 +1,6 @@
+[*.cs]
+
+# Parametr s [HttpTrigger] je povinnou součástí kontraktu Azure Functions - runtime podle něj váže
+# request na funkci. U endpointů bez vstupu (GET bez parametrů) ho tělo funkce nepoužívá, což by
+# jinak v Release (TreatWarningsAsErrors) shodilo build na IDE0060.
+dotnet_diagnostic.IDE0060.severity = none

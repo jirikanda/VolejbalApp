@@ -4,7 +4,7 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Terminy;
 
 public partial class Terminy
 {
-	[Inject] protected ITerminWebApiClient TerminWebApiClient { get; set; }
+	[Inject] protected ITerminApi TerminApi { get; set; }
 
 	[CascadingParameter] protected ProgressComponent.Progress Progress { get; set; }
 
@@ -16,7 +16,7 @@ public partial class Terminy
 	{
 		await base.OnInitializedAsync();
 
-		TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminWebApiClient.GetTerminyAsync());
+		TerminListDto terminList = await Progress.ExecuteInProgressAsync(async () => await TerminApi.GetTerminyAsync());
 		State.Terminy = terminList.Terminy.ToList();
 
 		if (State.Terminy.Count > 0)
