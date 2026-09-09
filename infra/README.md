@@ -113,17 +113,24 @@ Ruční spuštění deploye je samo o sobě rozhodnutí, co jde do produkce — 
 
 ### Co Deploy dělá
 
-Job **`build`**: restore → build → test → `dotnet publish` projektu `Api` pro `linux-x64` → zip → upload artifactu. Publish je RID-specifický kvůli ReadyToRun (aktivuje se v csproj podle RID) — to je největší jednotlivá páka na studený start.
+Workflow je rozdělený na čtyři joby podle toho, **co** nasazují:
 
-Job **`deploy`** (`needs: build`): stažení artifactu → Azure login přes OIDC → `az deployment group create` s bicep šablonou → `Azure/functions-action` s `sku: flexconsumption` → výpis URL API.
+```
+build ──► infrastructure ──┬──► deploy-api
+                           └──► deploy-frontend
+```
 
-> **Pořadí uvnitř jobu je závazné**: šablona musí Function App vytvořit a přiřadit její identitě role ke storage **dřív**, než se do ní balíček nahraje.
+Job **`build`**: restore → build → test → `dotnet publish` projektu `Api` pro `linux-x64` → zip, a `dotnet publish` na `Web.Client`; oba výstupy jdou nahoru jako artifacty. Publish API je RID-specifický kvůli ReadyToRun (aktivuje se v csproj podle RID) — to je největší jednotlivá páka na studený start. Frontend se staví tady, a ne až v `deploy-frontend`, aby se chyba v jeho buildu poznala **dřív, než se začne měnit infrastruktura**, a aby oba deploy joby zůstaly symetrické — jen nasazují hotový artefakt.
 
-Job **`deploy-frontend`** (`needs: deploy`): `dotnet publish` na `Web.Client` → Azure login přes OIDC → zjištění deployment tokenu SWA → nahrání statického výstupu přes `Azure/static-web-apps-deploy`. Samostatný job, ne rozšíření `build`/`deploy` — publikace frontendu je nezávislá na publishi API, a selhání jedné části se nemá tvářit jako selhání druhé.
+Job **`infrastructure`** (`needs: build`): Azure login přes OIDC → `az deployment group create` s bicep šablonou → přečtení outputů šablony a jejich vystavení jako **job outputs** (název a URL Function App, název a hostname SWA). Deploy joby díky tomu nemusejí sahat do ARM historie.
+
+Joby **`deploy-api`** a **`deploy-frontend`** (oba `needs: infrastructure`) běží **paralelně**: první nahraje balíček přes `Azure/functions-action` s `sku: flexconsumption`, druhý statický výstup přes `Azure/static-web-apps-deploy`. Jsou to dvě nezávislé věci nad hotovou infrastrukturou, takže selhání jednoho nezastaví druhé a v logu je hned vidět, která část se rozbila.
+
+> **Proč je infrastruktura zvlášť**: je to jediná část, která mění tvar prostředí, a obě nasazení aplikací na ní závisejí — Function App musí existovat a mít přiřazené role ke storage **dřív**, než se do ní balíček nahraje, a název SWA se čte z outputů šablony.
 
 Nahrávání obsahu do SWA samo o sobě OIDC cestu nemá — chce deployment token (API klíč resource). Ten se ale **nikam neukládá**: job si ho přečte za běhu (`az staticwebapp secrets list`) přes tentýž OIDC login jako bicep deploy a zamaskuje ho v logu (`::add-mask::`), takže žije jen v rámci jednoho běhu a není co rotovat.
 
-Rozdělení do jobů není kosmetika: `environment: Production` je na `deploy` i `deploy-frontend` jobu, takže případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku.
+`environment: Production` musí mít **každý** job, který se přihlašuje do Azure — subject federated credentialu je vázaný na environment, ne na jméno jobu. Zároveň to znamená, že případní required reviewers schvalují až ve chvíli, kdy build i testy prošly, ne naslepo na začátku; po rozdělení by ale schvalovali **všechny tři** deploy joby zvlášť (dnes na environmentu žádná protection rule není).
 
 Nasazuje se **celá šablona**, ne jen aplikace. ARM v incremental módu projde nezměněné resources jako no-op, takže to stojí minutu navíc — výměnou za to nemůže infrastruktura začít odpovídat něčemu jinému než šabloně.
 
@@ -180,7 +187,7 @@ Nasazuje se **celá šablona**, ne jen aplikace. ARM v incremental módu projde 
 
    > **Pozor na `subject`.** Skládá se ze dvou věcí, které se obě dají snadno splést; když nesedí, login skončí na `AADSTS70021: No matching federated identity record found`.
    >
-   > **1. `environment`, ne `ref`.** Job `deploy` má `environment: Production`, a když job cílí na environment, GitHub do tokenu dá claim `…:environment:Production` — **ne** `ref:refs/heads/master`. Kdyby z `deploy.yml` někdy zmizel `environment: Production`, je potřeba credential přenastavit.
+   > **1. `environment`, ne `ref`.** Joby `infrastructure`, `deploy-api` a `deploy-frontend` mají `environment: Production`, a když job cílí na environment, GitHub do tokenu dá claim `…:environment:Production` — **ne** `ref:refs/heads/master`. Kdyby z některého jobu v `deploy.yml` `environment: Production` zmizel, jeho Azure login přestane fungovat.
    >
    > **2. Immutable subject — jména *i* ID.** Repozitář má zapnuté [immutable subject claims](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims), takže prefix je `repo:jirikanda@5111719/VolejbalApp@169379851`, ne jen `repo:jirikanda/VolejbalApp`. `5111719` je ID účtu, `169379851` ID repozitáře. Díky ID přežije subject přejmenování účtu i repozitáře.
    >

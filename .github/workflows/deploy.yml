@@ -1,12 +1,24 @@
 name: Deploy to Azure
 
-# Záměrně jen ruční spuštění, očekává se nad master. Jeden workflow dělá celou cestu:
-# build + test (totéž co CI v build.yml), nasazení bicep šablony a nahrání balíčků API i frontendu.
+# Záměrně jen ruční spuštění, očekává se nad master. Jeden workflow dělá celou cestu do produkce,
+# rozdělenou na čtyři joby podle toho, co nasazují:
+#
+#   build ──► infrastructure ──┬──► deploy-api
+#                              └──► deploy-frontend
+#
+# Nasazení API a frontendu jsou dvě nezávislé věci nad hotovou infrastrukturou, takže běží paralelně;
+# selhání jednoho tím pádem nezastaví druhé a v logu je hned vidět, která část se rozbila.
+# Oba stavějí jen to, co už build job zabalil - nic se nekompiluje dvakrát.
 #
 # Nasazuje se vždy právě odbavený commit - proto tu není žádný input s verzí: co je v branchi, to se
 # nasadí. Ruční spuštění je samo o sobě to rozhodnutí, co jde do produkce.
 on:
   workflow_dispatch:
+
+env:
+  # Název deploymentu v ARM historii; infrastructure ho zapisuje, deploy joby z něj čtou outputy.
+  DEPLOYMENT_NAME: jk-volejbal
+  RESOURCE_GROUP: JkVolejbalRG
 
 jobs:
   build:
@@ -73,7 +85,22 @@ jobs:
           path: api.zip
           retention-days: 7
 
-  deploy:
+      # Frontend se staví tady, ne v deploy-frontend jobu: chyba v buildu klienta se pak pozná dřív,
+      # než se začne měnit infrastruktura, a oba deploy joby zůstanou symetrické - jen nasazují.
+      - name: Publish Web.Client
+        run: dotnet publish src/Web.Client/Web.Client.csproj --configuration Release --output ./publish/Web.Client
+
+      - name: Upload Web.Client
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: web-client
+          path: ./publish/Web.Client/wwwroot
+          retention-days: 7
+
+  # Infrastruktura zvlášť, protože je to jediná část, která mění tvar prostředí, a obě nasazení
+  # aplikací na ní závisejí: Function App musí existovat (a mít role ke storage) dřív, než do ní
+  # půjde balíček, a název SWA se čte z outputů téhle šablony.
+  infrastructure:
     needs: build
     runs-on: ubuntu-latest
     # environment: Production drží pohromadě dvě věci: umožňuje přidat required reviewers
@@ -81,20 +108,22 @@ jobs:
     # už jsou v tu chvíli hotové), a určuje subject federated credentialu v Entra ID
     # ("repo:jirikanda@5111719/VolejbalApp@169379851:environment:Production" - repozitář má zapnuté
     # immutable subject claims, proto ta ID). Odebrání tohoto řádku rozbije Azure login.
+    #
+    # Pozn.: environment musí mít KAŽDÝ job, který se přihlašuje do Azure - subject federated
+    # credentialu je vázaný na environment, ne na jméno jobu. Kdyby se na Production nastavili
+    # required reviewers, schvalovaly by se všechny tři deploy joby zvlášť.
     environment: Production
     permissions:
       contents: read
       id-token: write # OIDC token pro azure/login (federated credentials - žádné heslo v secrets)
-    env:
-      RESOURCE_GROUP: JkVolejbalRG
+    outputs:
+      functionAppName: ${{ steps.outputs.outputs.functionAppName }}
+      functionAppUrl: ${{ steps.outputs.outputs.functionAppUrl }}
+      staticWebAppName: ${{ steps.outputs.outputs.staticWebAppName }}
+      staticWebAppHostname: ${{ steps.outputs.outputs.staticWebAppHostname }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Download Api package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: api-package
 
       # Federated credentials (OIDC) - GitHub vydá krátkodobý token, Entra ID ho vymění za Azure token.
       # Žádné heslo/certifikát v secrets, není co rotovat.
@@ -105,68 +134,83 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      # Nasazuje se celá šablona, ne jen aplikace: ARM v incremental módu projde nezměněné resources
-      # (Log Analytics, App Insights, storage) jako no-op, takže to stojí minutu navíc, ale
+      # Nasazuje se celá šablona, ne jen změněná část: ARM v incremental módu projde nezměněné
+      # resources (Log Analytics, App Insights, storage) jako no-op, takže to stojí minutu navíc, ale
       # infrastruktura nemůže začít odpovídat něčemu jinému než šabloně.
-      #
-      # Pořadí je závazné: šablona musí Function App vytvořit (a přiřadit jí role ke storage) dřív,
-      # než se do ní nahraje balíček.
       - name: Deploy Bicep template
         run: |
           az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/main.bicep \
-            --name jk-volejbal \
+            --name "$DEPLOYMENT_NAME" \
             --parameters \
               databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}'
 
-      - name: Read Function App name
-        id: functionapp
+      # Outputy se čtou jednou tady a předávají se dál jako job outputs, aby deploy joby nemusely
+      # sahat do ARM historie a nebyly na ní závislé.
+      - name: Read template outputs
+        id: outputs
         run: |
-          NAME=$(az deployment group show \
-            --resource-group "$RESOURCE_GROUP" \
-            --name jk-volejbal \
-            --query properties.outputs.functionAppName.value -o tsv)
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          read_output() {
+            az deployment group show \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$DEPLOYMENT_NAME" \
+              --query "properties.outputs.$1.value" -o tsv
+          }
+          {
+            echo "functionAppName=$(read_output functionAppName)"
+            echo "functionAppUrl=$(read_output functionAppUrl)"
+            echo "staticWebAppName=$(read_output staticWebAppName)"
+            echo "staticWebAppHostname=$(read_output staticWebAppDefaultHostname)"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Deploy Api package
-        uses: Azure/functions-action@c5060b3b8bb1ebbcb531abd00c822ecbaa8ea656 # v1.5.7
-        with:
-          app-name: ${{ steps.functionapp.outputs.name }}
-          package: api.zip
-          sku: flexconsumption
-
-      - name: Show deployed URL
-        run: |
-          az deployment group show \
-            --resource-group "$RESOURCE_GROUP" \
-            --name jk-volejbal \
-            --query properties.outputs.functionAppUrl.value \
-            -o tsv
-
-  # Samostatný job, ne rozšíření build/deploy: publish Web.Client je nezávislý na publishi API
-  # (jiný dotnet publish, jiný artefakt) a build/deploy jsou rozdělené kvůli schvalování,
-  # ne kvůli pohodlí - stejný důvod platí i tady, selhání frontendu se nemá tvářit jako selhání API.
-  deploy-frontend:
-    needs: deploy
+  deploy-api:
+    needs: infrastructure
     runs-on: ubuntu-latest
     environment: Production
     permissions:
       contents: read
-      id-token: write # OIDC token pro azure/login (stejný federated credential jako deploy job - subject je vázaný na environment, ne na jméno jobu)
-    env:
-      RESOURCE_GROUP: JkVolejbalRG
+      id-token: write # OIDC token pro azure/login (stejný federated credential - subject je vázaný na environment, ne na jméno jobu)
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+      - name: Download Api package
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          dotnet-version: 10.0.x
+          name: api-package
 
-      - name: Publish Web.Client
-        run: dotnet publish src/Web.Client/Web.Client.csproj --configuration Release --output ./publish/Web.Client
+      - name: Azure login
+        uses: azure/login@7ddb5af1ef8758cf1353cf3b42f940aee27ba21c # v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Api package
+        uses: Azure/functions-action@c5060b3b8bb1ebbcb531abd00c822ecbaa8ea656 # v1.5.7
+        with:
+          app-name: ${{ needs.infrastructure.outputs.functionAppName }}
+          package: api.zip
+          sku: flexconsumption
+
+      - name: Show deployed URL
+        run: echo "${{ needs.infrastructure.outputs.functionAppUrl }}"
+
+  # Běží paralelně s deploy-api: publish frontendu je nezávislý na API a selhání jednoho se nemá
+  # tvářit jako selhání druhého.
+  deploy-frontend:
+    needs: infrastructure
+    runs-on: ubuntu-latest
+    environment: Production
+    permissions:
+      contents: read
+      id-token: write # OIDC token pro azure/login (stejný federated credential - subject je vázaný na environment, ne na jméno jobu)
+
+    steps:
+      - name: Download Web.Client
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: web-client
+          path: web-client
 
       - name: Azure login
         uses: azure/login@7ddb5af1ef8758cf1353cf3b42f940aee27ba21c # v3
@@ -177,39 +221,29 @@ jobs:
 
       # Deployment token SWA zjišťujeme za běhu přes OIDC session, ne z uloženého GitHub secretu:
       # nahrávání obsahu do SWA sice OIDC cestu nemá a chce API klíč, ale ten klíč jde přečíst
-      # přes stejné OIDC přihlášení jako bicep deploy (Contributor na resource group). Díky tomu
-      # v repu nepřibývá žádné dlouhodobé tajemství k rotaci - token žije jen v rámci tohoto běhu.
-      # ::add-mask:: ho schová v logu.
+      # přes stejné OIDC přihlášení jako bicep deploy. Díky tomu v repu nepřibývá žádné dlouhodobé
+      # tajemství k rotaci - token žije jen v rámci tohoto běhu. ::add-mask:: ho schová v logu.
       - name: Get Static Web App deployment token
         id: swa-token
         run: |
-          SWA_NAME=$(az deployment group show \
-            --resource-group "$RESOURCE_GROUP" \
-            --name jk-volejbal \
-            --query properties.outputs.staticWebAppName.value -o tsv)
           TOKEN=$(az staticwebapp secrets list \
-            --name "$SWA_NAME" \
+            --name "${{ needs.infrastructure.outputs.staticWebAppName }}" \
             --resource-group "$RESOURCE_GROUP" \
             --query "properties.apiKey" -o tsv)
           echo "::add-mask::$TOKEN"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
-      # Vlastní dotnet publish + skip_app_build, ne Oryx build uvnitř akce - konzistentní
-      # s tím, že repo dělá každý jiný publish krok explicitně, a nezávislé na tom, jak rychle Oryx
-      # buildimage doběhne .NET 10 a jak se popere s central package managementem (Directory.Packages.props).
+      # skip_app_build, protože artefakt je už hotový z build jobu - žádný Oryx build uvnitř akce.
+      # Nezávislé na tom, jak rychle Oryx buildimage doběhne .NET 10 a jak se popere s central
+      # package managementem (Directory.Packages.props).
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
         with:
           azure_static_web_apps_api_token: ${{ steps.swa-token.outputs.token }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
-          app_location: ./publish/Web.Client/wwwroot
+          app_location: web-client
           skip_app_build: true
 
       - name: Show deployed URL
-        run: |
-          az deployment group show \
-            --resource-group "$RESOURCE_GROUP" \
-            --name jk-volejbal \
-            --query properties.outputs.staticWebAppDefaultHostname.value \
-            -o tsv
+        run: echo "https://${{ needs.infrastructure.outputs.staticWebAppHostname }}"

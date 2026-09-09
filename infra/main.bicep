@@ -19,20 +19,20 @@
 param location string = resourceGroup().location
 
 @description('Název Function App.')
-param functionAppName string = 'jk-volejbal-func'
+param functionAppName string = 'JkVolejbalFunc'
 
 @description('Název App Service plánu (Flex Consumption). Na Flex platí jedna aplikace na plán.')
-param functionPlanName string = 'jk-volejbal-func-plan'
+param functionPlanName string = 'JkVolejbalFuncPlan'
 
 @description('Connection string k databázi (hostované mimo tuto šablonu).')
 @secure()
 param databaseConnectionString string
 
 @description('Název Application Insights (vytváří tato šablona jako workspace-based nad Log Analytics workspace níže).')
-param applicationInsightsName string = 'jk-volejbal-appinsights'
+param applicationInsightsName string = 'JkVolejbalAppInsights'
 
 @description('Název Log Analytics workspace (sdílí ho Application Insights).')
-param logAnalyticsName string = 'jk-volejbal-logs'
+param logAnalyticsName string = 'JkVolejbalLAW'
 
 @description('Počet dní uchování logů v Log Analytics.')
 param logAnalyticsRetentionDays int = 30
@@ -143,7 +143,7 @@ resource deploymentContainer 'Microsoft.Storage/storageAccounts/blobServices/con
 
 // Static Web App (frontend Web.Client) - obsah nasazuje samostatný GH Actions job (deploy-frontend),
 // ne nativní SWA<->GitHub integrace, proto žádný repositoryUrl/branch/buildProperties.
-resource staticWebApp 'Microsoft.Web/staticSites@2025-05-01' = {
+resource staticWebApp 'Microsoft.Web/staticSites@2025-03-01' = {
   name: staticWebAppName
   location: staticWebAppLocation
   sku: {
@@ -155,7 +155,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2025-05-01' = {
 
 // Podmíněný na bindCustomDomain - SWA ověřuje vlastnictví domény přes DNS (viz komentář u parametru),
 // takže dokud CNAME neukazuje na staticWebApp, resource se vůbec nemá zkoušet vytvořit.
-resource staticWebAppCustomDomain 'Microsoft.Web/staticSites/customDomains@2025-05-01' = if (bindCustomDomain) {
+resource staticWebAppCustomDomain 'Microsoft.Web/staticSites/customDomains@2025-03-01' = if (bindCustomDomain) {
   parent: staticWebApp
   name: customDomainName
   properties: {
