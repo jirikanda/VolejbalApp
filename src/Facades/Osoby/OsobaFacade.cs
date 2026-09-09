@@ -3,7 +3,7 @@ using KandaEu.Volejbal.Contracts.Osoby.Dto;
 
 namespace KandaEu.Volejbal.Facades.Osoby;
 
-[Service]
+[Service(ServiceType = typeof(IOsobaApi))]
 public class OsobaFacade(
 	IOsobaRepository _osobaRepository,
 	IOsobaDataSource _osobaDataSource,

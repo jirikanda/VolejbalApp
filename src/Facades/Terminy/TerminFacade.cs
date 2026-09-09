@@ -6,7 +6,7 @@ using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
 
 namespace KandaEu.Volejbal.Facades.Terminy;
 
-[Service]
+[Service(ServiceType = typeof(ITerminApi))]
 public class TerminFacade(
 	ITerminDataSource _terminDataSource,
 	ITerminRepository _terminRepostory,

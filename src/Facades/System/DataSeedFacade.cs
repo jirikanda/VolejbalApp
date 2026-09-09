@@ -8,7 +8,7 @@ namespace KandaEu.Volejbal.Facades.System;
 /// <summary>
 /// Fasáda k seedování dat.
 /// </summary>
-[Service]
+[Service(ServiceType = typeof(IDataSeedApi))]
 public class DataSeedFacade(
 	IDataSeedRunner _dataSeedRunner) : IDataSeedApi
 {

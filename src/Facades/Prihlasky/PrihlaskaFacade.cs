@@ -3,7 +3,7 @@ using KandaEu.Volejbal.Contracts.Prihlasky;
 
 namespace KandaEu.Volejbal.Facades.Prihlasky;
 
-[Service]
+[Service(ServiceType = typeof(IPrihlaskaApi))]
 public class PrihlaskaFacade(
 	IUnitOfWork _unitOfWork,
 	ITimeService _timeService,

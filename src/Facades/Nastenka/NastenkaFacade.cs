@@ -4,7 +4,7 @@ using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 
 namespace KandaEu.Volejbal.Facades.Nastenka;
 
-[Service]
+[Service(ServiceType = typeof(INastenkaApi))]
 public class NastenkaFacade(
 	IVzkazDataSource _vzkazDataSource,
 	ITimeService _timeService,

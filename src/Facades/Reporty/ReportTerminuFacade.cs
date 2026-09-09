@@ -4,7 +4,7 @@ using KandaEu.Volejbal.Contracts.Reporty;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 
-[Service]
+[Service(ServiceType = typeof(IReportTerminuApi))]
 public class ReportTerminuFacade(
 	ITerminDataSource _terminDataSource,
 	ITimeService _timeService) : IReportTerminuApi
