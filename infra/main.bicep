@@ -81,8 +81,8 @@ var bindCustomDomain = false
 
 // Storage account pro Functions: drží interní metadata hostu (AzureWebJobsStorage, včetně zámků
 // timer triggeru) a zároveň slouží jako úložiště deployment balíčku. Název musí být globálně unikátní
-// a smí obsahovat jen malá písmena a číslice, proto uniqueString místo čitelného jména.
-var storageAccountName = 'jkvolejbal${uniqueString(resourceGroup().id)}'
+// a smí obsahovat jen malá písmena a číslice.
+var storageAccountName = 'jkvolejbalfuncstorage'
 var deploymentContainerName = 'deployment-package'
 
 // Vestavěné role pro přístup Function App ke storage přes managed identity (bez klíčů).
