@@ -212,7 +212,7 @@ Výstup workflow `functionAppUrl` je adresa `https://<app>.azurewebsites.net` AP
 ```bash
 az deployment group create \
   --resource-group JkVolejbalRG \
-  --template-file deploy/main.bicep \
+  --template-file infra/main.bicep \
   --name jk-volejbal \
   --parameters databaseConnectionString='<connection string>'
 
@@ -227,9 +227,9 @@ Tohle je zároveň cesta k **rollbacku** — workflow vždy nasazuje aktuální 
 ### Ověření šablony před nasazením
 
 ```bash
-az bicep build --file deploy/main.bicep --stdout > /dev/null   # jen syntaxe, nepotřebuje login
+az bicep build --file infra/main.bicep --stdout > /dev/null   # jen syntaxe, nepotřebuje login
 az deployment group what-if --resource-group JkVolejbalRG --name jk-volejbal \
-  --template-file deploy/main.bicep --parameters databaseConnectionString="Server=x;Database=y;User Id=z;Password=q"
+  --template-file infra/main.bicep --parameters databaseConnectionString="Server=x;Database=y;User Id=z;Password=q"
 ```
 
 What-if se nepřipojí k databázi, takže fiktivní hodnota parametru stačí. Dva warningy `BCP081` u `Microsoft.Web/staticSites` jsou očekávané — bicep pro tuhle verzi API nemá typy, na nasazení to vliv nemá.

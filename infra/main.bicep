@@ -1,6 +1,6 @@
 // Azure Functions (Flex Consumption) hosting pro VolejbalApp Api (REST API) + Azure Static Web Apps
 // hosting pro Web.Client (Blazor WASM frontend, samostatně nasazovaný, viz deploy.yml job deploy-frontend).
-// Deployment scope: resource group (předpokládá existující RG, viz deploy/README.md).
+// Deployment scope: resource group (předpokládá existující RG, viz infra/README.md).
 //
 // Proč Functions místo Container Apps: na ACA se scale-to-zero byl naměřený studený start 33 s, z toho
 // podstatnou část tvořil pull image z ghcr.io (mimo Azure) a náběh repliky. Flex Consumption nasazuje
@@ -13,7 +13,7 @@
 //
 // Custom doména volejbal.kanda.eu (binding + automatický cert) JE součástí šablony, ale patří
 // Static Web App (frontend), ne Function App - řídí ji proměnná bindCustomDomain (zatím false,
-// protože DNS ještě neukazuje na SWA) - viz komentář u ní a deploy/README.md pro dvoufázový postup.
+// protože DNS ještě neukazuje na SWA) - viz komentář u ní a infra/README.md pro dvoufázový postup.
 
 @description('Lokace pro všechny resources.')
 param location string = resourceGroup().location
@@ -38,7 +38,7 @@ param logAnalyticsName string = 'jk-volejbal-logs'
 param logAnalyticsRetentionDays int = 30
 
 // Jako string kvůli json() níže - bicep nemá typ pro desetinná čísla.
-@description('Denní strop ingestace do Log Analytics v GB. Pojistka proti utržené fakturaci, ne nástroj běžné optimalizace - při dosažení se sběr dat na zbytek dne ZASTAVÍ a přijdete o výhled na aplikaci (viz deploy/README.md). "-1" = bez limitu.')
+@description('Denní strop ingestace do Log Analytics v GB. Pojistka proti utržené fakturaci, ne nástroj běžné optimalizace - při dosažení se sběr dat na zbytek dne ZASTAVÍ a přijdete o výhled na aplikaci (viz infra/README.md). "-1" = bez limitu.')
 param logAnalyticsDailyQuotaGb string = '0.25'
 
 @description('Prostředí aplikace (ovlivňuje appsettings.Api.{env}.json a chování aplikace).')
@@ -58,7 +58,7 @@ param maximumInstanceCount int = 5
 // Počet always-ready instancí. Nula = plná serverless ekonomika (vejde se do free grantu), ale platí se
 // za ni studeným startem v jednotkách sekund. Jedna instance ho prakticky odstraní za ~6,5 USD/měsíc
 // (baseline 0,000005 USD/GB-s, na always-ready se free granty NEvztahují). Zapnout až podle měření
-// skutečného studeného startu, viz deploy/README.md.
+// skutečného studeného startu, viz infra/README.md.
 @description('Počet always-ready instancí (0 = vypnuto).')
 param alwaysReadyInstanceCount int = 0
 
@@ -75,7 +75,7 @@ var customDomainName = 'volejbal.kanda.eu'
 // Zapíná binding custom domény na Static Web App. Vyžaduje, aby DNS CNAME volejbal.kanda.eu už
 // ukazoval na staticWebApp.properties.defaultHostname DŘÍV, než se tenhle resource nasadí - SWA
 // validaci (cname-delegation) i vydání certifikátu dělá automaticky, ale až v okamžiku, kdy CNAME
-// skutečně existuje. Dvoufázový postup (viz deploy/README.md): nasadit s false, ověřit deploy-frontend
+// skutečně existuje. Dvoufázový postup (viz infra/README.md): nasadit s false, ověřit deploy-frontend
 // job, přepsat DNS, tady přepnout na true a nasadit znovu.
 var bindCustomDomain = false
 
@@ -297,7 +297,7 @@ output functionAppUrl string = 'https://${functionApp.properties.defaultHostName
 @description('Název Function App - čte ho deploy job při nasazení balíčku, aby název nemusel být napsaný zvlášť i ve workflow.')
 output functionAppName string = functionApp.name
 
-@description('Defaultní hostname Static Web App (frontend) - veřejná URL frontendu, dokud nemá custom doménu, a cíl DNS CNAME při nastavování bindCustomDomain (viz deploy/README.md).')
+@description('Defaultní hostname Static Web App (frontend) - veřejná URL frontendu, dokud nemá custom doménu, a cíl DNS CNAME při nastavování bindCustomDomain (viz infra/README.md).')
 output staticWebAppDefaultHostname string = staticWebApp.properties.defaultHostname
 
 @description('Název Static Web App - čte ho deploy-frontend job, aby název nemusel být napsaný zvlášť i ve workflow.')

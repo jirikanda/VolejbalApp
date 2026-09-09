@@ -47,7 +47,7 @@ jobs:
 
       # MigrationTool se tu ZÁMĚRNĚ nepublikuje ani nespouští - migrace schématu se pouští ručně
       # z lokálního repa (dotnet run --project MigrationTool), a to PŘED spuštěním tohoto
-      # workflow, pokud přibyla migrace. Viz deploy/README.md.
+      # workflow, pokud přibyla migrace. Viz infra/README.md.
 
       # Bez --no-restore: tenhle krok si dělá vlastní RID-specific restore kvůli ReadyToRun, který se
       # v csproj aktivuje podle RID. Restore celé solution s --runtime nejde - u Web.Client
@@ -115,7 +115,7 @@ jobs:
         run: |
           az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
-            --template-file deploy/main.bicep \
+            --template-file infra/main.bicep \
             --name jk-volejbal \
             --parameters \
               databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}'
