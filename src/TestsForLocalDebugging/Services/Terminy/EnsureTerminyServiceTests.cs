@@ -10,7 +10,6 @@ namespace KandaEu.Volejbal.TestsForLocalDebugging.Services.Terminy;
 [TestClass]
 public class EnsureTerminyServiceTests : TestBase
 {
-	protected override bool UseLocalDb => true;
 	protected override bool SeedData => false;
 
 	public TestContext TestContext { get; set; }

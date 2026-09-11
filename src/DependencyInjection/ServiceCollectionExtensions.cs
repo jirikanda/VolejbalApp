@@ -4,7 +4,6 @@ using Havit.Services.TimeServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Havit.Services.Caching;
-using KandaEu.Volejbal.Services.Infrastructure;
 using KandaEu.Volejbal.Services.Infrastructure.MigrationTool;
 using KandaEu.Volejbal.Entity;
 using KandaEu.Volejbal.Services.Infrastructure.TimeService;
@@ -23,7 +22,7 @@ public static class ServiceCollectionExtensions
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
 			DatabaseConnectionString = configuration.GetConnectionString("Database"),
-			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile, ServiceProfiles.WebAPI }
+			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
 		};
 
 		services.ConfigureForAll(installConfiguration);
@@ -43,14 +42,12 @@ public static class ServiceCollectionExtensions
 	{
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
-			DatabaseConnectionString = configuration.GetConnectionString("Database"),
-			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
+			DatabaseConnectionString = configuration.GetConnectionString("Database")
 		};
 
 		InstallHavitEntityFramework(services, installConfiguration);
 		InstallHavitServices(services);
 		services.AddMemoryCache();
-		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly, installConfiguration.ServiceProfiles);
 
 		services.AddSingleton<IMigrationService, MigrationService>();
 
@@ -58,9 +55,7 @@ public static class ServiceCollectionExtensions
 	}
 
 	[MethodImpl(MethodImplOptions.NoInlining)]
-#pragma warning disable IDE0060 // Remove unused parameter
-	public static IServiceCollection ConfigureForTests(this IServiceCollection services, bool useInMemoryDb = false)
-#pragma warning restore IDE0060 // Remove unused parameter
+	public static IServiceCollection ConfigureForTests(this IServiceCollection services)
 	{
 		string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 		if (string.IsNullOrEmpty(environment))
@@ -97,15 +92,7 @@ public static class ServiceCollectionExtensions
 	{
 		services.AddDbContext<IDbContext, VolejbalDbContext>(optionsBuilder =>
 		{
-			if (configuration.UseInMemoryDb)
-			{
-				optionsBuilder.UseInMemoryDatabase(nameof(VolejbalDbContext));
-			}
-			else
-			{
-				string databaseConnectionString = configuration.DatabaseConnectionString;
-				optionsBuilder.UseSqlServer(databaseConnectionString, c => c.MaxBatchSize(30));
-			}
+			optionsBuilder.UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30));
 			optionsBuilder.UseDefaultHavitConventions();
 		});
 		services.AddDataLayerServices();
@@ -121,7 +108,8 @@ public static class ServiceCollectionExtensions
 
 	private static void InstallByServiceAttribute(IServiceCollection services, InstallConfiguration configuration)
 	{
-		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.DataLayer.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles);
+		// DataLayer se nescanuje - nemá jedinou třídu s [Service], registraci repozitářů, DataSources
+		// i data seedů obstarává generované AddDataLayerServices() (viz InstallHavitEntityFramework).
 		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.Services.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles);
 		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.Facades.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles);
 	}

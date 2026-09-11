@@ -7,7 +7,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Havit.Extensions.DependencyInjection" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
 	</ItemGroup>
 
 	<ItemGroup>

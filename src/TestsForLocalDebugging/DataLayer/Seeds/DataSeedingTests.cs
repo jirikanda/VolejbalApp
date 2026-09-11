@@ -10,7 +10,6 @@ namespace KandaEu.Volejbal.TestsForLocalDebugging.DataLayer.Seeds;
 [TestClass]
 public class DataSeedingTests : TestBase
 {
-	protected override bool UseLocalDb => true;
 	protected override bool SeedData => false;
 
 	[Ignore("Maže a znovu vytváří lokální databázi – spouštět jen ručně.")]

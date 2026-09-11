@@ -18,7 +18,6 @@ public class TestBase
 
 	protected IServiceProvider ServiceProvider { get; private set; }
 
-	protected virtual bool UseLocalDb => false;
 	protected virtual bool DeleteDbData => true;
 
 	protected virtual bool SeedData => true;
@@ -36,10 +35,7 @@ public class TestBase
 		{
 			dbContext.Database.EnsureDeleted();
 		}
-		if (this.UseLocalDb)
-		{
-			dbContext.Database.Migrate();
-		}
+		dbContext.Database.Migrate();
 
 		if (this.SeedData)
 		{
@@ -70,7 +66,7 @@ public class TestBase
 		services.AddMemoryCache();
 		services.AddLogging();
 
-		services.ConfigureForTests(useInMemoryDb: !UseLocalDb);
+		services.ConfigureForTests();
 
 		return services;
 	}
