@@ -28,8 +28,8 @@ public static class ServiceCollectionExtensions
 
 		services.ConfigureForAll(installConfiguration);
 
-		// Pravidelné úlohy neběží in-process, ale jako Timer trigger v projektu Api
-		// (viz Api/Functions/RecurringJobsFunctions.cs).
+		// Aplikace nemá žádné pravidelné úlohy - termíny se doplňují líně při čtení jejich seznamu
+		// (viz Facades/Terminy/TerminFacade.GetTerminyAsync), deaktivace osob je ruční akcí.
 
 		return services;
 	}

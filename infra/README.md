@@ -48,7 +48,7 @@ ASP.NET Core integrace ve Functions dává jen typy (`HttpRequest`, `IActionResu
 | `[ApiController]` + `ValidateModelAttribute` | [RequestBodyReader](../src/Api/Infrastructure/RequestBodyReader.cs) (DataAnnotations → 422) |
 | `UseRequestLocalization()` | `CultureInfo.DefaultThreadCurrentCulture` v `Program.cs` |
 | `AddRateLimiter` (`DefaultAPI`, 10 req/5 s) | **zrušeno**; roli pojistky přebral `maximumInstanceCount` |
-| `RecurringJobsBackgroundService` | **Timer trigger** ([RecurringJobsFunctions](../src/Api/Functions/RecurringJobsFunctions.cs)) |
+| `RecurringJobsBackgroundService` | **zrušeno**; termíny se doplňují líně při čtení jejich seznamu ([TerminFacade](../src/Facades/Terminy/TerminFacade.cs)) |
 | OpenAPI dokument + Scalar UI | **zrušeno** (klienti ho nepotřebují, viz níže) |
 | `TZ=Europe/Prague` | zóna v kódu ([ApplicationTimeService](../src/Services/Infrastructure/TimeService/ApplicationTimeService.cs)) |
 
@@ -246,7 +246,7 @@ What-if se nepřipojí k databázi, takže fiktivní hodnota parametru stačí. 
 - **CORS a `ApiBaseUrl` jdou ruku v ruce.** `Api` a `Web.Client` běží na různých originech (Function App vs. SWA), takže Function App potřebuje CORS allow-list (nastavený v `main.bicep` na hostname Static Web App i na custom doménu) a `Web.Client` potřebuje vědět, kam volat — to je commitnutá hodnota `ApiBaseUrl` v `src/Web.Client/wwwroot/appsettings.json`. **Obě hodnoty jsou napsané ručně a nic je nepropojuje automaticky**; při změně názvu Function App je nutné upravit obojí.
 - **HTTPS řeší platforma** (`httpsOnly: true`), ne aplikace. Ve Functions není `UseHttpsRedirection` ani `UseHsts` — a není kam je dát, ASP.NET Core middleware pipeline tu neexistuje.
 - **`/api/health` nemá registrované žádné checky** — vrací 200, jakmile stojí aplikace. Flex Consumption health probes nemá (na rozdíl od ACA), takže endpoint slouží ručnímu ověření a měření studeného startu, ne platformě.
-- **Aplikace nemá vazbu na počet instancí.** Plánovač už není in-process (Timer trigger místo `RecurringJobsBackgroundService`), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 5` je pojistka proti přetížení sdílené databáze, ne funkční nutnost.
+- **Aplikace nemá vazbu na počet instancí.** Žádný plánovač už neexistuje (termíny se doplňují líně při čtení, souběh řeší unikátní index v databázi), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 5` je pojistka proti přetížení sdílené databáze, ne funkční nutnost.
 - **App init timeout je 30 s.** Když se aplikace nerozběhne dřív, host to logne jako gRPC `System.TimeoutException` a hodnota se nedá konfigurovat. Sledovat při přidávání práce do startu.
 - Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho **záměrně nepublikuje ani nespouští** — aplikace schéma za běhu nemigruje, takže ho musíte pustit sám z lokálního repa proti produkčnímu connection stringu, **před** spuštěním deploye:
   ```powershell

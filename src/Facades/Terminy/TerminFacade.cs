@@ -3,6 +3,7 @@ using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;
+using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 namespace KandaEu.Volejbal.Facades.Terminy;
 
@@ -12,11 +13,35 @@ public class TerminFacade(
 	ITerminRepository _terminRepostory,
 	IPrihlaskaDataSource _prihlaskaDataSource,
 	IOsobaRepository _osobaRepository,
+	IEnsureTerminyService _ensureTerminyService,
 	ITimeService _timeService) : ITerminApi
 {
+	/// <summary>
+	/// Vrátí seznam budoucích termínů. Pokud jich není k dispozici dost, nejprve je doplní.
+	/// </summary>
+	/// <remarks>
+	/// Termíny se zakládají líně při čtení seznamu, dřívější hodinový timer trigger je proto zrušený.
+	/// Souběh více uživatelů řeší EnsureTerminyService (unikátní index nad datem termínu + opakování pokusu).
+	/// </remarks>
 	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken)
 	{
-		var terminy = await _terminDataSource.Data
+		List<TerminDto> terminy = await GetBudouciTerminyAsync(cancellationToken);
+
+		if (terminy.Count < EnsureTerminyService.PozadovanyPocetBudoucichTerminu)
+		{
+			await _ensureTerminyService.EnsureTerminyAsync(cancellationToken);
+			terminy = await GetBudouciTerminyAsync(cancellationToken);
+		}
+
+		return new TerminListDto
+		{
+			Terminy = terminy
+		};
+	}
+
+	private async Task<List<TerminDto>> GetBudouciTerminyAsync(CancellationToken cancellationToken)
+	{
+		return await _terminDataSource.Data
 			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetTerminyAsync)))
 			.Where(termin => termin.Datum.Date >= _timeService.GetCurrentDate())
 			.Select(item => new TerminDto
@@ -24,11 +49,6 @@ public class TerminFacade(
 				Id = item.Id,
 				Datum = item.Datum
 			}).ToListAsync(cancellationToken);
-
-		return new TerminListDto
-		{
-			Terminy = terminy
-		};
 	}
 
 	public async Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default)

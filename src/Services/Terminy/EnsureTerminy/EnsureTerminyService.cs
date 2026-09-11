@@ -12,7 +12,44 @@ public class EnsureTerminyService(
 	IUnitOfWork _unitOfWork,
 	ITimeService _timeService) : IEnsureTerminyService
 {
+	/// <summary>
+	/// Kolik budoucích termínů má být k dispozici.
+	/// </summary>
+	public const int PozadovanyPocetBudoucichTerminu = 3;
+
+	/// <summary>
+	/// Maximální počet pokusů o založení termínů (kvůli souběhu, viz EnsureTerminyAsync).
+	/// </summary>
+	private const int MaxPocetPokusu = 3;
+
+	/// <summary>
+	/// Doplní budoucí termíny do počtu <see cref="PozadovanyPocetBudoucichTerminu" />.
+	/// </summary>
+	/// <remarks>
+	/// Metoda se volá při čtení seznamu termínů, může tedy běžet souběžně pro několik požadavků najednou.
+	/// Souběh řeší databáze: unikátní index UIDX_Termin_Datum_Deleted duplicitní termín odmítne a commit
+	/// skončí <see cref="DbUpdateException" />. Poražený v závodě zahodí rozpracované změny a zkusí to
+	/// znovu nad aktuálními daty - obvykle už nezbývá co zakládat. Zamykat nic nepotřebujeme, vkládané
+	/// datum je deterministické (stejný den v týdnu), takže souběžné běhy soupeří o tentýž řádek.
+	/// </remarks>
 	public async Task EnsureTerminyAsync(CancellationToken cancellationToken)
+	{
+		for (int pokus = 1; ; pokus++)
+		{
+			try
+			{
+				await EnsureTerminyCoreAsync(cancellationToken);
+				return;
+			}
+			catch (DbUpdateException exception) when (pokus < MaxPocetPokusu)
+			{
+				_logger.LogInformation(exception, "Uložení termínů selhalo (pokus {pokus}), pravděpodobně souběh s jiným požadavkem. Zkouším znovu.", pokus);
+				_unitOfWork.Clear();
+			}
+		}
+	}
+
+	private async Task EnsureTerminyCoreAsync(CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Zjišťuji počet budoucích termínů...");
 		int budouciTerminyPocet = await _terminDataSource.Data
@@ -22,7 +59,7 @@ public class EnsureTerminyService(
 
 		_logger.LogInformation("Nalezeno {count} budoucích termínů.", budouciTerminyPocet);
 
-		if (budouciTerminyPocet < 3)
+		if (budouciTerminyPocet < PozadovanyPocetBudoucichTerminu)
 		{
 			DateTime posledniDatum = await _terminDataSource.DataIncludingDeleted
 				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(EnsureTerminyAsync)))
@@ -51,7 +88,7 @@ public class EnsureTerminyService(
 				}
 			}
 
-			for (int i = budouciTerminyPocet; i < 3; i++)
+			for (int i = budouciTerminyPocet; i < PozadovanyPocetBudoucichTerminu; i++)
 			{
 				while (!IsSchoolDate(datum))
 				{
