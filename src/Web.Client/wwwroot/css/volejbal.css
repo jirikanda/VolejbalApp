@@ -438,6 +438,8 @@ body::before {
     max-height: 440px; overflow-y: auto; padding-right: 4px;
 }
 .msg-sidebar .compose { margin-top: 16px; }
+/* Odeslání vzkazu je jediná akce celého boxu, proto přes celou šířku. */
+.msg-sidebar .compose .btn { width: 100%; justify-content: center; }
 
 .msg {
     background: var(--surface);
