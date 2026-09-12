@@ -264,3 +264,6 @@ src/Web/.vscode/launch.json
 
 # Azure Functions - lokální nastavení (obsahuje connection stringy)
 src/Api/local.settings.json
+
+# Azurite - lokální emulátor storage (viz .vscode/tasks.json)
+.azurite/
