@@ -35,7 +35,7 @@
                                 else
                                 {
                                     <button type="button" class="text-btn activate" @onclick="@(async () => await AktivovatAsync(osoba))">aktivovat</button>
-                                    <button type="button" class="text-btn del" @onclick="@(async () => await SmazatAsync(osoba))">smazat</button>
+                                    <button type="button" class="text-btn del" @onclick="@(() => ZobrazPotvrzeniSmazani(osoba))">smazat</button>
                                 }
                             </td>
                         </tr>
@@ -46,12 +46,24 @@
     }
 </div>
 
-<HxModal @ref="_deleteModal" Title="Smazat osobu" Size="ModalSize.Small">
-    <BodyTemplate>
-        Opravdu chceš smazat osobu &ldquo;@_osobaKeSmazani?.PrijmeniJmeno&rdquo;?
-    </BodyTemplate>
-    <FooterTemplate>
-        <HxButton Text="Zrušit" Color="ThemeColor.Secondary" OnClick="@(async () => await _deleteModal.HideAsync())" />
-        <HxButton Text="Smazat" Color="ThemeColor.Danger" OnClick="PotvrditSmazaniAsync" />
-    </FooterTemplate>
-</HxModal>
+@if (_osobaKeSmazani != null)
+{
+    <div class="modal-backdrop" tabindex="-1" @ref="_modalBackdrop"
+         @onclick="ZavriPotvrzeniSmazani"
+         @onkeydown="HandleModalKeyDown">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="smazat-osobu-nadpis"
+             @onclick:stopPropagation="true">
+            <div class="modal-head">
+                <h3 id="smazat-osobu-nadpis">Smazat osobu</h3>
+                <button type="button" class="modal-close" aria-label="Zavřít" @onclick="ZavriPotvrzeniSmazani">&times;</button>
+            </div>
+            <div class="modal-body">
+                Opravdu chceš smazat osobu &ldquo;@_osobaKeSmazani.PrijmeniJmeno&rdquo;?
+            </div>
+            <div class="modal-foot">
+                <button type="button" @onclick="ZavriPotvrzeniSmazani">Zrušit</button>
+                <button type="button" class="danger" @onclick="PotvrditSmazaniAsync">Smazat</button>
+            </div>
+        </div>
+    </div>
+}

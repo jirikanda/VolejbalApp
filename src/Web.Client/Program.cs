@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Havit.Blazor.Components.Web;
 using Havit.Blazor.Storage;
 using KandaEu.Volejbal.Web.Client.App_Start;
 using KandaEu.Volejbal.Web.Client.Components;
@@ -23,7 +22,6 @@ public class Program
 		builder.Services.AddApiClients(apiBaseUrl);
 
 		builder.Services.AddHavitBlazorStorage();
-		builder.Services.AddHxServices();
 
 		// WASM nemá request localization, kulturu nastavujeme napevno.
 		CultureInfo culture = new CultureInfo("cs-CZ");

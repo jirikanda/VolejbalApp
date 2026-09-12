@@ -1,6 +1,7 @@
 @using KandaEu.Volejbal.Contracts.Nastenka.Dto
 @using KandaEu.Volejbal.Contracts.Nastenka
 @using KandaEu.Volejbal.Contracts.Osoby
+@using KandaEu.Volejbal.Contracts.Osoby.Dto
 
 @inject INastenkaApi NastenkaApi
 @inject IOsobaApi OsobaApi
@@ -44,20 +45,23 @@
     <EditForm class="compose" Model="@_formData" OnValidSubmit="OnValidSubmitAsync">
         <DataAnnotationsValidator />
 
-        <HxSelect TItem="KandaEu.Volejbal.Contracts.Osoby.Dto.OsobaDto"
-                  TValue="int?"
-                  Label="Kdo píše"
-                  Data="@_state.AktivniOsoby"
-                  @bind-Value="@_formData.AutorId"
-                  TextSelector="@(o => o.PrijmeniJmeno)"
-                  ValueSelector="@(o => (int?)o.Id)"
-                  NullText="&#8212; vyber autora &#8212;"
-                  Nullable="true"
-                  InputSize="InputSize.Regular" />
+        <div class="field">
+            <label for="vzkaz-autor">Kdo píše</label>
+            <InputSelect id="vzkaz-autor" @bind-Value="@_formData.AutorId">
+                <option value="">&#8212; vyber autora &#8212;</option>
+                @foreach (OsobaDto osoba in _state.AktivniOsoby)
+                {
+                    <option value="@osoba.Id">@osoba.PrijmeniJmeno</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => _formData.AutorId)" />
+        </div>
 
-        <HxInputTextArea Label="Vzkaz"
-                         @bind-Value="@_formData.Zprava"
-                         Placeholder="Co chceš ostatním vzkázat?" />
+        <div class="field">
+            <label for="vzkaz-zprava">Vzkaz</label>
+            <InputTextArea id="vzkaz-zprava" placeholder="Co chceš ostatním vzkázat?" @bind-Value="@_formData.Zprava" />
+            <ValidationMessage For="@(() => _formData.Zprava)" />
+        </div>
 
         <button type="submit" class="btn primary-signed">Přidat vzkaz</button>
     </EditForm>

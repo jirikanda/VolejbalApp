@@ -1,6 +1,6 @@
-﻿using Havit.Blazor.Components.Web.Bootstrap;
-using KandaEu.Volejbal.Contracts.Osoby.Dto;
+﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Web.Client.Components.ProgressComponent;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace KandaEu.Volejbal.Web.Client.Components.Pages.Osoby;
 
@@ -14,13 +14,26 @@ public partial class SeznamOsob
 
 	private OsobaListDto _osoby;
 
-	private HxModal _deleteModal;
 	private OsobaDto _osobaKeSmazani;
+	private ElementReference _modalBackdrop;
+	private bool _modalCekaNaFocus;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 		_osoby = await Progress.ExecuteInProgressAsync(async () => await OsobaApi.GetOsobyAsync());
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		// Backdrop musí dostat focus, jinak se k němu nedostane @onkeydown a nefunguje zavření Escapem.
+		if (_modalCekaNaFocus)
+		{
+			_modalCekaNaFocus = false;
+			await _modalBackdrop.FocusAsync();
+		}
 	}
 
 	protected async Task AktivovatAsync(OsobaDto osoba)
@@ -35,17 +48,31 @@ public partial class SeznamOsob
 		osoba.Aktivni = false;
 	}
 
-	protected async Task SmazatAsync(OsobaDto osoba)
+	protected void ZobrazPotvrzeniSmazani(OsobaDto osoba)
 	{
 		_osobaKeSmazani = osoba;
-		await _deleteModal.ShowAsync();
+		_modalCekaNaFocus = true;
+	}
+
+	protected void ZavriPotvrzeniSmazani()
+	{
+		_osobaKeSmazani = null;
+	}
+
+	protected void HandleModalKeyDown(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Key == "Escape")
+		{
+			ZavriPotvrzeniSmazani();
+		}
 	}
 
 	protected async Task PotvrditSmazaniAsync()
 	{
-		await _deleteModal.HideAsync();
-		await Progress.ExecuteInProgressAsync(async () => await OsobaApi.SmazOsobuAsync(_osobaKeSmazani.Id));
-		_osoby.Osoby.Remove(_osobaKeSmazani);
+		OsobaDto osobaKeSmazani = _osobaKeSmazani;
 		_osobaKeSmazani = null;
+
+		await Progress.ExecuteInProgressAsync(async () => await OsobaApi.SmazOsobuAsync(osobaKeSmazani.Id));
+		_osoby.Osoby.Remove(osobaKeSmazani);
 	}
 }

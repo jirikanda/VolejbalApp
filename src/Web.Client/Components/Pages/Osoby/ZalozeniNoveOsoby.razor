@@ -5,9 +5,21 @@
     <p class="descr">Nový hráč se rovnou objeví v aktivním seznamu.</p>
 
     <div class="compose" style="padding: 0; border: 0; background: transparent; box-shadow: none;">
-        <HxInputText Label="Jméno" @bind-Value="@_formData.Jmeno" MaxLength="50" />
-        <HxInputText Label="Příjmení" @bind-Value="@_formData.Prijmeni" MaxLength="50" />
-        <HxInputText Label="E-mail" @bind-Value="@_formData.Email" MaxLength="50" />
+        <div class="field">
+            <label for="nova-osoba-jmeno">Jméno</label>
+            <InputText id="nova-osoba-jmeno" type="text" maxlength="50" @bind-Value="@_formData.Jmeno" />
+            <ValidationMessage For="@(() => _formData.Jmeno)" />
+        </div>
+        <div class="field">
+            <label for="nova-osoba-prijmeni">Příjmení</label>
+            <InputText id="nova-osoba-prijmeni" type="text" maxlength="50" @bind-Value="@_formData.Prijmeni" />
+            <ValidationMessage For="@(() => _formData.Prijmeni)" />
+        </div>
+        <div class="field">
+            <label for="nova-osoba-email">E-mail</label>
+            <InputText id="nova-osoba-email" type="text" maxlength="50" @bind-Value="@_formData.Email" />
+            <ValidationMessage For="@(() => _formData.Email)" />
+        </div>
 
         <p class="form-legend">Chráníme své soukromí a e-mail na těchto stránkách nezobrazujeme.</p>
 
