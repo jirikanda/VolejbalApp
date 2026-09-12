@@ -190,6 +190,48 @@ body::before {
     letter-spacing: -0.03em;
 }
 
+
+/* ─── BOOT ───
+   Úvodní obrazovka z index.html (hlavička + indikátor), která je na stránce do chvíle,
+   než Blazor vyrenderuje kořenovou komponentu do #app. Hlavička používá .topbar/.brand
+   z MainLayout, aby při záměně nepřeskočila, pod ní je indikátor načítání. */
+.boot {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px; min-height: 42vh;
+    /* Zpoždění proti probliknutí u rychlého (nacacheovaného) startu - stejný princip
+       jako SpinnerDelayMilliseconds v Progress. */
+    animation: fadeIn .35s ease .25s backwards;
+}
+.boot-track {
+    position: relative; overflow: hidden;
+    width: min(260px, 70vw); height: 6px;
+    background: var(--surface-sunk);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+}
+.boot-sweep {
+    position: absolute; top: 0; bottom: 0; left: 0;
+    width: 40%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, oklch(0.92 0.04 80), oklch(0.78 0.10 60), transparent);
+    animation: bootSweep 1.3s ease-in-out infinite;
+}
+.boot-label {
+    margin: 0;
+    font: 600 11px/1 var(--font-mono);
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-3);
+}
+@keyframes bootSweep {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+}
+/* Globální pravidlo pro prefers-reduced-motion zkracuje animace na .01ms, což by tady
+   nechalo poskakující pruh - proto vlastní statická varianta. */
+@media (prefers-reduced-motion: reduce) {
+    .boot-sweep { width: 100%; transform: none; animation-name: none !important; opacity: .55; }
+}
+
 .nav {
     display: flex; gap: 3px;
     background: var(--surface-sunk);
