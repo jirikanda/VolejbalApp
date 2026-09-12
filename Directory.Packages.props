@@ -4,11 +4,11 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="Havit.ApplicationInsights.DependencyCollector" Version="2.0.10" />
     <PackageVersion Include="Havit.AspNetCore.Mvc" Version="2.0.30" />
     <PackageVersion Include="Havit.Core" Version="2.0.39" />
     <PackageVersion Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.26.1" />
+    <PackageVersion Include="Havit.Blazor.Storage" Version="1.0.1" />
     <PackageVersion Include="Havit.Data.EntityFrameworkCore" Version="2.10.3" />
     <PackageVersion Include="Havit.Data.EntityFrameworkCore.Abstractions" Version="2.10.0" />
     <PackageVersion Include="Havit.Data.EntityFrameworkCore.CodeGenerator" Version="2.10.4" />

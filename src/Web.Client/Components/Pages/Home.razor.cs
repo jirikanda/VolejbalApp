@@ -6,7 +6,7 @@ public partial class Home
 	protected INastenkaApi NastenkaApi { get; set; }
 
 	[Inject]
-	protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
+	protected Havit.Blazor.Storage.ILocalStorageService LocalStorageService { get; set; }
 
 	private int? _currentTerminId;
 
@@ -16,18 +16,15 @@ public partial class Home
 	{
 		await base.OnInitializedAsync();
 
-		DateTime lastVisit = DateTime.Today.AddDays(-14);
-		if (await LocalStorageService.ContainKeyAsync("LastVisit"))
-		{
-			lastVisit = await LocalStorageService.GetItemAsync<DateTime>("LastVisit");
-		}
+		(bool Success, DateTime Value) lastVisitResult = await LocalStorageService.TryGetValueAsync<DateTime>("LastVisit");
+		DateTime lastVisit = lastVisitResult.Success ? lastVisitResult.Value : DateTime.Today.AddDays(-14);
 
 		if ((await NastenkaApi.GetVzkazyAsync()).Vzkazy.Any(vzkaz => vzkaz.DatumVlozeni > lastVisit))
 		{
 			ShowNastenkaLink = true;
 		}
 
-		await LocalStorageService.SetItemAsync("LastVisit", DateTime.Now);
+		await LocalStorageService.SetValueAsync("LastVisit", DateTime.Now);
 	}
 
 	private void HandleCurrentTerminIdChanged(int newCurrentterminId)

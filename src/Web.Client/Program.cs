@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
-using Blazored.LocalStorage;
 using Havit.Blazor.Components.Web;
+using Havit.Blazor.Storage;
 using KandaEu.Volejbal.Web.Client.App_Start;
 using KandaEu.Volejbal.Web.Client.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -22,7 +22,7 @@ public class Program
 
 		builder.Services.AddApiClients(apiBaseUrl);
 
-		builder.Services.AddBlazoredLocalStorage();
+		builder.Services.AddHavitBlazorStorage();
 		builder.Services.AddHxServices();
 
 		// WASM nemá request localization, kulturu nastavujeme napevno.

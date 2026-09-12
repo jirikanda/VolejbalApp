@@ -126,7 +126,7 @@ The repo is built on HAVIT's EF Core stack and conventions. Read these before ch
 - Standalone WASM app on Azure Static Web Apps; SPA fallback is in `wwwroot/staticwebapp.config.json`.
 - The API base address comes from `wwwroot/appsettings.json` (`ApiBaseUrl`) — **it is a committed production value** and must match the Function App URL that `infra/main.bicep` outputs. `appsettings.Development.json` points at `http://localhost:7071`.
 - Czech locale is set in `Program.cs` (`CultureInfo.DefaultThreadCurrentCulture`); the csproj sets `BlazorWebAssemblyLoadAllGlobalizationData=true` because Czech is not in the default ICU shards — don't remove it or date formatting breaks.
-- UI components: **Havit.Blazor.Components.Web.Bootstrap** (Hx* components). Use these instead of writing raw Bootstrap markup where one fits. Local state via `Blazored.LocalStorage`.
+- UI components: **Havit.Blazor.Components.Web.Bootstrap** (Hx* components). Use these instead of writing raw Bootstrap markup where one fits. Local state via `Havit.Blazor.Storage` (`ILocalStorageService`).
 
 ### Tests
 

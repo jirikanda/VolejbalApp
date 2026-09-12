@@ -18,7 +18,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 	protected PrihlasovaniState State { get; } = new PrihlasovaniState();
 
 	[Inject]
-	protected Blazored.LocalStorage.ILocalStorageService LocalStorageService { get; set; }
+	protected Havit.Blazor.Storage.ILocalStorageService LocalStorageService { get; set; }
 
 	[Parameter] public int? CurrentTerminId { get; set; }
 	protected int? PrefferedOsobaId { get; set; }
@@ -37,9 +37,10 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 	{
 		await base.OnInitializedAsync();
 
-		if (await LocalStorageService.ContainKeyAsync("PrefferedOsobaId"))
+		(bool Success, int Value) prefferedOsobaIdResult = await LocalStorageService.TryGetValueAsync<int>("PrefferedOsobaId");
+		if (prefferedOsobaIdResult.Success)
 		{
-			this.PrefferedOsobaId = await LocalStorageService.GetItemAsync<int>("PrefferedOsobaId");
+			this.PrefferedOsobaId = prefferedOsobaIdResult.Value;
 		}
 	}
 
@@ -90,7 +91,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id); // to se snad nemůže stát
 		prihlaseni.Add(new PrihlasenaOsobaDto { Osoba = prihlasovanaOsoba.Osoba });
 
-		await LocalStorageService.SetItemAsync("PrefferedOsobaId", prihlasovanaOsoba.Osoba.Id);
+		await LocalStorageService.SetValueAsync("PrefferedOsobaId", prihlasovanaOsoba.Osoba.Id);
 		PrefferedOsobaId = prihlasovanaOsoba.Osoba.Id;
 	}
 
