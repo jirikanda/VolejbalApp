@@ -1,28 +1,30 @@
 ﻿@page "/Error"
-@using System.Diagnostics
 
 <PageTitle>Volejbal &#183; Chyba</PageTitle>
 
-<h2>Ups...</h2>
+<div class="error-page">
+    <h2>Ups...</h2>
 
-<p>Stalo se něco, co nikdo nechtěl - v aplikaci došlo k chybě. Kliknutím <a href="#" @onclick="HandleRestartClick">restartujte aplikaci</a>.</p>
+    <p class="error-lead">@_headline</p>
 
-@*  
-@if (ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@RequestId</code>
-    </p>
-}
+    @if (!String.IsNullOrEmpty(_hint))
+    {
+        <p class="error-hint">@_hint</p>
+    }
 
-@code{
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; }
+    <p>Kliknutím <a href="#" @onclick="HandleRestartClick" @onclick:preventDefault>restartujete aplikaci</a>.</p>
 
-    private string RequestId { get; set; }
-    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-
-    protected override void OnInitialized() =>
-        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
-}
- *@
+    @if (Exception != null)
+    {
+        <details class="error-detail">
+            <summary>Technické podrobnosti</summary>
+            @if (!String.IsNullOrEmpty(_serverResponse))
+            {
+                <p class="error-detail-label">Odpověď serveru</p>
+                <pre>@_serverResponse</pre>
+            }
+            <p class="error-detail-label">Výjimka</p>
+            <pre>@Exception.ToString()</pre>
+        </details>
+    }
+</div>

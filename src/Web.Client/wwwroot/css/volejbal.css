@@ -765,6 +765,40 @@ body::before {
 .msg-list::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
 .msg-list::-webkit-scrollbar-track { background: transparent; }
 
+/* ─── ERROR PAGE ─── */
+.error-page {
+    max-width: 720px;
+    margin: 48px auto 0;
+    padding: 32px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+}
+.error-page h2 { font-size: 24px; letter-spacing: -0.02em; }
+.error-page .error-lead { font-size: 17px; font-weight: 600; color: var(--ink); }
+.error-page .error-hint { color: var(--ink-2); }
+.error-page .error-detail {
+    margin-top: 24px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+.error-page .error-detail summary {
+    cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-3);
+    font-family: var(--font-mono);
+}
+.error-page .error-detail .error-detail-label {
+    margin: 16px 0 6px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-3); font-family: var(--font-mono);
+}
+.error-page .error-detail pre {
+    margin: 0; padding: 12px 14px;
+    background: var(--surface-sunk); border-radius: var(--radius-sm);
+    font: 12px/1.5 var(--font-mono); color: var(--ink-2);
+    white-space: pre-wrap; word-break: break-word;
+    max-height: 320px; overflow: auto;
+}
+
 /* ─── BLAZOR ERROR UI ─── */
 #blazor-error-ui {
     background: var(--declined-soft);

@@ -55,8 +55,8 @@
                 @Body
             </CascadingValue>
         </ChildContent>
-        <ErrorContent>
-            <KandaEu.Volejbal.Web.Client.Components.Pages.Error />
+        <ErrorContent Context="exception">
+            <KandaEu.Volejbal.Web.Client.Components.Pages.Error Exception="@exception" />
         </ErrorContent>
     </ErrorBoundary>
 </div>
