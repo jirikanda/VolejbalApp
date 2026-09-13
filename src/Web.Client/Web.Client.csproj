@@ -15,6 +15,12 @@
 		<PackageReference Include="Refit.HttpClientFactory" />
 	</ItemGroup>
 
+	<!-- Než se zbaví Havit.Blazor.Storage závislosti na Havit.Core a stane se trimmable -->
+	<ItemGroup>
+		<TrimmableAssembly Include="Havit.Core" />
+		<TrimmableAssembly Include="Havit.Blazor.Storage" />
+.	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\Contracts\Contracts.csproj" />
 	</ItemGroup>
