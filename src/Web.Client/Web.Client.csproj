@@ -19,7 +19,7 @@
 	<ItemGroup>
 		<TrimmableAssembly Include="Havit.Core" />
 		<TrimmableAssembly Include="Havit.Blazor.Storage" />
-.	</ItemGroup>
+	</ItemGroup>
 	
 	<ItemGroup>
 		<ProjectReference Include="..\Contracts\Contracts.csproj" />
