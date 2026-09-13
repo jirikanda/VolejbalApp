@@ -1,6 +1,8 @@
 @if (State.AktualniTerminId == null)
 {
-    <p style="margin-top: 20px; color: var(--ink-3); font-style: italic;">Termín není zvolen.</p>
+    <p style="margin-top: 20px; color: var(--ink-3); font-style: italic;">
+        @(TerminyNacteny ? "Termín není zvolen." : "Načítám termíny…")
+    </p>
 }
 else if (State.Prihlaseni != null && State.Neprihlaseni != null)
 {

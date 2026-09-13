@@ -15,8 +15,8 @@
 
         <section class="section" style="margin-top: 0;">
             <div class="section-head"><h2>Termín</h2></div>
-            <KandaEu.Volejbal.Web.Client.Components.Pages.Terminy.Terminy CurrentTerminIdChanged="HandleCurrentTerminIdChanged" />
-            <KandaEu.Volejbal.Web.Client.Components.Pages.Prihlasovani.Prihlasovani CurrentTerminId="@_currentTerminId" />
+            <KandaEu.Volejbal.Web.Client.Components.Pages.Terminy.Terminy CurrentTerminIdChanged="HandleCurrentTerminIdChanged" TerminyNacteny="HandleTerminyNacteny" />
+            <KandaEu.Volejbal.Web.Client.Components.Pages.Prihlasovani.Prihlasovani CurrentTerminId="@_currentTerminId" TerminyNacteny="@_terminyNacteny" />
         </section>
     </main>
 

@@ -12,6 +12,12 @@ public partial class Terminy
 
 	[Parameter] public EventCallback<int> CurrentTerminIdChanged { get; set; }
 
+	/// <summary>
+	/// Oznámí dokončení načtení termínů (i když žádné termíny nejsou).
+	/// Okolí podle toho odliší "ještě načítám" od "není co zobrazit".
+	/// </summary>
+	[Parameter] public EventCallback TerminyNacteny { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
@@ -23,6 +29,9 @@ public partial class Terminy
 		{
 			await SetCurrentTerminIdAsync(State.Terminy[0].Id);
 		}
+
+		// až nakonec, aby se mezi "načítám" a zvoleným termínem neprobliklo "termín není zvolen"
+		await TerminyNacteny.InvokeAsync();
 	}
 
 	protected async Task TerminClickAsync(TerminDto termin)

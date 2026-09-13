@@ -21,6 +21,13 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 	protected Havit.Blazor.Storage.ILocalStorageService LocalStorageService { get; set; }
 
 	[Parameter] public int? CurrentTerminId { get; set; }
+
+	/// <summary>
+	/// Indikuje, že načítání termínů už proběhlo. Dokud je false, není absence zvoleného termínu
+	/// stavem "nic není zvoleno", ale "ještě se načítá".
+	/// </summary>
+	[Parameter] public bool TerminyNacteny { get; set; }
+
 	protected int? PrefferedOsobaId { get; set; }
 
 	private CancellationTokenSource _cancellationTokenSource;

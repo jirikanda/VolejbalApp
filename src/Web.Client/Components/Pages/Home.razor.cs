@@ -9,6 +9,7 @@ public partial class Home
 	protected Havit.Blazor.Storage.ILocalStorageService LocalStorageService { get; set; }
 
 	private int? _currentTerminId;
+	private bool _terminyNacteny;
 
 	protected bool ShowNastenkaLink { get; set; }
 
@@ -30,5 +31,10 @@ public partial class Home
 	private void HandleCurrentTerminIdChanged(int newCurrentterminId)
 	{
 		_currentTerminId = newCurrentterminId;
+	}
+
+	private void HandleTerminyNacteny()
+	{
+		_terminyNacteny = true;
 	}
 }
