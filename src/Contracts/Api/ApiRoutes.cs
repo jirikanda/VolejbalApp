@@ -27,7 +27,5 @@ public static class ApiRoutes
 	public const string ReportyTerminy = "api/reporty/terminy";
 	public const string ReportyOsoby = "api/reporty/osoby";
 
-	public const string SystemSeed = "api/system/seed/{profileName}";
-
 	public const string Health = "api/health";
 }

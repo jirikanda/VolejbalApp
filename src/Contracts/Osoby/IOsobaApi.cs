@@ -10,13 +10,13 @@ public interface IOsobaApi
 	Task VlozOsobuAsync([Body] OsobaInputDto osobaInputDto, CancellationToken cancellationToken = default);
 
 	[Delete("/" + ApiRoutes.Osoba)]
-	Task SmazOsobuAsync(int osobaId, CancellationToken cancellationToken = default);
+	Task SmazOsobuAsync(string osobaId, CancellationToken cancellationToken = default);
 
 	[Post("/" + ApiRoutes.OsobaAktivovat)]
-	Task AktivujOsobuAsync(int osobaId, CancellationToken cancellationToken = default);
+	Task AktivujOsobuAsync(string osobaId, CancellationToken cancellationToken = default);
 
 	[Post("/" + ApiRoutes.OsobaDeaktivovat)]
-	Task DeaktivujOsobuAsync(int osobaId, CancellationToken cancellationToken = default);
+	Task DeaktivujOsobuAsync(string osobaId, CancellationToken cancellationToken = default);
 
 	[Get("/" + ApiRoutes.Osoby)]
 	Task<OsobaListDto> GetOsobyAsync(CancellationToken cancellationToken = default);

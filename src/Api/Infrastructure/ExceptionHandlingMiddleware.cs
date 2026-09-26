@@ -1,7 +1,7 @@
 using System.Security;
 using Havit;
-using Havit.Data.Patterns.Exceptions;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
+using KandaEu.Volejbal.DataLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -52,6 +52,8 @@ public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _l
 			return (StatusCodes.Status403Forbidden, true);
 		}
 
+		// ObjectNotFoundException (neexistující termín/osoba z URL) se hlásí stejně jako OperationFailedException:
+		// z pohledu klienta jde o tentýž případ "data se mezitím změnila, načti stránku znovu".
 		if ((exception is OperationFailedException) || (exception is ObjectNotFoundException))
 		{
 			return (StatusCodes.Status422UnprocessableEntity, true);

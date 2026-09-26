@@ -32,11 +32,10 @@ updates:
       #
       # Skupiny běží v pořadí z tohoto souboru a balíček spadne do PRVNÍ odpovídající skupiny. Konkrétní pattern
       # skupiny proto musí být nad catch-all skupinami, jinak by je catch-all minor "spolkla".
-      microsoft-aspnetcore-and-efcore-and-extensions-dependencies:
+      microsoft-aspnetcore-and-extensions-dependencies:
         patterns:
           - "Microsoft.AspNetCore.*"
           - "Microsoft.Extensions.*"
-          - "Microsoft.EntityFrameworkCore*"
           - "System.*"
         update-types:
           - "minor"

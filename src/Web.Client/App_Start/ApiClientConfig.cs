@@ -3,7 +3,6 @@ using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 using KandaEu.Volejbal.Contracts.Reporty;
-using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.Contracts.Terminy;
 using Refit;
 
@@ -34,7 +33,6 @@ public static class ApiClientConfig
 		services.AddApiClient<ITerminApi>(refitSettings, apiBaseUrl);
 		services.AddApiClient<IReportOsobApi>(refitSettings, apiBaseUrl);
 		services.AddApiClient<IReportTerminuApi>(refitSettings, apiBaseUrl);
-		services.AddApiClient<IDataSeedApi>(refitSettings, apiBaseUrl);
 
 		return services;
 	}

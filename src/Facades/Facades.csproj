@@ -8,9 +8,11 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="Havit.VolejbalApp.Tests" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<PackageReference Include="Havit.Data.Patterns" />
+		<PackageReference Include="Havit.Core" />
+		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" />
+		<PackageReference Include="Havit.Services" />
 	</ItemGroup>
 
 	<ItemGroup>

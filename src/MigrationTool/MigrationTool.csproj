@@ -4,19 +4,19 @@
 		<OutputType>Exe</OutputType>
 		<AssemblyName>KandaEu.Volejbal.MigrationTool</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.MigrationTool</RootNamespace>
-
-		<!-- ReadyToRun jen při publish s konkrétním RID (CI publikuje linux-x64) -->
-		<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Azure.Cosmos" />
+		<!-- Jen kvůli jednorázovému převodu dat ze SQL Serveru, viz SqlImport.cs. -->
+		<PackageReference Include="Microsoft.Data.SqlClient" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\DataLayer\DataLayer.csproj" />
 		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
-		<ProjectReference Include="..\Services\Services.csproj" />
+		<ProjectReference Include="..\Model\Model.csproj" />
 	</ItemGroup>
 
 </Project>

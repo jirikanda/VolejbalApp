@@ -1,31 +1,30 @@
-﻿using Havit.Services.TimeServices;
-using KandaEu.Volejbal.Contracts.Reporty.Dto;
+using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Reporty;
+using KandaEu.Volejbal.Contracts.Reporty.Dto;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 
 [Service(ServiceType = typeof(IReportTerminuApi))]
 public class ReportTerminuFacade(
-	ITerminDataSource _terminDataSource,
+	ITerminRepository _terminRepository,
 	ITimeService _timeService) : IReportTerminuApi
 {
 	public async Task<ReportTerminu> GetReportAsync(CancellationToken cancellationToken)
 	{
 		DateTime today = _timeService.GetCurrentDate();
-		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(_timeService);
+		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(today);
+
+		List<Termin> terminy = await _terminRepository.GetTerminyVObdobiAsync(datumOdInclusive, today, cancellationToken);
 
 		return new ReportTerminu
 		{
-			ObsazenostTerminu = await _terminDataSource.Data
-				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetReportAsync)))
-				.Where(termin => (termin.Datum >= datumOdInclusive) && (termin.Datum < today))
-				.OrderBy(item => item.Datum)
+			ObsazenostTerminu = terminy
 				.Select(termin => new ReportTerminuItem
 				{
 					Datum = termin.Datum,
-					PocetHracu = termin.Prihlasky.Where(prihlaska => prihlaska.Deleted == null).Count()
+					PocetHracu = termin.Prihlasky.Count(prihlaska => prihlaska.Deleted == null)
 				})
-				.ToListAsync(cancellationToken)
+				.ToList()
 		};
 	}
 }

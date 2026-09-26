@@ -1,33 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
 using Havit;
 
 namespace KandaEu.Volejbal.Model;
 
+/// <summary>
+/// Osoba (hráč). Dokument v kontejneru "osoby".
+/// </summary>
 public class Osoba
 {
-	public int Id { get; set; }
+	/// <summary>
+	/// GUID. Cosmos nemá sekvence, přiděluje ho repozitář při vložení.
+	/// </summary>
+	public string Id { get; set; }
 
-	[Required]
-	[MaxLength(50)]
 	public string Prijmeni { get; set; }
 
-	[Required]
-	[MaxLength(50)]
 	public string Jmeno { get; set; }
 
-	[Required]
-	[MaxLength(50)]
 	public string Email { get; set; }
 
 	public DateTime? Deleted { get; set; }
 
 	public bool Aktivni { get; set; } = true;
 
-	public List<Prihlaska> Prihlasky { get; } = new List<Prihlaska>();
-
-	[NotMapped]
-	public bool PripominkyPovoleny { get; } = true;
-
+	[JsonIgnore]
 	public string PrijmeniJmeno
 	{
 		get

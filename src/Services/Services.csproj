@@ -8,8 +8,6 @@
 	<ItemGroup>
 		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" />
 		<PackageReference Include="Havit.Services" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -17,4 +15,4 @@
 		<ProjectReference Include="..\Model\Model.csproj" />
 	</ItemGroup>
 
-</Project>	 
+</Project>

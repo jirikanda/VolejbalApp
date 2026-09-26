@@ -1,17 +1,35 @@
 # Nasazení na Azure Functions (Flex Consumption) + Azure Static Web Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, Static Web App a (volitelně, viz níže) binding custom domény na Static Web App. Databáze je mimo scope této šablony — viz komentář v hlavičce `main.bicep`.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App a (volitelně, viz níže) binding custom domény na Static Web App.
 
 | Resource | Typ | Název |
 | --- | --- | --- |
-| Log Analytics workspace | `Microsoft.OperationalInsights/workspaces` | `jk-volejbal-logs` |
-| Application Insights | `Microsoft.Insights/components` | `jk-volejbal-appinsights` |
-| Storage account | `Microsoft.Storage/storageAccounts` | `jkvolejbal<uniqueString>` |
-| Flex Consumption plán | `Microsoft.Web/serverfarms` | `jk-volejbal-func-plan` |
-| Function App (`Api`) | `Microsoft.Web/sites` | `jk-volejbal-func` |
+| Log Analytics workspace | `Microsoft.OperationalInsights/workspaces` | `JkVolejbalLAW` |
+| Application Insights | `Microsoft.Insights/components` | `JkVolejbalAppInsights` |
+| Storage account | `Microsoft.Storage/storageAccounts` | `jkvolejbalfuncstorage` |
+| Cosmos DB účet | `Microsoft.DocumentDB/databaseAccounts` | `jkvolejbalcosmosdb` |
+| Flex Consumption plán | `Microsoft.Web/serverfarms` | `JkVolejbalFuncPlan` |
+| Function App (`Api`) | `Microsoft.Web/sites` | `JkVolejbalFunc` |
 | Static Web App (`Web.Client`, frontend) | `Microsoft.Web/staticSites` | `JkVolejbalSWA` |
 
 Application Insights je **workspace-based** nad Log Analytics workspace. Connection string se do Function App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
+
+## Cosmos DB
+
+Databáze je od přechodu ze SQL Serveru součástí šablony. Tři kontejnery ve sdílené databázi `volejbal` se sdílenou propustností **400 RU/s** (minimum pro sdílenou databázi, stačí až pro 4 kontejnery). Free tier dává 1000 RU/s, takže na účtu zbývá 600 RU/s pro další databázi; strop účtu `cosmosTotalThroughputLimit` = 1000 hlídá, aby se propustnost omylem nedostala do placeného pásma:
+
+| Kontejner | Partition key | Poznámka |
+| --- | --- | --- |
+| `osoby` | `/id` | desítky dokumentů, čtou se vždy jako celek |
+| `terminy` | `/id` (= datum termínu) | id dokumentu je datum termínu, přihlášky jsou vnořené; `/prihlasky/*` je vyloučené z indexu |
+| `vzkazy` | `/id` | autor odkazovaný přes id, jméno se dohledává při čtení |
+
+Dvě věci, které se snadno přehlédnou:
+
+- **Free tier je jeden na subscription a zapíná se jen při zakládání účtu.** Pozdější změna `cosmosEnableFreeTier` na existujícím účtu nic neudělá — musel by se smazat a založit znovu. Když už je free tier spotřebovaný jinde, nasadí se účet za běžnou cenu (při 1000 RU/s provisioned zhruba 58 USD/měsíc, takže v takovém případě spíš přepnout na serverless).
+- **Datové RBAC Cosmosu je něco jiného než Azure RBAC.** Přístup aplikace k dokumentům dává resource `Microsoft.DocumentDB/.../sqlRoleAssignments` (role *Built-in Data Contributor*), který **z portálu nastavit nejde** — jen šablonou nebo `az cosmosdb sql role assignment create`. Role jako *Contributor* nad účtem na data nestačí: aplikace nastartuje a každý dotaz skončí na 403.
+
+Klíčový přístup zůstává na účtu zapnutý kvůli Data Exploreru v portálu. Aplikace ho nepoužívá — app setting `Cosmos__Key` se nenastavuje a prázdný klíč znamená přihlášení managed identitou (viz `DataLayer/Cosmos/CosmosClientFactory.cs`).
 
 ## Proč Functions místo Container Apps
 
@@ -201,8 +219,7 @@ Nasazuje se **celá šablona**, ne jen aplikace. ARM v incremental módu projde 
    **Variables:**
    - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` — z výpisu výše. Jsou to identifikátory, ne tajemství; jako variables jsou navíc čitelné v logu běhu, což ladění usnadňuje. Ve workflow se na ně sahá přes `vars.*`.
 
-   **Secrets:**
-   - `DATABASE_CONNECTION_STRING` — connection string k databázi (hostované mimo tuto šablonu). Ve workflow `secrets.*`. **Jediné skutečné tajemství** — Azure login ani nasazení frontendu na SWA žádné uložené heslo nepotřebují.
+   **Secrets:** žádné. Od přechodu na Cosmos DB nemá workflow **jediné uložené tajemství** — Azure login jede přes OIDC, deployment token SWA se čte za běhu a k databázi se aplikace hlásí managed identitou. Dřívější `DATABASE_CONNECTION_STRING` je možné v repozitáři smazat.
 
    > Kdyby se některá z hodnot přesunula mezi záložkami, je potřeba změnit i prefix v [deploy.yml](../.github/workflows/deploy.yml). `secrets.X` u proměnné uložené jako variable se vyhodnotí na **prázdný řetězec** — workflow nespadne na chybějící hodnotu, ale `azure/login` selže na nesrozumitelnou chybu.
 4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Volitelně sem přidejte *required reviewers*.
@@ -211,8 +228,7 @@ Výstup workflow `functionAppUrl` je adresa `https://<app>.azurewebsites.net` AP
 
 ## Postup nasazení
 
-1. **Zmigrovat databázi**, pokud přibyla migrace — viz níže. Musí být hotové **dřív**, než naběhne nový kód.
-2. *Actions* → *Deploy to Azure* → *Run workflow* (branch `master`).
+*Actions* → *Deploy to Azure* → *Run workflow* (branch `master`). Schéma databáze se nasazuje spolu s infrastrukturou, takže žádný krok navíc před deployem není.
 
 ### Ruční nasazení bez GitHub Actions (alternativa)
 
@@ -220,8 +236,7 @@ Výstup workflow `functionAppUrl` je adresa `https://<app>.azurewebsites.net` AP
 az deployment group create \
   --resource-group JkVolejbalRG \
   --template-file infra/main.bicep \
-  --name jk-volejbal \
-  --parameters databaseConnectionString='<connection string>'
+  --name jk-volejbal
 
 dotnet publish src/Api/Api.csproj -c Release -r linux-x64 --self-contained false -o ./publish/Api
 cd ./publish/Api && zip -r ../../api.zip . && cd ../..
@@ -236,20 +251,35 @@ Tohle je zároveň cesta k **rollbacku** — workflow vždy nasazuje aktuální 
 ```bash
 az bicep build --file infra/main.bicep --stdout > /dev/null   # jen syntaxe, nepotřebuje login
 az deployment group what-if --resource-group JkVolejbalRG --name jk-volejbal \
-  --template-file infra/main.bicep --parameters databaseConnectionString="Server=x;Database=y;User Id=z;Password=q"
+  --template-file infra/main.bicep
 ```
 
-What-if se nepřipojí k databázi, takže fiktivní hodnota parametru stačí. Dva warningy `BCP081` u `Microsoft.Web/staticSites` jsou očekávané — bicep pro tuhle verzi API nemá typy, na nasazení to vliv nemá.
+Šablona nebere žádné parametry, takže what-if jde spustit bez doplňování hodnot. Dva warningy `BCP081` u `Microsoft.Web/staticSites` jsou očekávané — bicep pro tuhle verzi API nemá typy, na nasazení to vliv nemá.
 
 ## Poznámky
 
 - **CORS a `ApiBaseUrl` jdou ruku v ruce.** `Api` a `Web.Client` běží na různých originech (Function App vs. SWA), takže Function App potřebuje CORS allow-list (nastavený v `main.bicep` na hostname Static Web App i na custom doménu) a `Web.Client` potřebuje vědět, kam volat — to je commitnutá hodnota `ApiBaseUrl` v `src/Web.Client/wwwroot/appsettings.json`. **Obě hodnoty jsou napsané ručně a nic je nepropojuje automaticky**; při změně názvu Function App je nutné upravit obojí.
 - **HTTPS řeší platforma** (`httpsOnly: true`), ne aplikace. Ve Functions není `UseHttpsRedirection` ani `UseHsts` — a není kam je dát, ASP.NET Core middleware pipeline tu neexistuje.
 - **`/api/health` nemá registrované žádné checky** — vrací 200, jakmile stojí aplikace. Flex Consumption health probes nemá (na rozdíl od ACA), takže endpoint slouží ručnímu ověření a měření studeného startu, ne platformě.
-- **Aplikace nemá vazbu na počet instancí.** Žádný plánovač už neexistuje (termíny se doplňují líně při čtení, souběh řeší unikátní index v databázi), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 5` je pojistka proti přetížení sdílené databáze, ne funkční nutnost.
+- **Aplikace nemá vazbu na počet instancí.** Žádný plánovač už neexistuje (termíny se doplňují líně při čtení, souběh řeší unikátnost id dokumentu termínu), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 5` je pojistka proti vyčerpání propustnosti databáze (nad 1000 RU/s začne Cosmos vracet 429), ne funkční nutnost.
 - **App init timeout je 30 s.** Když se aplikace nerozběhne dřív, host to logne jako gRPC `System.TimeoutException` a hodnota se nedá konfigurovat. Sledovat při přidávání práce do startu.
-- Migrace databázového schématu a data seedy řeší samostatný konzolový **`MigrationTool`** projekt (mimo scope téhle šablony). Workflow ho **záměrně nepublikuje ani nespouští** — aplikace schéma za běhu nemigruje, takže ho musíte pustit sám z lokálního repa proti produkčnímu connection stringu, **před** spuštěním deploye:
+- **Schéma nasazuje šablona, ne aplikace ani workflow.** Kontejnery vznikají spolu s účtem Cosmos DB, takže před deployem není co pouštět. Konzolový **`MigrationTool`** zbývá pro dvě věci:
   ```powershell
-  dotnet run --project src/MigrationTool -- --connectionstring "<connection string>"
+  # 1) založení lokální databáze v Cosmos DB Emulatoru (vývoj)
+  dotnet run --project src/MigrationTool
+
+  # 2) jednorázový převod dat z původní SQL databáze (po prvním nasazení Cosmosu)
+  dotnet run --project src/MigrationTool -- `
+    --endpoint "<cosmosEndpoint z výstupu šablony>" `
+    --database "volejbal" `
+    --importfromsql "<connection string ke staré SQL databázi>"
+
+  # 3) cesta zpět: obsah Cosmosu do PRÁZDNÉ SQL databáze (schéma si vytvoří sám)
+  dotnet run --project src/MigrationTool -- `
+    --endpoint "<cosmosEndpoint z výstupu šablony>" `
+    --database "volejbal" `
+    --exporttosql "<connection string k prázdné SQL databázi>"
   ```
-  Automatizace tohohle kroku by znamenala vyřešit, jak se runner dostane k databázi po síti — u Azure SQL firewall pravidlo pro dynamickou IP hosted runneru, což je nepříjemné.
+  Bez `--key` se tool hlásí přes `DefaultAzureCredential`, takže proti produkci stačí `az login` — a přihlášený účet musí mít datovou roli Cosmosu (viz výše; vlastníkovi subscription se přiřadí přes `az cosmosdb sql role assignment create`).
+
+  Import (`--importfromsql`) zapisuje upsertem s id odvozeným z původních čísel, takže se dá pustit opakovaně — typicky jednou nanečisto a podruhé při ostrém přepnutí. Export (`--exporttosql`) naopak trvá na prázdné databázi: pokud v ní tabulky aplikace už jsou, skončí chybou. Celý běh je jedna transakce včetně zakládání tabulek, takže po neúspěchu zůstane cíl prázdný a jde to zopakovat.

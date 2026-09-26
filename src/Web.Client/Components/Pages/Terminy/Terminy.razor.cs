@@ -10,7 +10,7 @@ public partial class Terminy
 
 	protected TerminyState State { get; set; } = new TerminyState();
 
-	[Parameter] public EventCallback<int> CurrentTerminIdChanged { get; set; }
+	[Parameter] public EventCallback<string> CurrentTerminIdChanged { get; set; }
 
 	/// <summary>
 	/// Oznámí dokončení načtení termínů (i když žádné termíny nejsou).
@@ -39,7 +39,7 @@ public partial class Terminy
 		await SetCurrentTerminIdAsync(termin.Id);
 	}
 
-	private async Task SetCurrentTerminIdAsync(int terminId)
+	private async Task SetCurrentTerminIdAsync(string terminId)
 	{
 		State.CurrentTerminId = terminId;
 		await CurrentTerminIdChanged.InvokeAsync(terminId);

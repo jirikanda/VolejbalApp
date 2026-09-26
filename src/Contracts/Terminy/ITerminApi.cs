@@ -10,5 +10,5 @@ public interface ITerminApi
 	Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken = default);
 
 	[Get("/" + ApiRoutes.Termin)]
-	Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default);
+	Task<TerminDetailDto> GetDetailTerminuAsync(string terminId, CancellationToken cancellationToken = default);
 }

@@ -11,14 +11,22 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Havit.Services" />
+		<PackageReference Include="Microsoft.Azure.Cosmos" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
 		<PackageReference Include="MSTest" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DataLayer\DataLayer.csproj" />
 		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
-		<ProjectReference Include="..\Entity\Entity.csproj" />
-		<ProjectReference Include="..\Facades\Facades.csproj" />
 		<ProjectReference Include="..\Model\Model.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
 	</ItemGroup>

@@ -1,4 +1,4 @@
-﻿using Havit.Services.TimeServices;
+using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 
@@ -6,10 +6,9 @@ namespace KandaEu.Volejbal.Facades.Nastenka;
 
 [Service(ServiceType = typeof(INastenkaApi))]
 public class NastenkaFacade(
-	IVzkazDataSource _vzkazDataSource,
-	ITimeService _timeService,
-	IUnitOfWork _unitOfWork,
-	IOsobaRepository _osobaRepository) : INastenkaApi
+	IVzkazRepository _vzkazRepository,
+	IOsobaRepository _osobaRepository,
+	ITimeService _timeService) : INastenkaApi
 {
 	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken)
 	{
@@ -17,23 +16,25 @@ public class NastenkaFacade(
 		DateTime prispevkyOd = today.AddDays(-14);
 		DateTime currentWaveStart = GetCurrentWaveStart(today);
 
-		VzkazListDto result = new VzkazListDto
+		List<Vzkaz> vzkazy = await _vzkazRepository.GetVzkazyOdAsync(prispevkyOd, cancellationToken);
+
+		// Autoři se dohledávají podle id včetně smazaných - vzkaz smazaného hráče má zůstat podepsaný.
+		// Chybějící autor je porušená integrita dat a repozitář ji hlásí výjimkou.
+		List<Osoba> autori = await _osobaRepository.GetOsobyAsync(vzkazy.Select(vzkaz => vzkaz.AutorId).Distinct().ToList(), cancellationToken);
+		Dictionary<string, Osoba> autoriPodleId = autori.ToDictionary(autor => autor.Id);
+
+		return new VzkazListDto
 		{
-			Vzkazy = await _vzkazDataSource.Data
-				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetVzkazyAsync)))
-				.Where(item => item.DatumVlozeni > prispevkyOd)
-				.OrderByDescending(item => item.DatumVlozeni)
+			Vzkazy = vzkazy
 				.Select(vzkaz => new VzkazDto
 				{
-					Author = vzkaz.Autor.PrijmeniJmeno,
+					Author = autoriPodleId[vzkaz.AutorId].PrijmeniJmeno,
 					Zprava = vzkaz.Zprava,
 					DatumVlozeni = vzkaz.DatumVlozeni,
 					IsObsolete = vzkaz.DatumVlozeni < currentWaveStart
 				})
-				.ToListAsync(cancellationToken)
+				.ToList()
 		};
-
-		return result;
 	}
 
 	/// <summary>
@@ -48,18 +49,17 @@ public class NastenkaFacade(
 
 	public async Task VlozVzkazAsync(VzkazInputDto vzkazInputDto, CancellationToken cancellationToken)
 	{
-		Osoba autor = await _osobaRepository.GetObjectAsync(vzkazInputDto.AutorId, cancellationToken);
+		Osoba autor = await _osobaRepository.GetOsobaAsync(vzkazInputDto.AutorId, cancellationToken);
 		autor.ThrowIfDeleted();
 		autor.ThrowIfNotAktivni();
 
 		Vzkaz vzkaz = new Vzkaz
 		{
-			AutorId = vzkazInputDto.AutorId,
+			AutorId = autor.Id,
 			Zprava = vzkazInputDto.Zprava,
 			DatumVlozeni = _timeService.GetCurrentTime()
 		};
 
-		_unitOfWork.AddForInsert(vzkaz);
-		await _unitOfWork.CommitAsync(cancellationToken);
+		await _vzkazRepository.InsertAsync(vzkaz, cancellationToken);
 	}
 }

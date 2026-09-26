@@ -15,7 +15,8 @@
 		<PackageReference Include="Refit.HttpClientFactory" />
 	</ItemGroup>
 
-	<!-- Než se zbaví Havit.Blazor.Storage závislosti na Havit.Core a stane se trimmable -->
+	<!-- Balíčky bez IsTrimmable se kopírují celé, místo aby se analyzovaly. Havit.Core drží
+	     Havit.Blazor.Storage (než se té závislosti zbaví). -->
 	<ItemGroup>
 		<TrimmableAssembly Include="Havit.Core" />
 		<TrimmableAssembly Include="Havit.Blazor.Storage" />

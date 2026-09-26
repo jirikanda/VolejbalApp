@@ -44,7 +44,7 @@ public class OsobaFunctions(IOsobaApi _osobaFacade)
 	[Function(nameof(SmazOsobuAsync))]
 	public async Task<IActionResult> SmazOsobuAsync(
 		[HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = ApiRoutes.Osoba)] HttpRequest request,
-		int osobaId,
+		string osobaId,
 		CancellationToken cancellationToken)
 	{
 		await _osobaFacade.SmazOsobuAsync(osobaId, cancellationToken);
@@ -54,7 +54,7 @@ public class OsobaFunctions(IOsobaApi _osobaFacade)
 	[Function(nameof(AktivujOsobuAsync))]
 	public async Task<IActionResult> AktivujOsobuAsync(
 		[HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = ApiRoutes.OsobaAktivovat)] HttpRequest request,
-		int osobaId,
+		string osobaId,
 		CancellationToken cancellationToken)
 	{
 		await _osobaFacade.AktivujOsobuAsync(osobaId, cancellationToken);
@@ -64,7 +64,7 @@ public class OsobaFunctions(IOsobaApi _osobaFacade)
 	[Function(nameof(DeaktivujOsobuAsync))]
 	public async Task<IActionResult> DeaktivujOsobuAsync(
 		[HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = ApiRoutes.OsobaDeaktivovat)] HttpRequest request,
-		int osobaId,
+		string osobaId,
 		CancellationToken cancellationToken)
 	{
 		await _osobaFacade.DeaktivujOsobuAsync(osobaId, cancellationToken);

@@ -2,7 +2,6 @@ using System.Globalization;
 using Havit.ApplicationInsights.DependencyCollector;
 using KandaEu.Volejbal.Api.Infrastructure;
 using KandaEu.Volejbal.DependencyInjection;
-using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
@@ -64,7 +63,6 @@ public static class Program
 
 		builder.Services.AddApplicationInsightsTelemetryWorkerService(builder.Configuration);
 		builder.Services.ConfigureFunctionsApplicationInsights();
-		builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) => { module.EnableSqlCommandTextInstrumentation = true; });
 		builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreCancellationExceptionsTelemetryProcessor>();
 
 		builder.Services.ConfigureForWebAPI(builder.Configuration);

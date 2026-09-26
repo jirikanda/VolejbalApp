@@ -6,9 +6,11 @@
 // podstatnou část tvořil pull image z ghcr.io (mimo Azure) a náběh repliky. Flex Consumption nasazuje
 // zip do blob containeru ve stejném regionu, takže odpadá pull kontejneru z cizího registru.
 //
+// Databáze (Cosmos DB, free tier) JE součástí šablony včetně kontejnerů - datové úložiště tím přestává
+// být cizím resourcem a z pipeline mizí poslední skutečný secret: aplikace se autentizuje managed
+// identitou přes datové RBAC (viz cosmosDataContributorAssignment), ne klíčem.
+//
 // Mimo scope této šablony:
-// - databáze (hostovaná jinde) - připojení jen přes connection string parametr
-// - migrace/seed databáze (MigrationTool) - řeší se mimo tuto šablonu, ručně před deployem
 // - doména pro Api - běží jen na defaultním *.azurewebsites.net hostname
 //
 // Custom doména volejbal.kanda.eu (binding + automatický cert) JE součástí šablony, ale patří
@@ -24,9 +26,30 @@ param functionAppName string = 'JkVolejbalFunc'
 @description('Název App Service plánu (Flex Consumption). Na Flex platí jedna aplikace na plán.')
 param functionPlanName string = 'JkVolejbalFuncPlan'
 
-@description('Connection string k databázi (hostované mimo tuto šablonu).')
-@secure()
-param databaseConnectionString string
+@description('Název účtu Cosmos DB. Musí být globálně unikátní, jen malá písmena, číslice a pomlčky.')
+param cosmosAccountName string = 'jkvolejbalcosmosdb'
+
+@description('Název databáze v Cosmos DB.')
+param cosmosDatabaseName string = 'volejbal'
+
+// Free tier: 1000 RU/s a 25 GB zdarma, ale POUZE JEDEN účet na subscription a zapnout ho lze jen při
+// zakládání účtu (pozdější změna vyžaduje účet smazat a založit znovu). Objem aplikace je proti tomu
+// zanedbatelný - jednotky MB a desítky dokumentů na sezónu.
+@description('Zapíná free tier účtu Cosmos DB.')
+param cosmosEnableFreeTier bool = true
+
+// Propustnost sdílená celou databází, na minimu: 400 RU/s je nejmenší povolená hodnota pro sdílenou
+// databázi a stačí až pro 4 kontejnery (Cosmos vyžaduje 100 RU/s na kontejner; pátý kontejner by
+// znamenal 500). Tři samostatně provisionované kontejnery by chtěly 3x400 RU/s a do free tier by se
+// nevešly, proto sdílená. Zbytek free tier grantu (viz cosmosTotalThroughputLimit) zůstává volný
+// pro další databázi na tomtéž účtu.
+@description('Propustnost databáze v RU/s (sdílená všemi kontejnery). Minimum je 400.')
+param cosmosThroughput int = 400
+
+// Strop celkové propustnosti účtu = free tier grant (1000 RU/s zdarma). Pojistka proti tomu, aby
+// někdo v portálu omylem přidal placenou propustnost - všechno nad strop účet odmítne.
+@description('Strop celkové provisionované propustnosti účtu v RU/s (součet všech databází a kontejnerů).')
+param cosmosTotalThroughputLimit int = 1000
 
 @description('Název Application Insights (vytváří tato šablona jako workspace-based nad Log Analytics workspace níže).')
 param applicationInsightsName string = 'JkVolejbalAppInsights'
@@ -90,6 +113,11 @@ var storageBlobDataOwnerRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
 var storageQueueDataContributorRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 var storageTableDataContributorRoleId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
+// Vestavěná datová role Cosmos DB "Built-in Data Contributor" (čtení i zápis dokumentů, nikoli správa
+// účtu). Pozor, tohle je DATOVÉ RBAC Cosmosu, ne Azure RBAC - přiřazuje se resourcem
+// Microsoft.DocumentDB/.../sqlRoleAssignments a z portálu se nastavit nedá, jen šablonou nebo CLI.
+var cosmosDataContributorRoleId = '00000000-0000-0000-0000-000000000002'
+
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2025-07-01' = {
   name: logAnalyticsName
   location: location
@@ -138,6 +166,117 @@ resource deploymentContainer 'Microsoft.Storage/storageAccounts/blobServices/con
   name: deploymentContainerName
   properties: {
     publicAccess: 'None'
+  }
+}
+
+// Cosmos DB - datové úložiště aplikace. Klíčový přístup zůstává zapnutý kvůli Data Exploreru
+// v portálu; aplikace ho nepoužívá, autentizuje se managed identitou (viz cosmosDataContributorAssignment).
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
+  name: cosmosAccountName
+  location: location
+  kind: 'GlobalDocumentDB'
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    enableFreeTier: cosmosEnableFreeTier
+    minimalTlsVersion: 'Tls12'
+    // Účet vznikl ručně v portálu ještě před touto šablonou; následující hodnoty odpovídají jeho stavu.
+    // Continuous backup (7 dní) je u free tier zdarma a zpět na periodický se přepnout nedá -
+    // šablona bez backupPolicy by se o to pokusila a nasazení by spadlo.
+    backupPolicy: {
+      type: 'Continuous'
+      continuousModeProperties: {
+        tier: 'Continuous7Days'
+      }
+    }
+    enableAutomaticFailover: true
+    // Strop celkové propustnosti účtu, viz komentář u parametru.
+    capacity: {
+      totalThroughputLimit: cosmosTotalThroughputLimit
+    }
+    // Session consistency je default a pro jednu repliku i jediný rozumný kompromis: čtení po zápisu
+    // ze stejné session vidí vlastní zápisy, což je přesně to, co UI po přihlášení na termín očekává.
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: false
+      }
+    ]
+  }
+}
+
+resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-11-15' = {
+  parent: cosmosAccount
+  name: cosmosDatabaseName
+  properties: {
+    resource: {
+      id: cosmosDatabaseName
+    }
+    options: {
+      throughput: cosmosThroughput
+    }
+  }
+}
+
+// Všechny kontejnery mají partition key /id: model tak nenese žádnou vlastnost jen kvůli Cosmosu a point
+// read i zápis mají klíč vždy v ruce. Seznamy běží napříč partitions, ale celá data leží v jediné
+// fyzické partition, takže je fan-out zdarma.
+resource cosmosOsobyContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-11-15' = {
+  parent: cosmosDatabase
+  name: 'osoby'
+  properties: {
+    resource: {
+      id: 'osoby'
+      partitionKey: {
+        paths: [ '/id' ]
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+// Termíny mají partition key /id a id dokumentu je datum termínu, takže každý termín je vlastní logickou
+// partition. Unikátnost id v partition tím nahrazuje dřívější index UIDX_Termin_Datum_Deleted; partition
+// key odvozený z data (sezóna) by nic nepřinesl - seznamy se čtou napříč sezónami tak jako tak. Přihlášky jsou vnořené
+// v dokumentu a z indexu vyloučené: dovnitř pole se nikdy nedotazujeme, ale každé přihlášení dokument
+// přepíše - bez vyloučení by se při nejčastější operaci aplikace reindexovalo celé pole.
+resource cosmosTerminyContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-11-15' = {
+  parent: cosmosDatabase
+  name: 'terminy'
+  properties: {
+    resource: {
+      id: 'terminy'
+      partitionKey: {
+        paths: [ '/id' ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        automatic: true
+        includedPaths: [ { path: '/*' } ]
+        excludedPaths: [
+          { path: '/prihlasky/*' }
+          { path: '/"_etag"/?' }
+        ]
+      }
+    }
+  }
+}
+
+resource cosmosVzkazyContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-11-15' = {
+  parent: cosmosDatabase
+  name: 'vzkazy'
+  properties: {
+    resource: {
+      id: 'vzkazy'
+      partitionKey: {
+        paths: [ '/id' ]
+        kind: 'Hash'
+      }
+    }
   }
 }
 
@@ -246,9 +385,15 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: azureFunctionsEnvironment
         }
         {
-          name: 'ConnectionStrings__Database'
-          value: databaseConnectionString
+          name: 'Cosmos__Endpoint'
+          value: cosmosAccount.properties.documentEndpoint
         }
+        {
+          name: 'Cosmos__DatabaseId'
+          value: cosmosDatabaseName
+        }
+        // Cosmos__Key se ZÁMĚRNĚ nenastavuje: prázdný klíč znamená přihlášení managed identitou
+        // (viz DataLayer/Cosmos/CosmosClientFactory.cs). Díky tomu v nasazení není žádné tajemství.
         // Pozor: TZ (ani WEBSITE_TIME_ZONE) se nenastavuje - Flex Consumption je nepodporuje a tiše
         // ignoruje. Časovou zónu drží aplikace v kódu, viz Services/Infrastructure/TimeService.
       ]
@@ -291,6 +436,19 @@ resource storageTableDataContributorAssignment 'Microsoft.Authorization/roleAssi
   }
 }
 
+// Datový přístup Function App k Cosmosu. Bez tohoto přiřazení aplikace nastartuje, ale každý dotaz
+// skončí na 403 - datové RBAC Cosmosu je nezávislé na Azure RBAC a role jako Contributor nad účtem
+// na data nestačí.
+resource cosmosDataContributorAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-11-15' = {
+  parent: cosmosAccount
+  name: guid(cosmosAccount.id, functionApp.id, cosmosDataContributorRoleId)
+  properties: {
+    roleDefinitionId: '${cosmosAccount.id}/sqlRoleDefinitions/${cosmosDataContributorRoleId}'
+    principalId: functionApp.identity.principalId
+    scope: cosmosAccount.id
+  }
+}
+
 @description('Veřejná URL Api - defaultní azurewebsites.net hostname, žádná custom doména se sem neváže. Musí souhlasit s ApiBaseUrl ve Web.Client/wwwroot/appsettings.json.')
 output functionAppUrl string = 'https://${functionApp.properties.defaultHostName}'
 
@@ -302,3 +460,6 @@ output staticWebAppDefaultHostname string = staticWebApp.properties.defaultHostn
 
 @description('Název Static Web App - čte ho deploy-frontend job, aby název nemusel být napsaný zvlášť i ve workflow.')
 output staticWebAppName string = staticWebApp.name
+
+@description('Endpoint Cosmos DB - zadává se MigrationToolu při ručním převodu dat (viz infra/README.md).')
+output cosmosEndpoint string = cosmosAccount.properties.documentEndpoint

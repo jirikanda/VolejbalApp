@@ -1,16 +1,13 @@
-﻿using System.Runtime.CompilerServices;
-using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.Services.TimeServices;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Havit.Services.Caching;
-using KandaEu.Volejbal.Services.Infrastructure.MigrationTool;
-using KandaEu.Volejbal.Entity;
-using KandaEu.Volejbal.Services.Infrastructure.TimeService;
-using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 using Havit.Extensions.DependencyInjection;
-using Havit.Data.EntityFrameworkCore;
+using Havit.Extensions.DependencyInjection.Abstractions;
+using Havit.Services.Caching;
+using Havit.Services.TimeServices;
 using KandaEu.Volejbal.DataLayer;
+using KandaEu.Volejbal.DataLayer.Cosmos;
+using KandaEu.Volejbal.Services.Infrastructure.TimeService;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 
@@ -21,7 +18,7 @@ public static class ServiceCollectionExtensions
 	{
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
-			DatabaseConnectionString = configuration.GetConnectionString("Database"),
+			CosmosOptions = GetCosmosOptions(configuration),
 			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
 		};
 
@@ -34,22 +31,13 @@ public static class ServiceCollectionExtensions
 	}
 
 	/// <summary>
-	/// Konfigurace pro MigrationTool - migrace schématu databáze a spuštění data seedů v deployment time.
-	/// Záměrně nepoužívá ConfigureForAll, tool potřebuje jen EF Core, DataLayer a MigrationService (bez Services a Facades).
+	/// Konfigurace pro MigrationTool - založení databáze a kontejnerů, případně jednorázový převod dat
+	/// ze SQL Serveru. Záměrně nepoužívá ConfigureForAll, tool potřebuje jen přístup k datům.
 	/// </summary>
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	public static IServiceCollection ConfigureForMigrationTool(this IServiceCollection services, IConfiguration configuration)
 	{
-		InstallConfiguration installConfiguration = new InstallConfiguration
-		{
-			DatabaseConnectionString = configuration.GetConnectionString("Database")
-		};
-
-		InstallHavitEntityFramework(services, installConfiguration);
-		InstallHavitServices(services);
-		services.AddMemoryCache();
-
-		services.AddSingleton<IMigrationService, MigrationService>();
+		services.AddDataLayerServices(GetCosmosOptions(configuration));
 
 		return services;
 	}
@@ -71,7 +59,7 @@ public static class ServiceCollectionExtensions
 
 		InstallConfiguration installConfiguration = new InstallConfiguration
 		{
-			DatabaseConnectionString = configuration.GetConnectionString("Database"),
+			CosmosOptions = GetCosmosOptions(configuration),
 			ServiceProfiles = new[] { ServiceAttribute.DefaultProfile }
 		};
 
@@ -81,21 +69,16 @@ public static class ServiceCollectionExtensions
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	private static IServiceCollection ConfigureForAll(this IServiceCollection services, InstallConfiguration installConfiguration)
 	{
-		InstallHavitEntityFramework(services, installConfiguration);
+		services.AddDataLayerServices(installConfiguration.CosmosOptions);
 		InstallHavitServices(services);
 		InstallByServiceAttribute(services, installConfiguration);
 
 		return services;
 	}
 
-	private static void InstallHavitEntityFramework(IServiceCollection services, InstallConfiguration configuration)
+	private static CosmosOptions GetCosmosOptions(IConfiguration configuration)
 	{
-		services.AddDbContext<IDbContext, VolejbalDbContext>(optionsBuilder =>
-		{
-			optionsBuilder.UseSqlServer(configuration.DatabaseConnectionString, c => c.MaxBatchSize(30));
-			optionsBuilder.UseDefaultHavitConventions();
-		});
-		services.AddDataLayerServices();
+		return configuration.GetSection("Cosmos").Get<CosmosOptions>() ?? new CosmosOptions();
 	}
 
 	private static void InstallHavitServices(IServiceCollection services)
@@ -108,8 +91,8 @@ public static class ServiceCollectionExtensions
 
 	private static void InstallByServiceAttribute(IServiceCollection services, InstallConfiguration configuration)
 	{
-		// DataLayer se nescanuje - nemá jedinou třídu s [Service], registraci repozitářů, DataSources
-		// i data seedů obstarává generované AddDataLayerServices() (viz InstallHavitEntityFramework).
+		// DataLayer se nescanuje - nemá jedinou třídu s [Service], registraci repozitářů obstarává
+		// AddDataLayerServices() (viz ConfigureForAll).
 		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.Services.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles);
 		services.AddByServiceAttribute(typeof(KandaEu.Volejbal.Facades.Properties.AssemblyInfo).Assembly, configuration.ServiceProfiles);
 	}

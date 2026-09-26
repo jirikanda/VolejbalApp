@@ -2,7 +2,7 @@
 
 public class OsobaDto
 {
-	public int Id { get; set; }
+	public string Id { get; set; }
 	public string PrijmeniJmeno { get; set; }
 
 	/// <summary>

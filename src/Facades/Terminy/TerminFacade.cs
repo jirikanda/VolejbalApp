@@ -1,4 +1,4 @@
-﻿using Havit.Services.TimeServices;
+using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
@@ -9,9 +9,7 @@ namespace KandaEu.Volejbal.Facades.Terminy;
 
 [Service(ServiceType = typeof(ITerminApi))]
 public class TerminFacade(
-	ITerminDataSource _terminDataSource,
-	ITerminRepository _terminRepostory,
-	IPrihlaskaDataSource _prihlaskaDataSource,
+	ITerminRepository _terminRepository,
 	IOsobaRepository _osobaRepository,
 	IEnsureTerminyService _ensureTerminyService,
 	ITimeService _timeService) : ITerminApi
@@ -21,74 +19,72 @@ public class TerminFacade(
 	/// </summary>
 	/// <remarks>
 	/// Termíny se zakládají líně při čtení seznamu, dřívější hodinový timer trigger je proto zrušený.
-	/// Souběh více uživatelů řeší EnsureTerminyService (unikátní index nad datem termínu + opakování pokusu).
+	/// Souběh více uživatelů řeší EnsureTerminyService (id termínu = jeho datum, takže duplicitu
+	/// odmítne Cosmos konfliktem + opakování pokusu).
 	/// </remarks>
 	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken)
 	{
-		List<TerminDto> terminy = await GetBudouciTerminyAsync(cancellationToken);
+		List<Termin> terminy = await _terminRepository.GetBudouciTerminyAsync(_timeService.GetCurrentDate(), cancellationToken);
 
 		if (terminy.Count < EnsureTerminyService.PozadovanyPocetBudoucichTerminu)
 		{
 			await _ensureTerminyService.EnsureTerminyAsync(cancellationToken);
-			terminy = await GetBudouciTerminyAsync(cancellationToken);
+			terminy = await _terminRepository.GetBudouciTerminyAsync(_timeService.GetCurrentDate(), cancellationToken);
 		}
 
 		return new TerminListDto
 		{
 			Terminy = terminy
+				.Select(termin => new TerminDto
+				{
+					Id = termin.Id,
+					Datum = termin.Datum
+				})
+				.ToList()
 		};
 	}
 
-	private async Task<List<TerminDto>> GetBudouciTerminyAsync(CancellationToken cancellationToken)
+	public async Task<TerminDetailDto> GetDetailTerminuAsync(string terminId, CancellationToken cancellationToken = default)
 	{
-		return await _terminDataSource.Data
-			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetTerminyAsync)))
-			.Where(termin => termin.Datum.Date >= _timeService.GetCurrentDate())
-			.Select(item => new TerminDto
-			{
-				Id = item.Id,
-				Datum = item.Datum
-			}).ToListAsync(cancellationToken);
-	}
-
-	public async Task<TerminDetailDto> GetDetailTerminuAsync(int terminId, CancellationToken cancellationToken = default)
-	{
-		// Kontrola existence termínu
-		var termin = await _terminRepostory.GetObjectAsync(terminId, cancellationToken);
+		Termin termin = await _terminRepository.GetTerminAsync(terminId, cancellationToken);
 		termin.ThrowIfDeleted();
 		termin.ThrowIfPast(_timeService.GetCurrentDate());
 
-		List<Prihlaska> prihlaskyIncludingDeleted = await _prihlaskaDataSource.DataIncludingDeleted
-			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetDetailTerminuAsync)))
-			.Where(prihlaska => prihlaska.TerminId == terminId)
-			// Přihlášky/odhlášky smazaných osob přeskakujeme - jinak by se smazaná osoba, která se
-			// z termínu kdy odhlásila, objevila mezi nepřihlášenými a šla by znovu přihlásit
-			// (do neprihlaseni níže se nedostane, ta jde přes GetAllAktivniAsync, ale do odhlaseni ano).
-			.Where(prihlaska => prihlaska.Osoba.Deleted == null)
-			.Include(prihlaska => prihlaska.Osoba)
-			.ToListAsync(cancellationToken);
+		// Detail potřebuje i nepřihlášené, takže seznam osob se načítá tak jako tak - jména přihlášených
+		// se proto do přihlášek nedenormalizují, spárují se tady.
+		List<Osoba> osoby = await _osobaRepository.GetAllAsync(cancellationToken);
+		Dictionary<string, Osoba> osobyPodleId = osoby.ToDictionary(osoba => osoba.Id);
 
-		List<Prihlaska> prihlasky = prihlaskyIncludingDeleted.Where(prihlaska => prihlaska.Deleted == null).ToList();
-		List<Prihlaska> odhlasky = prihlaskyIncludingDeleted.Where(prihlaska => prihlaska.Deleted != null).ToList();
+		// Přihlášky/odhlášky smazaných osob přeskakujeme - jinak by se smazaná osoba, která se
+		// z termínu kdy odhlásila, objevila mezi nepřihlášenými a šla by znovu přihlásit.
+		List<Prihlaska> prihlaskyZnamychOsob = termin.Prihlasky
+			.Where(prihlaska => osobyPodleId.ContainsKey(prihlaska.OsobaId))
+			.ToList();
 
-		List<Osoba> prihlaseni = prihlasky.Select(item => item.Osoba).ToList();
-		// Neaktivní osoby se k přihlášení nenabízejí - stejné pravidlo jako u neprihlaseni níže,
-		// které jde přes GetAllAktivniAsync. Filtrovat je už v dotazu výše nelze: osoba deaktivovaná
-		// poté, co se na termín přihlásila, musí zůstat vidět mezi přihlášenými.
-		List<Osoba> odhlaseni = odhlasky.Select(item => item.Osoba).Distinct().Except(prihlaseni).Where(osoba => osoba.Aktivni).ToList();
+		List<Prihlaska> prihlasky = prihlaskyZnamychOsob.Where(prihlaska => prihlaska.Deleted == null).ToList();
 
-		List<Osoba> neprihlaseni = (await _osobaRepository.GetAllAktivniAsync(cancellationToken))
-			.Except(prihlaseni /* in memory */)
-			.Except(odhlaseni /* in memory */)
+		// Neaktivní osoby se k přihlášení nenabízejí. Filtrovat je nelze u přihlášených: osoba
+		// deaktivovaná poté, co se na termín přihlásila, musí zůstat vidět mezi přihlášenými.
+		List<Osoba> odhlaseni = prihlaskyZnamychOsob
+			.Where(prihlaska => prihlaska.Deleted != null)
+			.Select(prihlaska => osobyPodleId[prihlaska.OsobaId])
+			.Where(osoba => osoba.Aktivni)
+			.ToList();
+
+		HashSet<string> rozhodnutiIds = prihlaskyZnamychOsob.Select(prihlaska => prihlaska.OsobaId).ToHashSet();
+
+		List<Osoba> neprihlaseni = osoby
+			.Where(osoba => osoba.Aktivni)
+			.Where(osoba => !rozhodnutiIds.Contains(osoba.Id))
 			.ToList();
 
 		return new TerminDetailDto
 		{
 			Prihlaseni = prihlasky
-				.OrderBy(item => item.DatumPrihlaseni)
+				.OrderBy(prihlaska => prihlaska.DatumPrihlaseni)
 				.Select(prihlaska => new PrihlasenaOsobaDto
 				{
-					Osoba = prihlaska.ToOsobaDto()
+					Osoba = osobyPodleId[prihlaska.OsobaId].ToOsobaDto()
 				})
 				.ToList(),
 
@@ -103,9 +99,8 @@ public class TerminFacade(
 					Osoba = odhlaseny.ToOsobaDto(),
 					IsOdhlaseny = true
 				}))
-				.OrderBy(neprihlasenaOsoba => neprihlasenaOsoba.Osoba.PrijmeniJmeno)
+				.OrderBy(neprihlasenaOsoba => neprihlasenaOsoba.Osoba.PrijmeniJmeno, Comparers.CzechComparer)
 				.ToList()
 		};
 	}
-
 }

@@ -57,10 +57,6 @@ jobs:
       - name: Test
         run: dotnet test src/Tests/Tests.csproj --no-build --configuration Release --verbosity normal
 
-      # MigrationTool se tu ZÁMĚRNĚ nepublikuje ani nespouští - migrace schématu se pouští ručně
-      # z lokálního repa (dotnet run --project MigrationTool), a to PŘED spuštěním tohoto
-      # workflow, pokud přibyla migrace. Viz infra/README.md.
-
       # Bez --no-restore: tenhle krok si dělá vlastní RID-specific restore kvůli ReadyToRun, který se
       # v csproj aktivuje podle RID. Restore celé solution s --runtime nejde - u Web.Client
       # (browser-wasm) by vyžadoval neexistující Mono runtime pack pro linux-x64. Globální
@@ -137,14 +133,14 @@ jobs:
       # Nasazuje se celá šablona, ne jen změněná část: ARM v incremental módu projde nezměněné
       # resources (Log Analytics, App Insights, storage) jako no-op, takže to stojí minutu navíc, ale
       # infrastruktura nemůže začít odpovídat něčemu jinému než šabloně.
+      # Šablona nebere žádné parametry: od přechodu na Cosmos DB se aplikace k databázi hlásí managed
+      # identitou (datové RBAC přiřazuje tatáž šablona), takže do nasazení nevstupuje žádný secret.
       - name: Deploy Bicep template
         run: |
           az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/main.bicep \
-            --name "$DEPLOYMENT_NAME" \
-            --parameters \
-              databaseConnectionString='${{ secrets.DATABASE_CONNECTION_STRING }}'
+            --name "$DEPLOYMENT_NAME"
 
       # Outputy se čtou jednou tady a předávají se dál jako job outputs, aby deploy joby nemusely
       # sahat do ARM historie a nebyly na ní závislé.

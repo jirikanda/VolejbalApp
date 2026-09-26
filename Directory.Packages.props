@@ -4,35 +4,35 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="Havit.ApplicationInsights.DependencyCollector" Version="2.0.10" />
     <PackageVersion Include="Havit.AspNetCore.Mvc" Version="2.0.30" />
     <PackageVersion Include="Havit.Core" Version="2.0.39" />
     <PackageVersion Include="Havit.Blazor.Storage" Version="1.0.1" />
-    <PackageVersion Include="Havit.Data.EntityFrameworkCore" Version="2.10.3" />
-    <PackageVersion Include="Havit.Data.EntityFrameworkCore.Abstractions" Version="2.10.0" />
-    <PackageVersion Include="Havit.Data.EntityFrameworkCore.CodeGenerator" Version="2.10.4" />
-    <PackageVersion Include="Havit.Data.EntityFrameworkCore.Patterns" Version="2.10.3" />
-    <PackageVersion Include="Havit.Data.Patterns" Version="2.1.34" />
     <PackageVersion Include="Havit.Extensions.DependencyInjection" Version="2.0.14" />
     <PackageVersion Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.22" />
-    <PackageVersion Include="Havit.Model" Version="2.0.6" />
     <PackageVersion Include="Havit.Services" Version="2.0.51" />
     <PackageVersion Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.23.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.63.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.51.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12" />
+    <!-- Jen MigrationTool: jednorázový převod dat ze SQL Serveru do Cosmosu. Po převodu ho lze
+         i s tím projektem vyhodit, aplikace na SQL Server nesahá. -->
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.12" />
     <PackageVersion Include="MSTest" Version="4.4.0" />
+    <!-- Nutná závislost Cosmos SDK, i když ji náš kód nepoužívá - podrobnosti u reference
+         v src/DataLayer/DataLayer.csproj. SDK se váže na 10.0.0.0, novější verze vezme zavděk. -->
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Refit" Version="15.2.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="15.2.0" />
   </ItemGroup>
