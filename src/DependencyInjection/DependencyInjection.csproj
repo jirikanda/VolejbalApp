@@ -3,6 +3,9 @@
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.DependencyInjection</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.DependencyInjection</RootNamespace>
+
+		<!-- RID z publishe Api musí protéct až do DataLayeru, důvod viz DataLayer.csproj. -->
+		<IsRidAgnostic>false</IsRidAgnostic>
 	</PropertyGroup>
 
 	<ItemGroup>

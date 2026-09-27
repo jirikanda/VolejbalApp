@@ -3,6 +3,9 @@
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Services</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Services</RootNamespace>
+
+		<!-- RID z publishe Api musí protéct až do DataLayeru, důvod viz DataLayer.csproj. -->
+		<IsRidAgnostic>false</IsRidAgnostic>
 	</PropertyGroup>
 
 	<ItemGroup>
