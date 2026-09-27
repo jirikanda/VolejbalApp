@@ -69,7 +69,7 @@ public partial class Error
 			case HttpStatusCode.Forbidden:
 				return "Server požadovanou akci nepovolil.";
 
-			// Fasády hlásí OperationFailedException i ObjectNotFoundException jako 422 (viz ExceptionHandlingMiddleware).
+			// Server hlásí OperationFailedException i ObjectNotFoundException jako 422 (viz ExceptionHandlingMiddleware).
 			case HttpStatusCode.UnprocessableEntity:
 				return "Server požadavek odmítl - data se mezitím mohla změnit. Zkuste stránku načíst znovu.";
 

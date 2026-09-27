@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using KandaEu.Volejbal.Model.Metadata;
 
 namespace KandaEu.Volejbal.Contracts.Osoby.Dto;

@@ -1,9 +1,8 @@
-using System.Reflection;
+﻿using System.Reflection;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 using KandaEu.Volejbal.Contracts.Reporty;
-using KandaEu.Volejbal.Contracts.System;
 using KandaEu.Volejbal.Contracts.Terminy;
 using Microsoft.Azure.Functions.Worker;
 using Refit;
@@ -28,8 +27,7 @@ public class ApiContractTests
 		typeof(IPrihlaskaApi),
 		typeof(ITerminApi),
 		typeof(IReportOsobApi),
-		typeof(IReportTerminuApi),
-		typeof(IDataSeedApi)
+		typeof(IReportTerminuApi)
 	];
 
 	[TestMethod]

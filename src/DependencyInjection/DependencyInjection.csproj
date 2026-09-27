@@ -3,15 +3,19 @@
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.DependencyInjection</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.DependencyInjection</RootNamespace>
+
+		<!-- RID z publishe Api musí protéct až do DataLayeru, důvod viz DataLayer.csproj. -->
+		<IsRidAgnostic>false</IsRidAgnostic>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Havit.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DataLayer\DataLayer.csproj" />
-		<ProjectReference Include="..\Entity\Entity.csproj" />
 		<ProjectReference Include="..\Facades\Facades.csproj" />
 		<ProjectReference Include="..\Model\Model.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />

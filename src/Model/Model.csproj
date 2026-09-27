@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Model</AssemblyName>
@@ -6,9 +6,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Havit.Core kvůli OperationFailedException, kterou entity vyhazují ve svých kontrolách.
+		     Žádné EF balíčky: entity jsou tvarem dokumentu, ne mapováním na tabulky. -->
 		<PackageReference Include="Havit.Core" />
-		<PackageReference Include="Havit.Data.EntityFrameworkCore.Abstractions" />
-		<PackageReference Include="Havit.Model" />
 	</ItemGroup>
 
 </Project>

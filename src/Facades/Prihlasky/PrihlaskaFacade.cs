@@ -1,85 +1,130 @@
-﻿using Havit.Services.TimeServices;
+﻿using Havit;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 
 namespace KandaEu.Volejbal.Facades.Prihlasky;
 
 [Service(ServiceType = typeof(IPrihlaskaApi))]
 public class PrihlaskaFacade(
-	IUnitOfWork _unitOfWork,
-	ITimeService _timeService,
+	TimeProvider _timeProvider,
 	ITerminRepository _terminRepository,
-	IOsobaRepository _osobaRepository,
-	IPrihlaskaRepository _prihlaskaRepository) : IPrihlaskaApi
+	IOsobaRepository _osobaRepository) : IPrihlaskaApi
 {
-	public async Task PrihlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken)
-	{
-		Termin termin = await _terminRepository.GetObjectAsync(terminId, cancellationToken);
-		termin.ThrowIfDeleted();
-		termin.ThrowIfPast(_timeService.GetCurrentDate());
+	/// <summary>
+	/// Maximální počet pokusů o uložení termínu při souběhu (viz UpravTerminAsync).
+	/// </summary>
+	private const int MaxPocetPokusu = 10;
 
-		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+	public async Task PrihlasitAsync(string terminId, string osobaId, CancellationToken cancellationToken)
+	{
+		Osoba osoba = await _osobaRepository.GetOsobaAsync(osobaId, cancellationToken);
 		osoba.ThrowIfDeleted();
 		osoba.ThrowIfNotAktivni();
 
-		if (await _prihlaskaRepository.GetPrihlaskaAsync(terminId, osobaId, cancellationToken) != null)
+		await UpravTerminAsync(terminId, termin =>
 		{
-			return;
-		}
+			Prihlaska prihlaska = NajdiPrihlasku(termin, osobaId);
 
-		Prihlaska prihlaska = new Prihlaska
-		{
-			TerminId = terminId,
-			OsobaId = osobaId,
-			DatumPrihlaseni = _timeService.GetCurrentTime(),
-		};
-
-		_unitOfWork.AddForInsert(prihlaska);
-		try
-		{
-			await _unitOfWork.CommitAsync(cancellationToken);
-		}
-		catch (DbUpdateException ex) when (IsPrihlaskaUniqueIndexViolation(ex))
-		{
-			// Souběžné přihlášení druhým requestem — již existuje, považujeme za úspěch (idempotentní).
-		}
-	}
-
-	public async Task OdhlasitAsync(int terminId, int osobaId, CancellationToken cancellationToken)
-	{
-		Termin termin = await _terminRepository.GetObjectAsync(terminId, cancellationToken);
-		termin.ThrowIfDeleted();
-		termin.ThrowIfPast(_timeService.GetCurrentDate());
-
-		Prihlaska prihlaska = await _prihlaskaRepository.GetPrihlaskaAsync(terminId, osobaId, cancellationToken);
-		if (prihlaska != null)
-		{
-			_unitOfWork.AddForDelete(prihlaska);
-		}
-		else
-		{
-			var now = _timeService.GetCurrentTime();
-
-			_unitOfWork.AddForInsert(new Prihlaska
+			if ((prihlaska != null) && (prihlaska.Deleted == null))
 			{
-				TerminId = terminId,
-				OsobaId = osobaId,
-				DatumPrihlaseni = now,
-				Deleted = now
-			});
-		}
-		await _unitOfWork.CommitAsync(cancellationToken);
+				// Už je přihlášená, není co měnit - přihlášení je idempotentní.
+				return false;
+			}
+
+			if (prihlaska != null)
+			{
+				// Dřívější odhlášku měníme zpět na přihlášku.
+				prihlaska.Deleted = null;
+				prihlaska.DatumPrihlaseni = _timeProvider.GetLocalDateTime();
+			}
+			else
+			{
+				termin.Prihlasky.Add(new Prihlaska
+				{
+					OsobaId = osobaId,
+					DatumPrihlaseni = _timeProvider.GetLocalDateTime()
+				});
+			}
+
+			return true;
+		}, cancellationToken);
 	}
 
-	private static bool IsPrihlaskaUniqueIndexViolation(DbUpdateException ex)
+	public async Task OdhlasitAsync(string terminId, string osobaId, CancellationToken cancellationToken)
 	{
-		// SQL Server: 2627 = unique constraint, 2601 = unique index.
-		// Pro in-memory provider DbUpdateException nepadá, takže větev pro testy neřešíme.
-		var inner = ex.InnerException;
-		if (inner == null)
+		// Cosmos nemá cizí klíče: bez kontroly by šlo do termínu přidávat tombstony s libovolným id.
+		// Neaktivní hráč se odhlásit smí - přihlásil se ještě jako aktivní a musí mít jak z termínu odejít.
+		Osoba osoba = await _osobaRepository.GetOsobaAsync(osobaId, cancellationToken);
+		osoba.ThrowIfDeleted();
+
+		await UpravTerminAsync(terminId, termin =>
 		{
-			return false;
+			Prihlaska prihlaska = NajdiPrihlasku(termin, osobaId);
+
+			if ((prihlaska != null) && (prihlaska.Deleted != null))
+			{
+				// Už je odhlášená, není co měnit.
+				return false;
+			}
+
+			if (prihlaska != null)
+			{
+				prihlaska.Deleted = _timeProvider.GetLocalDateTime();
+			}
+			else
+			{
+				// Odhlášení osoby, která přihlášená nebyla: tombstone, aby UI poznalo, že jde
+				// o aktivní odmítnutí účasti, ne o "ještě se nerozhodl".
+				DateTime now = _timeProvider.GetLocalDateTime();
+				termin.Prihlasky.Add(new Prihlaska
+				{
+					OsobaId = osobaId,
+					DatumPrihlaseni = now,
+					Deleted = now
+				});
+			}
+
+			return true;
+		}, cancellationToken);
+	}
+
+	private static Prihlaska NajdiPrihlasku(Termin termin, string osobaId)
+	{
+		// Na osobu připadá nejvýš jedna položka - přihlášení i odhlášení mění tutéž (viz Prihlaska).
+		return termin.Prihlasky.FirstOrDefault(prihlaska => prihlaska.OsobaId == osobaId);
+	}
+
+	/// <summary>
+	/// Načte termín, nechá ho upravit a uloží. Pokud mezitím termín změnil někdo jiný, načte ho znovu
+	/// a úpravu zopakuje nad aktuálními daty.
+	/// </summary>
+	/// <param name="uprava">Úprava termínu. Vrací false, pokud není co ukládat.</param>
+	/// <remarks>
+	/// Přihlášky jsou součástí dokumentu termínu, takže souběžná přihlášení dvou hráčů na tentýž termín
+	/// píšou do téhož dokumentu. Konflikt zachytí ETag (uložení skončí s 412) - cenou za vnoření
+	/// přihlášek je tahle smyčka, výměnou za ni odpadl unikátní index i join při čtení detailu.
+	/// </remarks>
+	private async Task UpravTerminAsync(string terminId, Func<Termin, bool> uprava, CancellationToken cancellationToken)
+	{
+		for (int pokus = 1; ; pokus++)
+		{
+			Termin termin = await _terminRepository.GetTerminAsync(terminId, cancellationToken);
+			termin.ThrowIfDeleted();
+			termin.ThrowIfPast(_timeProvider.GetLocalToday());
+
+			if (!uprava(termin))
+			{
+				return;
+			}
+
+			if (await _terminRepository.TryReplaceTerminAsync(termin, cancellationToken))
+			{
+				return;
+			}
+
+			if (pokus >= MaxPocetPokusu)
+			{
+				throw new OperationFailedException("Termín se právě mění z jiného zařízení, zkus to prosím znovu.");
+			}
 		}
-		string message = inner.Message ?? string.Empty;
-		return message.Contains("UIDX_Prihlaska_TerminId_OsobaId_Deleted", StringComparison.Ordinal);
 	}
 }

@@ -6,8 +6,7 @@ namespace KandaEu.Volejbal.Facades.Osoby;
 [Service(ServiceType = typeof(IOsobaApi))]
 public class OsobaFacade(
 	IOsobaRepository _osobaRepository,
-	IOsobaDataSource _osobaDataSource,
-	IUnitOfWork _unitOfWork) : IOsobaApi
+	TimeProvider _timeProvider) : IOsobaApi
 {
 	public async Task VlozOsobuAsync(OsobaInputDto osobaInputDto, CancellationToken cancellationToken)
 	{
@@ -18,48 +17,50 @@ public class OsobaFacade(
 			Email = osobaInputDto.Email
 		};
 
-		_unitOfWork.AddForInsert(osoba);
-		await _unitOfWork.CommitAsync(cancellationToken);
+		await _osobaRepository.InsertAsync(osoba, cancellationToken);
 	}
 
-	public async Task AktivujOsobuAsync(int osobaId, CancellationToken cancellationToken)
+	public async Task AktivujOsobuAsync(string osobaId, CancellationToken cancellationToken)
 	{
-		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+		Osoba osoba = await _osobaRepository.GetOsobaAsync(osobaId, cancellationToken);
 
 		osoba.ThrowIfDeleted();
 		osoba.ThrowIfAktivni();
 
 		osoba.Aktivni = true;
 
-		_unitOfWork.AddForUpdate(osoba);
-		await _unitOfWork.CommitAsync(cancellationToken);
+		await _osobaRepository.UpdateAsync(osoba, cancellationToken);
 	}
 
-	public async Task DeaktivujOsobuAsync(int osobaId, CancellationToken cancellationToken)
+	public async Task DeaktivujOsobuAsync(string osobaId, CancellationToken cancellationToken)
 	{
-		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+		Osoba osoba = await _osobaRepository.GetOsobaAsync(osobaId, cancellationToken);
 
 		osoba.ThrowIfDeleted();
 		osoba.ThrowIfNotAktivni();
 
 		osoba.Aktivni = false;
 
-		_unitOfWork.AddForUpdate(osoba);
-		await _unitOfWork.CommitAsync(cancellationToken);
+		await _osobaRepository.UpdateAsync(osoba, cancellationToken);
 	}
 
 	/// <summary>
 	/// Smaže osobu. Mazat lze jen osobu, která je již deaktivovaná — aby smazání nebylo jednokrokové.
 	/// </summary>
-	public async Task SmazOsobuAsync(int osobaId, CancellationToken cancellationToken)
+	/// <remarks>
+	/// Soft delete: osoba zůstává dokumentem s vyplněným deleted. Přihlášky smazané osoby odkazují
+	/// na id, které se pak nenajde mezi načtenými osobami, a detail termínu je přeskočí.
+	/// </remarks>
+	public async Task SmazOsobuAsync(string osobaId, CancellationToken cancellationToken)
 	{
-		Osoba osoba = await _osobaRepository.GetObjectAsync(osobaId, cancellationToken);
+		Osoba osoba = await _osobaRepository.GetOsobaAsync(osobaId, cancellationToken);
 
 		osoba.ThrowIfDeleted();
 		osoba.ThrowIfAktivni();
 
-		_unitOfWork.AddForDelete(osoba);
-		await _unitOfWork.CommitAsync(cancellationToken);
+		osoba.Deleted = _timeProvider.GetLocalDateTime();
+
+		await _osobaRepository.UpdateAsync(osoba, cancellationToken);
 	}
 
 	/// <summary>
@@ -67,30 +68,27 @@ public class OsobaFacade(
 	/// </summary>
 	public async Task<OsobaListDto> GetOsobyAsync(CancellationToken cancellationToken)
 	{
-		return await GetOsobyAsync(null, cancellationToken);
+		return ToOsobaListDto(await _osobaRepository.GetAllAsync(cancellationToken));
 	}
 
 	public async Task<OsobaListDto> GetAktivniOsobyAsync(CancellationToken cancellationToken)
 	{
-		return await GetOsobyAsync(true, cancellationToken);
+		return ToOsobaListDto(await _osobaRepository.GetAllAktivniAsync(cancellationToken));
 	}
 
-	private async Task<OsobaListDto> GetOsobyAsync(bool? aktivni, CancellationToken cancellationToken)
+	private static OsobaListDto ToOsobaListDto(List<Osoba> osoby)
 	{
-		OsobaListDto result = new OsobaListDto
+		// Řazení podle příjmení a jména zajišťuje repozitář (české řazení, viz OsobaRazeniExtensions).
+		return new OsobaListDto
 		{
-			Osoby = await _osobaDataSource.Data
-				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetOsobyAsync)))
-				.Where(osoba => (aktivni == null) || (osoba.Aktivni == aktivni.Value))
-				.OrderBy(item => item.Prijmeni).ThenBy(item => item.Jmeno)
-				.Select(item => new OsobaDto
+			Osoby = osoby
+				.Select(osoba => new OsobaDto
 				{
-					Id = item.Id,
-					PrijmeniJmeno = item.PrijmeniJmeno,
-					Aktivni = item.Aktivni
+					Id = osoba.Id,
+					PrijmeniJmeno = osoba.PrijmeniJmeno,
+					Aktivni = osoba.Aktivni
 				})
-				.ToListAsync(cancellationToken)
+				.ToList()
 		};
-		return result;
 	}
 }

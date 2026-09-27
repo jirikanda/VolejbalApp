@@ -1,16 +1,31 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.DataLayer</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.DataLayer</RootNamespace>
+
+		<!-- RID z publishe Api (linux-x64) má do tohoto projektu protéct. Knihovny jsou ve výchozím stavu RID-agnostické
+		     a SDK jim globální RuntimeIdentifier nepředává; Cosmos SDK ale svoje Windows nativní binárky
+		     (ServiceInterop, msvcp140, vcruntime140*) přidává vlastním targets souborem jako obsah projektu vždy,
+		     když RID chybí nebo začíná na "win". Bez RID by se tedy sestavily do výstupu DataLayeru a odtud přitekly
+		     do linuxového balíčku Api (cca 9 MB navíc při každém studeném startu). Totéž musí platit pro každý
+		     projekt mezi Api a DataLayerem (Services, Facades, DependencyInjection), jinak by se DataLayer přes něj
+		     sestavil ještě jednou bez RID. -->
+		<IsRidAgnostic>false</IsRidAgnostic>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Havit.Data.EntityFrameworkCore.Patterns" />
+		<PackageReference Include="Azure.Identity" />
+		<PackageReference Include="Microsoft.Azure.Cosmos" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+		<!-- Nepoužívá ho náš kód, ale Cosmos SDK: svoje vlastní typy (ContainerProperties, query plány,
+		     Documents.*) serializuje Newtonsoftem, jen uživatelská data jdou přes System.Text.Json.
+		     Balíček si ho netáhne jako závislost, aby si verzi řídil konzument, ale odkazuje se na něj -
+		     bez téhle reference spadne už konstruktor CosmosClient na FileNotFoundException. -->
+		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Entity\Entity.csproj" />
 		<ProjectReference Include="..\Model\Model.csproj" />
 	</ItemGroup>
 

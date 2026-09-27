@@ -16,7 +16,6 @@
   <Project Path="src/Contracts/Contracts.csproj" />
   <Project Path="src/DataLayer/DataLayer.csproj" />
   <Project Path="src/DependencyInjection/DependencyInjection.csproj" />
-  <Project Path="src/Entity/Entity.csproj" />
   <Project Path="src/Facades/Facades.csproj" />
   <Project Path="src/MigrationTool/MigrationTool.csproj" />
   <Project Path="src/Model/Model.csproj" />

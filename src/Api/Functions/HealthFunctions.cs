@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Contracts.Api;
+﻿using KandaEu.Volejbal.Contracts.Api;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;

@@ -1,16 +1,13 @@
-﻿using Havit.Data.EntityFrameworkCore;
-using Havit.Services.TimeServices;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 [Service]
 public class EnsureTerminyService(
 	ILogger<EnsureTerminyService> _logger,
-	ITerminDataSource _terminDataSource,
-	IUnitOfWork _unitOfWork,
-	ITimeService _timeService) : IEnsureTerminyService
+	ITerminRepository _terminRepository,
+	ITerminDatumGeneratorService _terminDatumGeneratorService,
+	TimeProvider _timeProvider) : IEnsureTerminyService
 {
 	/// <summary>
 	/// Kolik budoucích termínů má být k dispozici.
@@ -23,111 +20,85 @@ public class EnsureTerminyService(
 	private const int MaxPocetPokusu = 3;
 
 	/// <summary>
-	/// Doplní budoucí termíny do počtu <see cref="PozadovanyPocetBudoucichTerminu" />.
+	/// Doplní budoucí termíny do počtu <see cref="PozadovanyPocetBudoucichTerminu" /> a vrátí nesmazané
+	/// budoucí termíny včetně právě založených.
 	/// </summary>
 	/// <remarks>
 	/// Metoda se volá při čtení seznamu termínů, může tedy běžet souběžně pro několik požadavků najednou.
-	/// Souběh řeší databáze: unikátní index UIDX_Termin_Datum_Deleted duplicitní termín odmítne a commit
-	/// skončí <see cref="DbUpdateException" />. Poražený v závodě zahodí rozpracované změny a zkusí to
-	/// znovu nad aktuálními daty - obvykle už nezbývá co zakládat. Zamykat nic nepotřebujeme, vkládané
-	/// datum je deterministické (stejný den v týdnu), takže souběžné běhy soupeří o tentýž řádek.
+	/// Souběh řeší databáze: id dokumentu termínu je jeho datum, takže Cosmos duplicitní termín odmítne
+	/// konfliktem a <see cref="ITerminRepository.TryCreateTerminAsync" /> vrátí false. Poražený v závodě to
+	/// zkusí znovu nad aktuálními daty - obvykle už nezbývá co zakládat.
+	///
+	/// Aby souběžné běhy soupeřily o tentýž dokument, musí počet budoucích termínů i datum, na které se
+	/// navazuje, pocházet z jednoho snímku dat. Proto se čte jediný seznam budoucích termínů včetně
+	/// smazaných a poslední datum se z něj bere přímo; samostatný dotaz na poslední datum přijde na řadu
+	/// jen tehdy, když žádný budoucí termín není. Dva dotazy s různým stářím by dovolily, aby poražený
+	/// navázal na datum založené soupeřem a místo konfliktu založil termín navíc.
 	/// </remarks>
-	public async Task EnsureTerminyAsync(CancellationToken cancellationToken)
+	public async Task<List<Termin>> EnsureTerminyAsync(CancellationToken cancellationToken)
 	{
-		for (int pokus = 1; ; pokus++)
+		DateTime today = _timeProvider.GetLocalToday();
+
+		for (int pokus = 1; pokus <= MaxPocetPokusu; pokus++)
 		{
-			try
+			(bool uspech, List<Termin> budouciTerminy) = await TryEnsureTerminyCoreAsync(today, cancellationToken);
+			if (uspech)
 			{
-				await EnsureTerminyCoreAsync(cancellationToken);
-				return;
+				return budouciTerminy;
 			}
-			catch (DbUpdateException exception) when (pokus < MaxPocetPokusu)
+
+			_logger.LogInformation("Založení termínu selhalo na konfliktu (pokus {pokus}), pravděpodobně souběh s jiným požadavkem. Zkouším znovu.", pokus);
+		}
+
+		// Po vyčerpání pokusů termíny nejspíš založil někdo jiný; vrací se to, co je k dispozici, další
+		// požadavek to dorovná.
+		_logger.LogWarning("Termíny se nepodařilo doplnit ani na {pokusy}. pokus, nechávám to na dalším požadavku.", MaxPocetPokusu);
+		return await _terminRepository.GetBudouciTerminyAsync(today, cancellationToken);
+	}
+
+	/// <summary>
+	/// Jeden průchod doplněním termínů. Vrací false, pokud narazil na konflikt nebo na data změněná
+	/// souběžným požadavkem; při úspěchu vrací nesmazané budoucí termíny včetně založených.
+	/// </summary>
+	private async Task<(bool Uspech, List<Termin> BudouciTerminy)> TryEnsureTerminyCoreAsync(DateTime today, CancellationToken cancellationToken)
+	{
+		// Jeden snímek: nesmazané termíny určují počet, všechny (i smazané) datum, na které se navazuje.
+		List<Termin> vsechnyBudouciTerminy = await _terminRepository.GetBudouciTerminyIncludingDeletedAsync(today, cancellationToken);
+		List<Termin> budouciTerminy = vsechnyBudouciTerminy.Where(termin => termin.Deleted == null).ToList();
+		_logger.LogInformation("Nalezeno {count} budoucích termínů.", budouciTerminy.Count);
+
+		if (budouciTerminy.Count >= PozadovanyPocetBudoucichTerminu)
+		{
+			return (true, budouciTerminy);
+		}
+
+		DateTime? posledniDatum;
+		if (vsechnyBudouciTerminy.Count > 0)
+		{
+			posledniDatum = vsechnyBudouciTerminy.Max(termin => termin.Datum);
+		}
+		else
+		{
+			posledniDatum = await _terminRepository.GetPosledniDatumTerminuAsync(cancellationToken);
+			if ((posledniDatum != null) && (posledniDatum.Value >= today))
 			{
-				_logger.LogInformation(exception, "Uložení termínů selhalo (pokus {pokus}), pravděpodobně souběh s jiným požadavkem. Zkouším znovu.", pokus);
-				_unitOfWork.Clear();
+				// Mezi oběma dotazy někdo budoucí termín založil - snímek už neplatí, zkusíme to znovu.
+				return (false, budouciTerminy);
 			}
 		}
-	}
 
-	private async Task EnsureTerminyCoreAsync(CancellationToken cancellationToken)
-	{
-		_logger.LogInformation("Zjišťuji počet budoucích termínů...");
-		int budouciTerminyPocet = await _terminDataSource.Data
-			.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(EnsureTerminyAsync)))
-			.Where(termin => termin.Datum.Date >= _timeService.GetCurrentDate())
-			.CountAsync(cancellationToken);
-
-		_logger.LogInformation("Nalezeno {count} budoucích termínů.", budouciTerminyPocet);
-
-		if (budouciTerminyPocet < PozadovanyPocetBudoucichTerminu)
+		foreach (DateTime datum in _terminDatumGeneratorService.GetDatumyKZalozeni(today, posledniDatum, budouciTerminy.Count, PozadovanyPocetBudoucichTerminu))
 		{
-			DateTime posledniDatum = await _terminDataSource.DataIncludingDeleted
-				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(EnsureTerminyAsync)))
-				.OrderByDescending(item => item.Datum)
-				.Select(item => item.Datum)
-				.FirstOrDefaultAsync(cancellationToken);
-
-			DateTime datum;
-			if (posledniDatum == default(DateTime))
+			_logger.LogInformation("Zakládám termín pro datum {datum}.", datum);
+			Termin termin = new Termin { Datum = datum };
+			if (!await _terminRepository.TryCreateTerminAsync(termin, cancellationToken))
 			{
-				// pokud není žádné datum, vezmeme první úterý ode dneška
-				datum = _timeService.GetCurrentDate();
-				while (datum.DayOfWeek != DayOfWeek.Tuesday)
-				{
-					datum = datum.AddDays(1);
-				}
-			}
-			else
-			{
-				// pokud již nějaké datum máme, přidáme vezmeme stejný den následující týden
-				datum = posledniDatum.AddDays(7);
-
-				while (datum < _timeService.GetCurrentDate()) // pokud by to náhodou bylo v minulosti, což se nečeká, posuneme se do budoucnosti
-				{
-					datum = datum.AddDays(7); // k tomuto snad nikdy nedojde
-				}
+				return (false, budouciTerminy);
 			}
 
-			for (int i = budouciTerminyPocet; i < PozadovanyPocetBudoucichTerminu; i++)
-			{
-				while (!IsSchoolDate(datum))
-				{
-					datum = datum.AddDays(7);
-				}
-
-				_logger.LogInformation("Zakládám termín pro datum {datum}.", datum);
-				Termin termin = new Termin { Datum = datum };
-				_unitOfWork.AddForInsert(termin);
-				datum = datum.AddDays(7);
-			}
-
-			_logger.LogInformation("Ukládám...");
-			await _unitOfWork.CommitAsync(cancellationToken);
-			_logger.LogInformation("Uloženo...");
+			budouciTerminy.Add(termin);
 		}
-	}
 
-	private bool IsSchoolDate(DateTime datum)
-	{
-		return !IsSummerHoliday(datum)
-			&& !IsChristmasHoliday(datum)
-			&& !IsHolidayDate(datum, 1, 5) // Svátek práce
-			&& !IsHolidayDate(datum, 8, 5) // Den vítězství
-			&& !IsHolidayDate(datum, 28, 9) // Den české státnosti
-			&& !IsHolidayDate(datum, 28, 10) // Den vzniku Československa
-			&& !IsHolidayDate(datum, 17, 11); // Den boje za svobodu a demokracii
+		return (true, budouciTerminy.OrderBy(termin => termin.Datum).ToList());
 	}
-
-	private bool IsSummerHoliday(DateTime datum)
-	{
-		return datum.Month is 7 or 8;
-	}
-
-	private bool IsChristmasHoliday(DateTime datum)
-	{
-		return ((datum.Month == 12) && (datum.Day >= 24))
-			|| ((datum.Month == 1) && (datum.Day == 1));
-	}
-
-	private bool IsHolidayDate(DateTime datum, int day, int month) => (datum.Day == day) && (datum.Month == month);
 }

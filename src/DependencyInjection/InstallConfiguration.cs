@@ -1,7 +1,9 @@
-﻿namespace KandaEu.Volejbal.DependencyInjection;
+﻿using KandaEu.Volejbal.DataLayer.Cosmos;
+
+namespace KandaEu.Volejbal.DependencyInjection;
 
 internal class InstallConfiguration
 {
-	public string DatabaseConnectionString { get; set; }
+	public CosmosOptions CosmosOptions { get; set; }
 	public string[] ServiceProfiles { get; set; }
 }

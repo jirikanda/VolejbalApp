@@ -8,7 +8,7 @@ public partial class Home
 	[Inject]
 	protected Havit.Blazor.Storage.ILocalStorageService LocalStorageService { get; set; }
 
-	private int? _currentTerminId;
+	private string _currentTerminId;
 	private bool _terminyNacteny;
 
 	protected bool ShowNastenkaLink { get; set; }
@@ -28,7 +28,7 @@ public partial class Home
 		await LocalStorageService.SetValueAsync("LastVisit", DateTime.Now);
 	}
 
-	private void HandleCurrentTerminIdChanged(int newCurrentterminId)
+	private void HandleCurrentTerminIdChanged(string newCurrentterminId)
 	{
 		_currentTerminId = newCurrentterminId;
 	}

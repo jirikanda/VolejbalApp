@@ -20,7 +20,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 	[Inject]
 	protected Havit.Blazor.Storage.ILocalStorageService LocalStorageService { get; set; }
 
-	[Parameter] public int? CurrentTerminId { get; set; }
+	[Parameter] public string CurrentTerminId { get; set; }
 
 	/// <summary>
 	/// Indikuje, že načítání termínů už proběhlo. Dokud je false, není absence zvoleného termínu
@@ -28,15 +28,21 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 	/// </summary>
 	[Parameter] public bool TerminyNacteny { get; set; }
 
-	protected int? PrefferedOsobaId { get; set; }
+	protected string PrefferedOsobaId { get; set; }
+
+	/// <summary>
+	/// Klíč v local storage. Změněný oproti "PrefferedOsobaId": tam je uložené číselné id z doby před
+	/// přechodem na Cosmos, které by se jako string nepřečetlo.
+	/// </summary>
+	private const string PrefferedOsobaStorageKey = "PrefferedOsoba";
 
 	private CancellationTokenSource _cancellationTokenSource;
 
 	protected override async Task OnParametersSetAsync()
 	{
-		if ((CurrentTerminId != null) && (CurrentTerminId != State.AktualniTerminId))
+		if (!String.IsNullOrEmpty(CurrentTerminId) && (CurrentTerminId != State.AktualniTerminId))
 		{
-			await SetCurrentTerminAsync(CurrentTerminId.Value);
+			await SetCurrentTerminAsync(CurrentTerminId);
 		}
 	}
 
@@ -44,14 +50,14 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 	{
 		await base.OnInitializedAsync();
 
-		(bool Success, int Value) prefferedOsobaIdResult = await LocalStorageService.TryGetValueAsync<int>("PrefferedOsobaId");
+		(bool Success, string Value) prefferedOsobaIdResult = await LocalStorageService.TryGetValueAsync<string>(PrefferedOsobaStorageKey);
 		if (prefferedOsobaIdResult.Success)
 		{
 			this.PrefferedOsobaId = prefferedOsobaIdResult.Value;
 		}
 	}
 
-	protected async Task SetCurrentTerminAsync(int terminId)
+	protected async Task SetCurrentTerminAsync(string terminId)
 	{
 		State.AktualniTerminId = terminId;
 
@@ -92,13 +98,13 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;
 
-		await Progress.ExecuteInProgressAsync(async () => await PrihlaskaApi.PrihlasitAsync(State.AktualniTerminId.Value, prihlasovanaOsoba.Osoba.Id));
+		await Progress.ExecuteInProgressAsync(async () => await PrihlaskaApi.PrihlasitAsync(State.AktualniTerminId, prihlasovanaOsoba.Osoba.Id));
 
 		neprihlaseni.RemoveAll(neprihlaseny => neprihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id);
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == prihlasovanaOsoba.Osoba.Id); // to se snad nemůže stát
 		prihlaseni.Add(new PrihlasenaOsobaDto { Osoba = prihlasovanaOsoba.Osoba });
 
-		await LocalStorageService.SetValueAsync("PrefferedOsobaId", prihlasovanaOsoba.Osoba.Id);
+		await LocalStorageService.SetValueAsync(PrefferedOsobaStorageKey, prihlasovanaOsoba.Osoba.Id);
 		PrefferedOsobaId = prihlasovanaOsoba.Osoba.Id;
 	}
 
@@ -107,7 +113,7 @@ public partial class Prihlasovani : ComponentBase, IDisposable
 		var prihlaseni = State.Prihlaseni;
 		var neprihlaseni = State.Neprihlaseni;
 
-		await Progress.ExecuteInProgressAsync(async () => await PrihlaskaApi.OdhlasitAsync(State.AktualniTerminId.Value, odhlasovanaOsobaDto.Id));
+		await Progress.ExecuteInProgressAsync(async () => await PrihlaskaApi.OdhlasitAsync(State.AktualniTerminId, odhlasovanaOsobaDto.Id));
 
 		prihlaseni.RemoveAll(prihlaseny => prihlaseny.Osoba.Id == odhlasovanaOsobaDto.Id);
 		neprihlaseni.RemoveAll(item => item.Osoba.Id == odhlasovanaOsobaDto.Id);

@@ -1,47 +1,50 @@
-﻿using Havit.Data.EntityFrameworkCore;
-using Havit.Data.Patterns.DataSeeds;
-using KandaEu.Volejbal.DataLayer.Seeds.Core;
+﻿using System.Net;
+using KandaEu.Volejbal.DataLayer.Cosmos;
 using KandaEu.Volejbal.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KandaEu.Volejbal.TestsForLocalDebugging;
 
 /// <summary>
-/// Bázový třída pro testy.
-/// Zpřístupňuje nakonfigurovaný DI container a transparentně zajišťuje _scope.
+/// Bázová třída pro testy. Zpřístupňuje nakonfigurovaný DI container nad lokálním Cosmos DB emulátorem
+/// a před každým testem databázi maže a zakládá znovu.
 /// </summary>
+/// <remarks>
+/// Vyžaduje běžící Cosmos DB Emulator (viz appsettings.json). Do CI tyhle testy nepatří - proto jsou
+/// v samostatném projektu a označené [Ignore].
+/// </remarks>
 public class TestBase
 {
-	private IDisposable _scope;
-
 	protected IServiceProvider ServiceProvider { get; private set; }
 
-	protected virtual bool DeleteDbData => true;
-
-	protected virtual bool SeedData => true;
-
 	[TestInitialize]
-	public virtual void TestInitialize()
+	public virtual async Task TestInitializeAsync()
 	{
-		IServiceCollection services = CreateServiceCollection();
+		IServiceCollection services = new ServiceCollection();
+
+		// Co v hostiteli (Api/MigrationTool) přidá generic host sám, tady musíme dodat ručně - bez toho
+		// se nedá sestavit ILogger<T>.
+		services.AddLogging();
+
+		services.ConfigureForTests();
+
 		IServiceProvider serviceProvider = services.BuildServiceProvider();
 
-		_scope = serviceProvider.CreateScope();
+		CosmosOptions cosmosOptions = serviceProvider.GetRequiredService<CosmosOptions>();
+		CosmosClient cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
 
-		var dbContext = serviceProvider.GetRequiredService<IDbContext>();
-		if (DeleteDbData)
+		try
 		{
-			dbContext.Database.EnsureDeleted();
+			await cosmosClient.GetDatabase(cosmosOptions.DatabaseId).DeleteAsync();
 		}
-		dbContext.Database.Migrate();
+		catch (CosmosException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
+		{
+			// Databáze ještě není, nic k mazání.
+		}
 
-		if (this.SeedData)
-		{
-			var dataSeedRunner = serviceProvider.GetRequiredService<IDataSeedRunner>();
-			dataSeedRunner.SeedData<CoreProfile>();
-		}
+		await serviceProvider.GetRequiredService<CosmosDatabaseInitializer>().EnsureDatabaseAsync();
 
 		this.ServiceProvider = serviceProvider;
 	}
@@ -49,25 +52,10 @@ public class TestBase
 	[TestCleanup]
 	public virtual void TestCleanup()
 	{
-		_scope.Dispose();
-		if (this.ServiceProvider is IDisposable)
+		if (this.ServiceProvider is IDisposable disposable)
 		{
-			((IDisposable)this.ServiceProvider).Dispose();
+			disposable.Dispose();
 		}
 		this.ServiceProvider = null;
-	}
-
-	protected virtual IServiceCollection CreateServiceCollection()
-	{
-		IServiceCollection services = new ServiceCollection();
-
-		// Co v hostiteli (Api/MigrationTool) přidá generic host sám, tady musíme dodat ručně -
-		// bez toho se nedá sestavit ICacheService (MemoryCacheService) ani ILogger<T>.
-		services.AddMemoryCache();
-		services.AddLogging();
-
-		services.ConfigureForTests();
-
-		return services;
 	}
 }

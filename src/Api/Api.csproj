@@ -1,4 +1,4 @@
-<Project Sdk="Azure.Functions.Sdk">
+﻿<Project Sdk="Azure.Functions.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Api</AssemblyName>
@@ -11,6 +11,11 @@
 		     přechodu na Flex Consumption. Nesmí se předávat jako globální CLI vlastnost - protékala by do
 		     Web.Client (browser-wasm), který R2R nepodporuje. -->
 		<PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
+
+		<!-- Dynamické PGO vypnuté: instrumentace tier-0 kódu se vyplatí až dlouho běžícímu procesu, instance
+		     Flex Consumption žije minuty a končí dřív, než by optimalizovaný kód něco vrátil. Tiered
+		     compilation samotná musí zůstat zapnutá - jen s ní se používá ReadyToRun kód. -->
+		<TieredPGO>false</TieredPGO>
 
 		<!-- Workstation GC místo Server GC (SDK default) - Server GC alokuje heap + vyhrazené vlákno na každé
 		     CPU jádro, což je na instanci Flex Consumption (512 MB / 0,25 core) zbytečná režie. -->
@@ -32,6 +37,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Contracts\Contracts.csproj" />
 		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
+		<ProjectReference Include="..\DataLayer\DataLayer.csproj" />
 		<ProjectReference Include="..\Facades\Facades.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
 	</ItemGroup>

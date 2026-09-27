@@ -1,15 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Services</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Services</RootNamespace>
+
+		<!-- RID z publishe Api musí protéct až do DataLayeru, důvod viz DataLayer.csproj. -->
+		<IsRidAgnostic>false</IsRidAgnostic>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" />
-		<PackageReference Include="Havit.Services" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -17,4 +17,4 @@
 		<ProjectReference Include="..\Model\Model.csproj" />
 	</ItemGroup>
 
-</Project>	 
+</Project>

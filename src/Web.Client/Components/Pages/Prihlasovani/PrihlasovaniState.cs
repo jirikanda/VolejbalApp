@@ -4,7 +4,7 @@ namespace KandaEu.Volejbal.Web.Client.Components.Pages.Prihlasovani;
 
 public class PrihlasovaniState
 {
-	public int? AktualniTerminId { get; set; }
+	public string AktualniTerminId { get; set; }
 
 	public List<PrihlasenaOsobaDto> Prihlaseni { get; set; }
 	public List<NeprihlasenaOsobaDto> Neprihlaseni { get; set; }

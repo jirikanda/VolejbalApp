@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Contracts.Api;
+﻿namespace KandaEu.Volejbal.Contracts.Api;
 
 /// <summary>
 /// Cesty HTTP API. Konstanty sdílí Refit kontrakty (I*Api) s HTTP triggery v projektu Api,
@@ -26,8 +26,6 @@ public static class ApiRoutes
 
 	public const string ReportyTerminy = "api/reporty/terminy";
 	public const string ReportyOsoby = "api/reporty/osoby";
-
-	public const string SystemSeed = "api/system/seed/{profileName}";
 
 	public const string Health = "api/health";
 }

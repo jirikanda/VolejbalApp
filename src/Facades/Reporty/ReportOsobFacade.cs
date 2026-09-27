@@ -1,32 +1,47 @@
-﻿using Havit.Services.TimeServices;
-using KandaEu.Volejbal.Contracts.Reporty;
+﻿using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
+using KandaEu.Volejbal.Services.SkolniRok;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 
 [Service(ServiceType = typeof(IReportOsobApi))]
 public class ReportOsobFacade(
-	IOsobaDataSource _osobaDataSource,
-	ITimeService _timeService) : IReportOsobApi
+	ITerminRepository _terminRepository,
+	ISkolniRokService _skolniRokService,
+	IOsobaRepository _osobaRepository,
+	TimeProvider _timeProvider) : IReportOsobApi
 {
+	/// <remarks>
+	/// Co v SQL dělalo GROUP BY, se tady spočítá v paměti nad termíny jedné sezóny - jsou jich desítky
+	/// a přihlášky jsou součástí jejich dokumentů, takže je to jeden dotaz bez joinu.
+	/// </remarks>
 	public async Task<ReportOsob> GetReportAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = _timeService.GetCurrentDate();
-		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(_timeService);
+		DateTime today = _timeProvider.GetLocalToday();
+		DateTime datumOdInclusive = _skolniRokService.GetZacatek(today);
+
+		List<Termin> terminy = await _terminRepository.GetTerminyVObdobiAsync(datumOdInclusive, today, cancellationToken);
+
+		Dictionary<string, int> pocetTerminuPodleOsoby = terminy
+			.SelectMany(termin => termin.Prihlasky)
+			.Where(prihlaska => prihlaska.Deleted == null)
+			.GroupBy(prihlaska => prihlaska.OsobaId)
+			.ToDictionary(skupina => skupina.Key, skupina => skupina.Count());
+
+		// Jen osoby, které mají v sezóně přihlášku - ostatní v reportu nefigurují. Načítají se i smazané,
+		// ty se ale stejně jako dřív z reportu vynechávají.
+		List<Osoba> osoby = await _osobaRepository.GetOsobyAsync(pocetTerminuPodleOsoby.Keys.ToList(), cancellationToken);
 
 		return new ReportOsob
 		{
-			UcastHracu = (await _osobaDataSource.Data
-				.TagWith(QueryTagBuilder.CreateTag(this.GetType(), nameof(GetReportAsync)))
-				.Select(osoba =>
-				new ReportOsobItem
+			UcastHracu = osoby
+				.Where(osoba => osoba.Deleted == null)
+				.OrderByPrijmeniJmeno()
+				.Select(osoba => new ReportOsobItem
 				{
 					PrijmeniJmeno = osoba.PrijmeniJmeno,
-					PocetTerminu = osoba.Prihlasky.Where(prihlaska => (prihlaska.Termin.Datum >= datumOdInclusive) && (prihlaska.Termin.Datum < today) && (prihlaska.Termin.Deleted == null) && (prihlaska.Deleted == null)).Count()
+					PocetTerminu = pocetTerminuPodleOsoby[osoba.Id]
 				})
-				.ToListAsync(cancellationToken))
-				.Where(item => item.PocetTerminu > 0) // in memory
-				.OrderBy(item => item.PrijmeniJmeno)
 				.ToList()
 		};
 	}

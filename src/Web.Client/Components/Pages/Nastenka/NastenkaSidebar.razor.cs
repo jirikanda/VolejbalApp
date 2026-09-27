@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Web.Client.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Web.Client.Components.ProgressComponent;
 
 namespace KandaEu.Volejbal.Web.Client.Components.Pages.Nastenka;
 

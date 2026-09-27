@@ -1,16 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Facades</AssemblyName>
 		<RootNamespace>KandaEu.Volejbal.Facades</RootNamespace>
+
+		<!-- RID z publishe Api musí protéct až do DataLayeru, důvod viz DataLayer.csproj. -->
+		<IsRidAgnostic>false</IsRidAgnostic>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Havit.VolejbalApp.Tests" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<PackageReference Include="Havit.Data.Patterns" />
+		<PackageReference Include="Havit.Core" />
+		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Web.Client.Components.ProgressComponent;
+﻿using KandaEu.Volejbal.Web.Client.Components.ProgressComponent;
 using Microsoft.JSInterop;
 
 namespace KandaEu.Volejbal.Web.Client.Components.Layout;

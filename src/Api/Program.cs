@@ -1,8 +1,7 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Havit.ApplicationInsights.DependencyCollector;
 using KandaEu.Volejbal.Api.Infrastructure;
 using KandaEu.Volejbal.DependencyInjection;
-using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +33,7 @@ public static class Program
 	/// nemají request localization middleware a kultura se stejně nikdy neodvozovala od klienta.
 	/// </summary>
 	/// <remarks>
-	/// Časová zóna se nastavuje v kódu (viz ITimeService), ne proměnnou TZ - tu Flex Consumption nepodporuje.
+	/// Časová zóna se nastavuje v kódu (viz PragueTimeProvider), ne proměnnou TZ - tu Flex Consumption nepodporuje.
 	/// </remarks>
 	private static void ConfigureCulture()
 	{
@@ -58,13 +57,22 @@ public static class Program
 	private static void ConfigureServices(FunctionsApplicationBuilder builder)
 	{
 		builder.Services.AddOptions();
-		builder.Services.AddMemoryCache();
 
 		builder.Services.AddExceptionMonitoring(builder.Configuration);
 
-		builder.Services.AddApplicationInsightsTelemetryWorkerService(builder.Configuration);
+		builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
+		{
+			// Studený start: worker si nechává jen sběr requestů, závislostí (volání Cosmosu) a výjimek.
+			// Ostatní moduly startují vlákna a spojení, která se na krátce žijící instanci Flex Consumption
+			// (0,25 jádra) nikdy nevyplatí - Live Metrics otevírá streamovací spojení hned při startu,
+			// performance a event countery čtou v intervalu čítače procesu, diagnostický modul posílá
+			// heartbeat a dotazuje se na metadata instance (IMDS).
+			options.EnableQuickPulseMetricStream = false;
+			options.EnablePerformanceCounterCollectionModule = false;
+			options.EnableEventCounterCollectionModule = false;
+			options.EnableDiagnosticsTelemetryModule = false;
+		});
 		builder.Services.ConfigureFunctionsApplicationInsights();
-		builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) => { module.EnableSqlCommandTextInstrumentation = true; });
 		builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreCancellationExceptionsTelemetryProcessor>();
 
 		builder.Services.ConfigureForWebAPI(builder.Configuration);
