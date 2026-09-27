@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Model.Metadata;
+﻿namespace KandaEu.Volejbal.Model.Metadata;
 
 /// <summary>
 /// Limity délek textů osoby. Dřív generované z EF modelu; Cosmos žádné délky nevynucuje, takže je

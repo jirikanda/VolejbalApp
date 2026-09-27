@@ -1,4 +1,4 @@
-<Project Sdk="Azure.Functions.Sdk">
+﻿<Project Sdk="Azure.Functions.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>KandaEu.Volejbal.Api</AssemblyName>

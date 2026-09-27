@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+﻿namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 /// <summary>
 /// Výpočet dat termínů k založení. Bez závislostí a s datem předaným parametrem, aby šel testovat v CI

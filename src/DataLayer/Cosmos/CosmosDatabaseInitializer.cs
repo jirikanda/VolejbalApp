@@ -1,4 +1,4 @@
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 
 namespace KandaEu.Volejbal.DataLayer.Cosmos;
 

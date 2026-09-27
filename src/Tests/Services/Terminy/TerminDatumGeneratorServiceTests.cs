@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+﻿using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 namespace KandaEu.Volejbal.Tests.Services.Terminy;
 

@@ -1,4 +1,4 @@
-using System.Security;
+﻿using System.Security;
 using Havit;
 using Havit.AspNetCore.ExceptionMonitoring.Services;
 using KandaEu.Volejbal.DataLayer;

@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.DataLayer.Cosmos;
+﻿using KandaEu.Volejbal.DataLayer.Cosmos;
 using KandaEu.Volejbal.Model;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Data.SqlClient;

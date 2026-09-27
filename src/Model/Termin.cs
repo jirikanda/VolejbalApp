@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Havit;
 
 namespace KandaEu.Volejbal.Model;

@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Services.Infrastructure.Time;
+﻿namespace KandaEu.Volejbal.Services.Infrastructure.Time;
 
 /// <summary>
 /// Poskytuje aktuální čas v české časové zóně. Registruje se jako <see cref="TimeProvider" />, veškerý

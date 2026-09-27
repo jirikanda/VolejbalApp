@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.DataLayer.Cosmos;
+﻿using KandaEu.Volejbal.DataLayer.Cosmos;
 
 namespace KandaEu.Volejbal.DependencyInjection;
 

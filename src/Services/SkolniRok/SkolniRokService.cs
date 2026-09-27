@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Services.SkolniRok;
+﻿namespace KandaEu.Volejbal.Services.SkolniRok;
 
 /// <summary>
 /// Hranice školního roku. Bez závislostí a s datem předaným parametrem, aby šla testovat bez DI.

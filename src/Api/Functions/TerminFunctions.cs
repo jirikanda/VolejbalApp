@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Contracts.Api;
+﻿using KandaEu.Volejbal.Contracts.Api;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 using KandaEu.Volejbal.Contracts.Terminy;
 using Microsoft.AspNetCore.Http;

@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Contracts.Reporty;
+﻿using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
 using KandaEu.Volejbal.Services.SkolniRok;
 

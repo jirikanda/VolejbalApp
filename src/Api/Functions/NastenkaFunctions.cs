@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Api.Infrastructure;
+﻿using KandaEu.Volejbal.Api.Infrastructure;
 using KandaEu.Volejbal.Contracts.Api;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;

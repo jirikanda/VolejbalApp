@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Services.SkolniRok;
+﻿namespace KandaEu.Volejbal.Services.SkolniRok;
 
 public interface ISkolniRokService
 {

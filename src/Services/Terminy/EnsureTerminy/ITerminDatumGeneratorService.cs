@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
+﻿namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
 
 public interface ITerminDatumGeneratorService
 {

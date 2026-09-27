@@ -1,4 +1,4 @@
-using Havit;
+﻿using Havit;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 
 namespace KandaEu.Volejbal.Facades.Prihlasky;

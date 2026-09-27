@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Contracts.Api;
+﻿namespace KandaEu.Volejbal.Contracts.Api;
 
 /// <summary>
 /// Cesty HTTP API. Konstanty sdílí Refit kontrakty (I*Api) s HTTP triggery v projektu Api,

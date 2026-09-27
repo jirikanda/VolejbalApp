@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.DataLayer.Repositories;
+﻿namespace KandaEu.Volejbal.DataLayer.Repositories;
 
 public interface ITerminRepository
 {

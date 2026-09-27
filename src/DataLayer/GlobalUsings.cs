@@ -1,1 +1,1 @@
-global using KandaEu.Volejbal.Model;
+﻿global using KandaEu.Volejbal.Model;

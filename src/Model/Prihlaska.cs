@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Model;
+﻿namespace KandaEu.Volejbal.Model;
 
 /// <summary>
 /// Přihláška osoby na termín. Není samostatným dokumentem - je vnořená v <see cref="Termin.Prihlasky" />.

@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Prihlasky;

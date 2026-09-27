@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Contracts.Osoby.Dto;
+﻿using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
 using KandaEu.Volejbal.Facades.Terminy.Dto.Extensions;

@@ -1,4 +1,4 @@
-using KandaEu.Volejbal.Contracts.Api;
+﻿using KandaEu.Volejbal.Contracts.Api;
 using Refit;
 
 namespace KandaEu.Volejbal.Contracts.Prihlasky;

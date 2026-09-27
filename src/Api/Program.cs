@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Havit.ApplicationInsights.DependencyCollector;
 using KandaEu.Volejbal.Api.Infrastructure;
 using KandaEu.Volejbal.DependencyInjection;

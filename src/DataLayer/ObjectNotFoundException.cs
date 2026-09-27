@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.DataLayer;
+﻿namespace KandaEu.Volejbal.DataLayer;
 
 /// <summary>
 /// Objekt (osoba, termín) s daným id neexistuje. Vyhazují repozitáře při načtení podle id, které

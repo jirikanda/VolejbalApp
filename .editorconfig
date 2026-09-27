@@ -1,4 +1,4 @@
-﻿# ALL FILES
+# ALL FILES
 [*]
 
 indent_style = tab
@@ -11,7 +11,16 @@ spelling_exclusion_path = ./exclusion.dic
 # Projektové soubory drží CRLF (sjednoceno s .gitattributes; VS je tak preferuje)
 [*.{sln,csproj,vbproj,vcxproj,vcproj,dbproj,fsproj,props,targets,filters,vcxitems}]
 end_of_line = crlf
+charset = utf-8-bom
 
+
+# Razor: stejné kódování jako C#
+[*.razor]
+charset = utf-8-bom
+
+# JSON a ostatní konfigurace bez BOM - některé nástroje ho v JSONu nečekají
+[*.{json,yml,yaml,md,bicep,editorconfig}]
+charset = utf-8
 
 # C# files
 [*.cs]
@@ -19,6 +28,9 @@ end_of_line = crlf
 ####################################
 # Core EditorConfig Options        #
 ####################################
+
+# Kódování: C# soubory UTF-8 s BOM (viz .claude/skills/CodeConventions)
+charset = utf-8-bom
 
 # Indentation and spacing
 indent_style = tab

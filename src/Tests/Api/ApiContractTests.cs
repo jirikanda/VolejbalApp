@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Prihlasky;

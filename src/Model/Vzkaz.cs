@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Model;
+﻿namespace KandaEu.Volejbal.Model;
 
 /// <summary>
 /// Vzkaz na nástěnce. Dokument v kontejneru "vzkazy".

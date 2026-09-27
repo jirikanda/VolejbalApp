@@ -1,4 +1,4 @@
-using Havit;
+﻿using Havit;
 
 namespace KandaEu.Volejbal.Model;
 

@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.DataLayer.Cosmos;
+﻿namespace KandaEu.Volejbal.DataLayer.Cosmos;
 
 /// <summary>
 /// Připojení k Cosmos DB (sekce "Cosmos" v konfiguraci).

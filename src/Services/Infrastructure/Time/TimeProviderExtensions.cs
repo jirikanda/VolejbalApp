@@ -1,4 +1,4 @@
-namespace KandaEu.Volejbal.Services.Infrastructure.Time;
+﻿namespace KandaEu.Volejbal.Services.Infrastructure.Time;
 
 /// <summary>
 /// Místní čas jako <see cref="DateTime" /> bez zóny - tvar, ve kterém aplikace s časem pracuje

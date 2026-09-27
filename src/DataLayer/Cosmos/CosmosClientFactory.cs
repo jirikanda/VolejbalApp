@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
