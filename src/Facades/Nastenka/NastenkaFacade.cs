@@ -18,7 +18,11 @@ public class NastenkaFacade(
 		List<Vzkaz> vzkazy = await _vzkazRepository.GetVzkazyOdAsync(prispevkyOd, cancellationToken);
 
 		// Autoři se dohledávají podle id včetně smazaných - vzkaz smazaného hráče má zůstat podepsaný.
-		// Chybějící autor je porušená integrita dat a repozitář ji hlásí výjimkou.
+		// Chybějící autor je porušená integrita dat a repozitář ji hlásí výjimkou (celá nástěnka pak
+		// vrací 422). Aplikační cestou takový stav vzniknout nemůže: VlozVzkazAsync autora načítá,
+		// osoby se mažou jen soft delete a import ze SQL přenáší všechny osoby včetně smazaných
+		// s deterministickými id. Zbývá jen ruční zásah do dat (Data Explorer, obnova jediného
+		// kontejneru) - záměrně se netoleruje, aby se o něm vědělo hned.
 		List<Osoba> autori = await _osobaRepository.GetOsobyAsync(vzkazy.Select(vzkaz => vzkaz.AutorId).Distinct().ToList(), cancellationToken);
 		Dictionary<string, Osoba> autoriPodleId = autori.ToDictionary(autor => autor.Id);
 

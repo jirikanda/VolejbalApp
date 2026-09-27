@@ -10,7 +10,9 @@ public interface IOsobaRepository
 	/// <summary>
 	/// Osoby podle id, včetně smazaných - pro dohledání autorů či hráčů odkazovaných z jiných dokumentů.
 	/// Neexistuje-li kterákoli z nich, skončí <see cref="ObjectNotFoundException" />: odkazy mezi dokumenty
-	/// vznikají jen v aplikaci a mazání je soft delete, takže chybějící osoba je porušená integrita dat.
+	/// vznikají jen v aplikaci (fasády autora či hráče před uložením odkazu načítají), mazání je soft delete
+	/// a import ze SQL přenáší všechny osoby, takže chybějící osoba je porušená integrita dat způsobená
+	/// ručním zásahem mimo aplikaci. Netoleruje se záměrně, aby se o ní vědělo hned.
 	/// </summary>
 	Task<List<Osoba>> GetOsobyAsync(IReadOnlyCollection<string> osobaIds, CancellationToken cancellationToken = default);
 
