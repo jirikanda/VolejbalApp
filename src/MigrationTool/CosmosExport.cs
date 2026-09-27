@@ -77,7 +77,7 @@ public class CosmosExport(VolejbalCosmosContainers _containers, ILogger<CosmosEx
 		command.Parameters.Add("@Deleted", SqlDbType.DateTime2);
 		command.Parameters.Add("@Aktivni", SqlDbType.Bit);
 
-		foreach (Osoba osoba in osoby.OrderBy(osoba => osoba.Prijmeni, Comparers.CzechComparer).ThenBy(osoba => osoba.Jmeno, Comparers.CzechComparer))
+		foreach (Osoba osoba in osoby.OrderByPrijmeniJmeno())
 		{
 			command.Parameters["@Prijmeni"].Value = osoba.Prijmeni;
 			command.Parameters["@Jmeno"].Value = osoba.Jmeno;

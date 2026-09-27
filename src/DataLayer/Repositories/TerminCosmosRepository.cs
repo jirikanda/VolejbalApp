@@ -44,6 +44,14 @@ public class TerminCosmosRepository(VolejbalCosmosContainers _containers) : ITer
 			cancellationToken);
 	}
 
+	public Task<List<Termin>> GetBudouciTerminyIncludingDeletedAsync(DateTime today, CancellationToken cancellationToken = default)
+	{
+		return QueryAsync(
+			new QueryDefinition("SELECT * FROM c WHERE c.datum >= @od ORDER BY c.datum")
+				.WithParameter("@od", CosmosDateTimeConverter.ToCosmosString(today.Date)),
+			cancellationToken);
+	}
+
 	public async Task<DateTime?> GetPosledniDatumTerminuAsync(CancellationToken cancellationToken = default)
 	{
 		List<Termin> terminy = await QueryAsync(

@@ -20,17 +20,12 @@ public class TerminFacade(
 	/// <remarks>
 	/// Termíny se zakládají líně při čtení seznamu, dřívější hodinový timer trigger je proto zrušený.
 	/// Souběh více uživatelů řeší EnsureTerminyService (id termínu = jeho datum, takže duplicitu
-	/// odmítne Cosmos konfliktem + opakování pokusu).
+	/// odmítne Cosmos konfliktem + opakování pokusu). Služba seznam čte i vrací sama, takže seznam
+	/// termínů stojí jedno čtení, a když se zakládalo, tak pořád jen jedno plus zápisy.
 	/// </remarks>
 	public async Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken)
 	{
-		List<Termin> terminy = await _terminRepository.GetBudouciTerminyAsync(_timeService.GetCurrentDate(), cancellationToken);
-
-		if (terminy.Count < EnsureTerminyService.PozadovanyPocetBudoucichTerminu)
-		{
-			await _ensureTerminyService.EnsureTerminyAsync(cancellationToken);
-			terminy = await _terminRepository.GetBudouciTerminyAsync(_timeService.GetCurrentDate(), cancellationToken);
-		}
+		List<Termin> terminy = await _ensureTerminyService.EnsureTerminyAsync(cancellationToken);
 
 		return new TerminListDto
 		{
@@ -99,7 +94,7 @@ public class TerminFacade(
 					Osoba = odhlaseny.ToOsobaDto(),
 					IsOdhlaseny = true
 				}))
-				.OrderBy(neprihlasenaOsoba => neprihlasenaOsoba.Osoba.PrijmeniJmeno, Comparers.CzechComparer)
+				.OrderByPrijmeniJmeno(neprihlasenaOsoba => neprihlasenaOsoba.Osoba.PrijmeniJmeno)
 				.ToList()
 		};
 	}

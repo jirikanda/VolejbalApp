@@ -79,7 +79,7 @@ public class OsobaFacade(
 
 	private static OsobaListDto ToOsobaListDto(List<Osoba> osoby)
 	{
-		// Řazení podle příjmení a jména zajišťuje repozitář (české řazení, viz Comparers.CzechComparer).
+		// Řazení podle příjmení a jména zajišťuje repozitář (české řazení, viz OsobaRazeniExtensions).
 		return new OsobaListDto
 		{
 			Osoby = osoby

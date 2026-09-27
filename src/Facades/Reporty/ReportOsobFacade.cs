@@ -35,8 +35,7 @@ public class ReportOsobFacade(
 		{
 			UcastHracu = osoby
 				.Where(osoba => osoba.Deleted == null)
-				.OrderBy(osoba => osoba.Prijmeni, Comparers.CzechComparer)
-				.ThenBy(osoba => osoba.Jmeno, Comparers.CzechComparer)
+				.OrderByPrijmeniJmeno()
 				.Select(osoba => new ReportOsobItem
 				{
 					PrijmeniJmeno = osoba.PrijmeniJmeno,

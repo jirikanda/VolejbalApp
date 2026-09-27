@@ -14,6 +14,12 @@ public interface ITerminRepository
 	Task<List<Termin>> GetBudouciTerminyAsync(DateTime today, CancellationToken cancellationToken = default);
 
 	/// <summary>
+	/// Všechny termíny ode dneška dál včetně smazaných, seřazené podle data. Jeden snímek pro počet
+	/// nesmazaných i pro datum, na které navazuje zakládání dalších (viz EnsureTerminyService).
+	/// </summary>
+	Task<List<Termin>> GetBudouciTerminyIncludingDeletedAsync(DateTime today, CancellationToken cancellationToken = default);
+
+	/// <summary>
 	/// Datum posledního termínu, včetně smazaných - na něj navazuje zakládání dalších termínů.
 	/// Null, pokud žádný termín neexistuje.
 	/// </summary>

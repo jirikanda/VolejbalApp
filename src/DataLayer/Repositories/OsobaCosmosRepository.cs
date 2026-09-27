@@ -33,11 +33,6 @@ public class OsobaCosmosRepository(VolejbalCosmosContainers _containers) : IOsob
 
 	public async Task<List<Osoba>> GetOsobyAsync(IReadOnlyCollection<string> osobaIds, CancellationToken cancellationToken = default)
 	{
-		if (osobaIds.Count == 0)
-		{
-			return new List<Osoba>();
-		}
-
 		// Partition key je id, takže jde o dávku point readů v jednom požadavku - levnější než dotaz
 		// s ARRAY_CONTAINS. Neexistující položky Cosmos vynechá, proto se úplnost kontroluje až nad výsledkem.
 		List<(string, PartitionKey)> polozky = osobaIds
@@ -46,9 +41,18 @@ public class OsobaCosmosRepository(VolejbalCosmosContainers _containers) : IOsob
 			.Select(osobaId => (osobaId, new PartitionKey(osobaId)))
 			.ToList();
 
-		FeedResponse<Osoba> response = await _containers.Osoby.ReadManyItemsAsync<Osoba>(polozky, cancellationToken: cancellationToken);
-		List<Osoba> osoby = response.ToList();
+		if (polozky.Count == 0)
+		{
+			// Nic platného k načtení; když přitom vstup nebyl prázdný, chybějící id nahlásí kontrola níže.
+			return ThrowIfChybejici(osobaIds, new List<Osoba>());
+		}
 
+		FeedResponse<Osoba> response = await _containers.Osoby.ReadManyItemsAsync<Osoba>(polozky, cancellationToken: cancellationToken);
+		return ThrowIfChybejici(osobaIds, response.ToList());
+	}
+
+	private static List<Osoba> ThrowIfChybejici(IReadOnlyCollection<string> osobaIds, List<Osoba> osoby)
+	{
 		HashSet<string> nalezene = osoby.Select(osoba => osoba.Id).ToHashSet();
 		List<string> chybejici = osobaIds.Where(osobaId => !nalezene.Contains(osobaId)).Distinct().ToList();
 		if (chybejici.Count > 0)
@@ -87,9 +91,6 @@ public class OsobaCosmosRepository(VolejbalCosmosContainers _containers) : IOsob
 		List<Osoba> osoby = await _containers.Osoby.QueryToListAsync<Osoba>(new QueryDefinition(sql), requestOptions: null, cancellationToken);
 
 		// České řazení v paměti - ORDER BY v Cosmosu řadí ordinálně (Čapek až za Zemanem).
-		return osoby
-			.OrderBy(osoba => osoba.Prijmeni, Comparers.CzechComparer)
-			.ThenBy(osoba => osoba.Jmeno, Comparers.CzechComparer)
-			.ToList();
+		return osoby.OrderByPrijmeniJmeno().ToList();
 	}
 }
