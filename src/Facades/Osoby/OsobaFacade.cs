@@ -1,4 +1,3 @@
-using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
 
@@ -7,7 +6,7 @@ namespace KandaEu.Volejbal.Facades.Osoby;
 [Service(ServiceType = typeof(IOsobaApi))]
 public class OsobaFacade(
 	IOsobaRepository _osobaRepository,
-	ITimeService _timeService) : IOsobaApi
+	TimeProvider _timeProvider) : IOsobaApi
 {
 	public async Task VlozOsobuAsync(OsobaInputDto osobaInputDto, CancellationToken cancellationToken)
 	{
@@ -59,7 +58,7 @@ public class OsobaFacade(
 		osoba.ThrowIfDeleted();
 		osoba.ThrowIfAktivni();
 
-		osoba.Deleted = _timeService.GetCurrentTime();
+		osoba.Deleted = _timeProvider.GetLocalDateTime();
 
 		await _osobaRepository.UpdateAsync(osoba, cancellationToken);
 	}

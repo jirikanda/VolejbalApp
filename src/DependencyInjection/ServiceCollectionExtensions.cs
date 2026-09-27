@@ -1,11 +1,9 @@
 using System.Runtime.CompilerServices;
 using Havit.Extensions.DependencyInjection;
 using Havit.Extensions.DependencyInjection.Abstractions;
-using Havit.Services.Caching;
-using Havit.Services.TimeServices;
 using KandaEu.Volejbal.DataLayer;
 using KandaEu.Volejbal.DataLayer.Cosmos;
-using KandaEu.Volejbal.Services.Infrastructure.TimeService;
+using KandaEu.Volejbal.Services.Infrastructure.Time;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -70,7 +68,7 @@ public static class ServiceCollectionExtensions
 	private static IServiceCollection ConfigureForAll(this IServiceCollection services, InstallConfiguration installConfiguration)
 	{
 		services.AddDataLayerServices(installConfiguration.CosmosOptions);
-		InstallHavitServices(services);
+		InstallTimeProvider(services);
 		InstallByServiceAttribute(services, installConfiguration);
 
 		return services;
@@ -81,12 +79,10 @@ public static class ServiceCollectionExtensions
 		return configuration.GetSection("Cosmos").Get<CosmosOptions>() ?? new CosmosOptions();
 	}
 
-	private static void InstallHavitServices(IServiceCollection services)
+	private static void InstallTimeProvider(IServiceCollection services)
 	{
-		// HAVIT .NET Framework Extensions
-		services.AddSingleton<ITimeService, ApplicationTimeService>();
-		services.AddSingleton<ICacheService, MemoryCacheService>();
-		services.AddSingleton(new MemoryCacheServiceOptions { UseCacheDependenciesSupport = false });
+		// Pražský čas pro celý server - proces v Azure běží v UTC, viz PragueTimeProvider.
+		services.AddSingleton<TimeProvider, PragueTimeProvider>();
 	}
 
 	private static void InstallByServiceAttribute(IServiceCollection services, InstallConfiguration configuration)

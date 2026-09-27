@@ -33,7 +33,6 @@ public class CompositionRootTests
 		ServiceCollection services = new ServiceCollection();
 		// Totéž, co v Api/Program.cs přidává hostitel mimo ConfigureForWebAPI.
 		services.AddLogging();
-		services.AddMemoryCache();
 		services.ConfigureForWebAPI(configuration);
 
 		Type[] apiInterfaces = GetApiInterfaces();

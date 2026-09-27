@@ -68,7 +68,7 @@ ASP.NET Core integrace ve Functions dává jen typy (`HttpRequest`, `IActionResu
 | `AddRateLimiter` (`DefaultAPI`, 10 req/5 s) | **zrušeno**; roli pojistky přebral `maximumInstanceCount` |
 | `RecurringJobsBackgroundService` | **zrušeno**; termíny se doplňují líně při čtení jejich seznamu ([TerminFacade](../src/Facades/Terminy/TerminFacade.cs)) |
 | OpenAPI dokument + Scalar UI | **zrušeno** (klienti ho nepotřebují, viz níže) |
-| `TZ=Europe/Prague` | zóna v kódu ([ApplicationTimeService](../src/Services/Infrastructure/TimeService/ApplicationTimeService.cs)) |
+| `TZ=Europe/Prague` | zóna v kódu ([PragueTimeProvider](../src/Services/Infrastructure/Time/PragueTimeProvider.cs)) |
 
 > **`TZ` ani `WEBSITE_TIME_ZONE` na Flex Consumption nefungují** — platforma je tiše ignoruje a proces běží v UTC. Do šablony je nepřidávejte; vypadalo by to, že něco nastavují.
 

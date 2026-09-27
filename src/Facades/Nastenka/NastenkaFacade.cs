@@ -1,4 +1,3 @@
-using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Nastenka.Dto;
 
@@ -8,11 +7,11 @@ namespace KandaEu.Volejbal.Facades.Nastenka;
 public class NastenkaFacade(
 	IVzkazRepository _vzkazRepository,
 	IOsobaRepository _osobaRepository,
-	ITimeService _timeService) : INastenkaApi
+	TimeProvider _timeProvider) : INastenkaApi
 {
 	public async Task<VzkazListDto> GetVzkazyAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = _timeService.GetCurrentDate();
+		DateTime today = _timeProvider.GetLocalToday();
 		DateTime prispevkyOd = today.AddDays(-14);
 		DateTime currentWaveStart = GetCurrentWaveStart(today);
 
@@ -57,7 +56,7 @@ public class NastenkaFacade(
 		{
 			AutorId = autor.Id,
 			Zprava = vzkazInputDto.Zprava,
-			DatumVlozeni = _timeService.GetCurrentTime()
+			DatumVlozeni = _timeProvider.GetLocalDateTime()
 		};
 
 		await _vzkazRepository.InsertAsync(vzkaz, cancellationToken);

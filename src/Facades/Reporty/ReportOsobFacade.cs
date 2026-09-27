@@ -1,4 +1,3 @@
-using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
 using KandaEu.Volejbal.Services.SkolniRok;
@@ -10,7 +9,7 @@ public class ReportOsobFacade(
 	ITerminRepository _terminRepository,
 	ISkolniRokService _skolniRokService,
 	IOsobaRepository _osobaRepository,
-	ITimeService _timeService) : IReportOsobApi
+	TimeProvider _timeProvider) : IReportOsobApi
 {
 	/// <remarks>
 	/// Co v SQL dělalo GROUP BY, se tady spočítá v paměti nad termíny jedné sezóny - jsou jich desítky
@@ -18,7 +17,7 @@ public class ReportOsobFacade(
 	/// </remarks>
 	public async Task<ReportOsob> GetReportAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = _timeService.GetCurrentDate();
+		DateTime today = _timeProvider.GetLocalToday();
 		DateTime datumOdInclusive = _skolniRokService.GetZacatek(today);
 
 		List<Termin> terminy = await _terminRepository.GetTerminyVObdobiAsync(datumOdInclusive, today, cancellationToken);

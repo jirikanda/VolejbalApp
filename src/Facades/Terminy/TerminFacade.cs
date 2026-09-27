@@ -1,4 +1,3 @@
-using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Osoby.Dto;
 using KandaEu.Volejbal.Contracts.Terminy;
 using KandaEu.Volejbal.Contracts.Terminy.Dto;
@@ -12,7 +11,7 @@ public class TerminFacade(
 	ITerminRepository _terminRepository,
 	IOsobaRepository _osobaRepository,
 	IEnsureTerminyService _ensureTerminyService,
-	ITimeService _timeService) : ITerminApi
+	TimeProvider _timeProvider) : ITerminApi
 {
 	/// <summary>
 	/// Vrátí seznam budoucích termínů. Pokud jich není k dispozici dost, nejprve je doplní.
@@ -43,7 +42,7 @@ public class TerminFacade(
 	{
 		Termin termin = await _terminRepository.GetTerminAsync(terminId, cancellationToken);
 		termin.ThrowIfDeleted();
-		termin.ThrowIfPast(_timeService.GetCurrentDate());
+		termin.ThrowIfPast(_timeProvider.GetLocalToday());
 
 		// Detail potřebuje i nepřihlášené, takže seznam osob se načítá tak jako tak - jména přihlášených
 		// se proto do přihlášek nedenormalizují, spárují se tady.

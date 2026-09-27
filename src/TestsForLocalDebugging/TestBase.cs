@@ -24,9 +24,8 @@ public class TestBase
 	{
 		IServiceCollection services = new ServiceCollection();
 
-		// Co v hostiteli (Api/MigrationTool) přidá generic host sám, tady musíme dodat ručně -
-		// bez toho se nedá sestavit ICacheService (MemoryCacheService) ani ILogger<T>.
-		services.AddMemoryCache();
+		// Co v hostiteli (Api/MigrationTool) přidá generic host sám, tady musíme dodat ručně - bez toho
+		// se nedá sestavit ILogger<T>.
 		services.AddLogging();
 
 		services.ConfigureForTests();

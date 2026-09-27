@@ -1,4 +1,3 @@
-using Havit.Services.TimeServices;
 using Microsoft.Extensions.Logging;
 
 namespace KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
@@ -8,7 +7,7 @@ public class EnsureTerminyService(
 	ILogger<EnsureTerminyService> _logger,
 	ITerminRepository _terminRepository,
 	ITerminDatumGeneratorService _terminDatumGeneratorService,
-	ITimeService _timeService) : IEnsureTerminyService
+	TimeProvider _timeProvider) : IEnsureTerminyService
 {
 	/// <summary>
 	/// Kolik budoucích termínů má být k dispozici.
@@ -38,7 +37,7 @@ public class EnsureTerminyService(
 	/// </remarks>
 	public async Task<List<Termin>> EnsureTerminyAsync(CancellationToken cancellationToken)
 	{
-		DateTime today = _timeService.GetCurrentDate();
+		DateTime today = _timeProvider.GetLocalToday();
 
 		for (int pokus = 1; pokus <= MaxPocetPokusu; pokus++)
 		{

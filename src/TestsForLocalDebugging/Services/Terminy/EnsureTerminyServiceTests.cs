@@ -1,4 +1,4 @@
-using Havit.Services.TimeServices;
+using KandaEu.Volejbal.Services.Infrastructure.Time;
 using KandaEu.Volejbal.DataLayer.Repositories;
 using KandaEu.Volejbal.Model;
 using KandaEu.Volejbal.Services.Terminy.EnsureTerminy;
@@ -31,9 +31,9 @@ public class EnsureTerminyServiceTests : TestBase
 			.Select(_ => ensureTerminyService.EnsureTerminyAsync(TestContext.CancellationToken)));
 
 		// assert
-		ITimeService timeService = ServiceProvider.GetRequiredService<ITimeService>();
+		TimeProvider timeProvider = ServiceProvider.GetRequiredService<TimeProvider>();
 		List<Termin> terminy = await ServiceProvider.GetRequiredService<ITerminRepository>()
-			.GetBudouciTerminyAsync(timeService.GetCurrentDate(), TestContext.CancellationToken);
+			.GetBudouciTerminyAsync(timeProvider.GetLocalToday(), TestContext.CancellationToken);
 
 		Assert.HasCount(EnsureTerminyService.PozadovanyPocetBudoucichTerminu, terminy);
 		Assert.AreAllDistinct(terminy.Select(termin => termin.Datum).ToList());

@@ -7,7 +7,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Havit.Extensions.DependencyInjection.Abstractions" />
-		<PackageReference Include="Havit.Services" />
 	</ItemGroup>
 
 	<ItemGroup>

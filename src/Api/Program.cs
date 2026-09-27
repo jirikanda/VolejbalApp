@@ -33,7 +33,7 @@ public static class Program
 	/// nemají request localization middleware a kultura se stejně nikdy neodvozovala od klienta.
 	/// </summary>
 	/// <remarks>
-	/// Časová zóna se nastavuje v kódu (viz ITimeService), ne proměnnou TZ - tu Flex Consumption nepodporuje.
+	/// Časová zóna se nastavuje v kódu (viz PragueTimeProvider), ne proměnnou TZ - tu Flex Consumption nepodporuje.
 	/// </remarks>
 	private static void ConfigureCulture()
 	{
@@ -57,7 +57,6 @@ public static class Program
 	private static void ConfigureServices(FunctionsApplicationBuilder builder)
 	{
 		builder.Services.AddOptions();
-		builder.Services.AddMemoryCache();
 
 		builder.Services.AddExceptionMonitoring(builder.Configuration);
 

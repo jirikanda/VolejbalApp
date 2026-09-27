@@ -1,12 +1,11 @@
 using Havit;
-using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Prihlasky;
 
 namespace KandaEu.Volejbal.Facades.Prihlasky;
 
 [Service(ServiceType = typeof(IPrihlaskaApi))]
 public class PrihlaskaFacade(
-	ITimeService _timeService,
+	TimeProvider _timeProvider,
 	ITerminRepository _terminRepository,
 	IOsobaRepository _osobaRepository) : IPrihlaskaApi
 {
@@ -35,14 +34,14 @@ public class PrihlaskaFacade(
 			{
 				// Dřívější odhlášku měníme zpět na přihlášku.
 				prihlaska.Deleted = null;
-				prihlaska.DatumPrihlaseni = _timeService.GetCurrentTime();
+				prihlaska.DatumPrihlaseni = _timeProvider.GetLocalDateTime();
 			}
 			else
 			{
 				termin.Prihlasky.Add(new Prihlaska
 				{
 					OsobaId = osobaId,
-					DatumPrihlaseni = _timeService.GetCurrentTime()
+					DatumPrihlaseni = _timeProvider.GetLocalDateTime()
 				});
 			}
 
@@ -64,13 +63,13 @@ public class PrihlaskaFacade(
 
 			if (prihlaska != null)
 			{
-				prihlaska.Deleted = _timeService.GetCurrentTime();
+				prihlaska.Deleted = _timeProvider.GetLocalDateTime();
 			}
 			else
 			{
 				// Odhlášení osoby, která přihlášená nebyla: tombstone, aby UI poznalo, že jde
 				// o aktivní odmítnutí účasti, ne o "ještě se nerozhodl".
-				DateTime now = _timeService.GetCurrentTime();
+				DateTime now = _timeProvider.GetLocalDateTime();
 				termin.Prihlasky.Add(new Prihlaska
 				{
 					OsobaId = osobaId,
@@ -105,7 +104,7 @@ public class PrihlaskaFacade(
 		{
 			Termin termin = await _terminRepository.GetTerminAsync(terminId, cancellationToken);
 			termin.ThrowIfDeleted();
-			termin.ThrowIfPast(_timeService.GetCurrentDate());
+			termin.ThrowIfPast(_timeProvider.GetLocalToday());
 
 			if (!uprava(termin))
 			{
