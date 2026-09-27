@@ -43,8 +43,7 @@ public class SqlImport(VolejbalCosmosContainers _containers, ILogger<SqlImport> 
 			await _containers.Osoby.UpsertItemAsync(osoba, new PartitionKey(osoba.Id), cancellationToken: cancellationToken);
 		}
 
-		// Termíny se stejným datem (možné jen mezi smazanými) se slily na jeden dokument, viz ReadTerminyAsync.
-		foreach (Termin termin in terminy.Values.DistinctBy(termin => termin.Id))
+		foreach (Termin termin in terminy.Values)
 		{
 			await _containers.Terminy.UpsertItemAsync(termin, new PartitionKey(termin.Id), cancellationToken: cancellationToken);
 		}
@@ -93,40 +92,39 @@ public class SqlImport(VolejbalCosmosContainers _containers, ILogger<SqlImport> 
 	{
 		// Klíč je původní SQL id (kvůli přihláškám), dokument termínu je ale identifikovaný datem.
 		// Unikátní index UIDX_Termin_Datum_Deleted dovoloval víc smazaných termínů téhož data (lišily se
-		// časem smazání) - v Cosmosu je na datum jeden dokument, takže vyhrává nesmazaný, jinak
-		// naposledy smazaný, a přihlášky všech se slévají do něj.
-		Dictionary<int, Termin> result = new Dictionary<int, Termin>();
-		Dictionary<string, Termin> podleData = new Dictionary<string, Termin>();
+		// časem smazání). V Cosmosu je na datum jeden dokument, takže pro každé datum vyhrává nesmazaný
+		// termín, jinak naposledy smazaný - a do slovníku jde JEN vítěz. Přihlášky poražených výskytů se
+		// tím nepřenesou; slít je do vítěze by hráče přihlásilo na termín, na který se nepřihlásili.
+		List<(int SqlId, DateTime Datum, DateTime? Deleted)> radky = new List<(int, DateTime, DateTime?)>();
 
-		await using SqlCommand command = new SqlCommand("SELECT Id, Datum, Deleted FROM Termin ORDER BY Datum, Deleted DESC", connection);
-		await using SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
-		while (await reader.ReadAsync(cancellationToken))
+		await using (SqlCommand command = new SqlCommand("SELECT Id, Datum, Deleted FROM Termin", connection))
+		await using (SqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken))
 		{
-			int sqlId = reader.GetInt32(0);
-			DateTime datum = reader.GetDateTime(1).Date;
-			DateTime? deleted = reader.IsDBNull(2) ? null : reader.GetDateTime(2);
-			string id = Termin.GetId(datum);
-
-			if (podleData.TryGetValue(id, out Termin existujici))
+			while (await reader.ReadAsync(cancellationToken))
 			{
-				// ORDER BY Datum, Deleted DESC: nesmazaný (NULL) přijde jako poslední, ten má přednost.
-				if (deleted == null)
-				{
-					existujici.Deleted = null;
-				}
-				_logger.LogWarning("Termín {datum} je v SQL vícekrát (id {sqlId}), slévám ho do jednoho dokumentu.", id, sqlId);
-				result.Add(sqlId, existujici);
-				continue;
+				radky.Add((reader.GetInt32(0), reader.GetDateTime(1).Date, reader.IsDBNull(2) ? null : reader.GetDateTime(2)));
+			}
+		}
+
+		Dictionary<int, Termin> result = new Dictionary<int, Termin>();
+		foreach (IGrouping<DateTime, (int SqlId, DateTime Datum, DateTime? Deleted)> skupina in radky.GroupBy(radek => radek.Datum))
+		{
+			(int SqlId, DateTime Datum, DateTime? Deleted) vitez = skupina
+				.OrderBy(radek => radek.Deleted.HasValue) // nesmazaný první
+				.ThenByDescending(radek => radek.Deleted)
+				.First();
+
+			foreach ((int SqlId, DateTime Datum, DateTime? Deleted) porazeny in skupina.Where(radek => radek.SqlId != vitez.SqlId))
+			{
+				_logger.LogWarning("Termín {datum} je v SQL vícekrát; výskyt id {sqlId} (smazaný {deleted}) se přeskakuje včetně jeho přihlášek, přenáší se id {vitezId}.", Termin.GetId(skupina.Key), porazeny.SqlId, porazeny.Deleted, vitez.SqlId);
 			}
 
-			Termin termin = new Termin
+			result.Add(vitez.SqlId, new Termin
 			{
-				Id = id,
-				Datum = datum,
-				Deleted = deleted
-			};
-			podleData.Add(id, termin);
-			result.Add(sqlId, termin);
+				Id = Termin.GetId(skupina.Key),
+				Datum = skupina.Key,
+				Deleted = vitez.Deleted
+			});
 		}
 
 		return result;
@@ -148,7 +146,8 @@ public class SqlImport(VolejbalCosmosContainers _containers, ILogger<SqlImport> 
 
 			if (!terminy.TryGetValue(terminId, out Termin termin) || !osoby.TryGetValue(osobaId, out Osoba osoba))
 			{
-				_logger.LogWarning("Přihláška (termín {terminId}, osoba {osobaId}) odkazuje na neexistující záznam, přeskakuji.", terminId, osobaId);
+				// Termín buď neexistuje, nebo je to poražený duplicitní výskyt (viz ReadTerminyAsync).
+				_logger.LogWarning("Přihláška (termín {terminId}, osoba {osobaId}) odkazuje na nepřenášený záznam, přeskakuji.", terminId, osobaId);
 				continue;
 			}
 

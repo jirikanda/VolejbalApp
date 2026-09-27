@@ -228,7 +228,16 @@ Výstup workflow `functionAppUrl` je adresa `https://<app>.azurewebsites.net` AP
 
 ## Postup nasazení
 
-*Actions* → *Deploy to Azure* → *Run workflow* (branch `master`). Schéma databáze se nasazuje spolu s infrastrukturou, takže žádný krok navíc před deployem není.
+*Actions* → *Deploy to Azure* → *Run workflow* (branch `master`). Schéma databáze se nasazuje spolu s infrastrukturou, takže při běžném nasazení žádný krok navíc není.
+
+**Výjimka: první nasazení nad Cosmos DB (přepnutí ze SQL Serveru).** Data ze SQL převádí ruční `MigrationTool`, a dokud neproběhne, nesmí nad novou databází běžet aplikace: první čtení by založilo termíny, hráči by se mohli přihlašovat a import by pak dokumenty termínů **upsertem přepsal**, včetně přihlášek vzniklých v tom okně. Postup:
+
+1. **Zastavit Function App** - `az functionapp stop --name JkVolejbalFunc --resource-group JkVolejbalRG`. Tím končí i zápisy staré aplikace do SQL; frontend do znovuspuštění hlásí chybu volání API.
+2. **Spustit deploy workflow.** Bicep založí databázi a kontejnery, joby nasadí balíček API i frontend. Po doběhnutí ověřit, že aplikace zůstala zastavená: `az functionapp show --name JkVolejbalFunc --resource-group JkVolejbalRG --query state` má vrátit `Stopped`; kdyby ne, znovu `stop` dřív, než na ni někdo sáhne.
+3. **Převést data** - `dotnet run --project src/MigrationTool -- --endpoint "<cosmosEndpoint z výstupu workflow>" --database volejbal --importfromsql "<cs>"`. Vyžaduje `az login` s datovou rolí Cosmosu (viz výše). Kontejnery už existují, tool je jen potvrdí.
+4. **Spustit Function App** - `az functionapp start --name JkVolejbalFunc --resource-group JkVolejbalRG` - a proklikat aplikaci.
+
+Import je opakovatelný, takže krok 3 jde vyzkoušet nanečisto dřív (databázi a kontejnery si tool založí sám); před ostrým přepnutím ho pak stačí pustit znovu.
 
 ### Ruční nasazení bez GitHub Actions (alternativa)
 
@@ -263,12 +272,12 @@ az deployment group what-if --resource-group JkVolejbalRG --name jk-volejbal \
 - **`/api/health` nemá registrované žádné checky** — vrací 200, jakmile stojí aplikace. Flex Consumption health probes nemá (na rozdíl od ACA), takže endpoint slouží ručnímu ověření a měření studeného startu, ne platformě.
 - **Aplikace nemá vazbu na počet instancí.** Žádný plánovač už neexistuje (termíny se doplňují líně při čtení, souběh řeší unikátnost id dokumentu termínu), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 5` je pojistka proti vyčerpání propustnosti databáze (nad 1000 RU/s začne Cosmos vracet 429), ne funkční nutnost.
 - **App init timeout je 30 s.** Když se aplikace nerozběhne dřív, host to logne jako gRPC `System.TimeoutException` a hodnota se nedá konfigurovat. Sledovat při přidávání práce do startu.
-- **Schéma nasazuje šablona, ne aplikace ani workflow.** Kontejnery vznikají spolu s účtem Cosmos DB, takže před deployem není co pouštět. Konzolový **`MigrationTool`** zbývá pro dvě věci:
+- **Schéma nasazuje šablona, ne aplikace ani workflow.** Kontejnery vznikají spolu s účtem Cosmos DB, takže při běžném deployi není co pouštět (výjimka je první přepnutí ze SQL, viz *Postup nasazení*). Konzolový **`MigrationTool`** zbývá pro dvě věci:
   ```powershell
   # 1) založení lokální databáze v Cosmos DB Emulatoru (vývoj)
   dotnet run --project src/MigrationTool
 
-  # 2) jednorázový převod dat z původní SQL databáze (po prvním nasazení Cosmosu)
+  # 2) jednorázový převod dat z původní SQL databáze (při prvním nasazení, se zastavenou Function App - viz Postup nasazení)
   dotnet run --project src/MigrationTool -- `
     --endpoint "<cosmosEndpoint z výstupu šablony>" `
     --database "volejbal" `

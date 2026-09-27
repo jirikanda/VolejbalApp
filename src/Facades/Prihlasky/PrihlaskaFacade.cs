@@ -51,6 +51,12 @@ public class PrihlaskaFacade(
 
 	public async Task OdhlasitAsync(string terminId, string osobaId, CancellationToken cancellationToken)
 	{
+		// Cosmos nemá cizí klíče: bez kontroly by šlo do termínu přidávat tombstony s libovolným id.
+		// Neaktivní hráč se odhlásit smí - přihlásil se ještě jako aktivní a musí mít jak z termínu odejít.
+		Osoba osoba = await _osobaRepository.GetOsobaAsync(osobaId, cancellationToken);
+		osoba.ThrowIfDeleted();
+		osoba.ThrowIfNotAktivni();
+
 		await UpravTerminAsync(terminId, termin =>
 		{
 			Prihlaska prihlaska = NajdiPrihlasku(termin, osobaId);
