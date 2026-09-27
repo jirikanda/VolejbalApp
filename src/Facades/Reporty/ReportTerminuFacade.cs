@@ -1,18 +1,20 @@
 using Havit.Services.TimeServices;
 using KandaEu.Volejbal.Contracts.Reporty;
 using KandaEu.Volejbal.Contracts.Reporty.Dto;
+using KandaEu.Volejbal.Services.SkolniRok;
 
 namespace KandaEu.Volejbal.Facades.Reporty;
 
 [Service(ServiceType = typeof(IReportTerminuApi))]
 public class ReportTerminuFacade(
 	ITerminRepository _terminRepository,
+	ISkolniRokService _skolniRokService,
 	ITimeService _timeService) : IReportTerminuApi
 {
 	public async Task<ReportTerminu> GetReportAsync(CancellationToken cancellationToken)
 	{
 		DateTime today = _timeService.GetCurrentDate();
-		DateTime datumOdInclusive = ReportHelpers.GetZacatekSkolnihoRoku(today);
+		DateTime datumOdInclusive = _skolniRokService.GetZacatek(today);
 
 		List<Termin> terminy = await _terminRepository.GetTerminyVObdobiAsync(datumOdInclusive, today, cancellationToken);
 
