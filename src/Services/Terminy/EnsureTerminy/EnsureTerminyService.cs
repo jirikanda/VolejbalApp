@@ -41,8 +41,8 @@ public class EnsureTerminyService(
 
 		for (int pokus = 1; pokus <= MaxPocetPokusu; pokus++)
 		{
-			(bool uspech, List<Termin> budouciTerminy) = await TryEnsureTerminyCoreAsync(today, cancellationToken);
-			if (uspech)
+			List<Termin> budouciTerminy = await TryEnsureTerminyCoreAsync(today, cancellationToken);
+			if (budouciTerminy != null)
 			{
 				return budouciTerminy;
 			}
@@ -57,48 +57,47 @@ public class EnsureTerminyService(
 	}
 
 	/// <summary>
-	/// Jeden průchod doplněním termínů. Vrací false, pokud narazil na konflikt nebo na data změněná
-	/// souběžným požadavkem; při úspěchu vrací nesmazané budoucí termíny včetně založených.
+	/// Jeden průchod doplněním termínů. Při úspěchu vrací nesmazané budoucí termíny včetně založených,
+	/// seřazené podle data. Vrací null, pokud narazil na konflikt nebo na data změněná souběžným
+	/// požadavkem - volající má průchod zopakovat.
 	/// </summary>
-	private async Task<(bool Uspech, List<Termin> BudouciTerminy)> TryEnsureTerminyCoreAsync(DateTime today, CancellationToken cancellationToken)
+	private async Task<List<Termin>> TryEnsureTerminyCoreAsync(DateTime today, CancellationToken cancellationToken)
 	{
 		// Jeden snímek: nesmazané termíny určují počet, všechny (i smazané) datum, na které se navazuje.
 		List<Termin> vsechnyBudouciTerminy = await _terminRepository.GetBudouciTerminyIncludingDeletedAsync(today, cancellationToken);
 		List<Termin> budouciTerminy = vsechnyBudouciTerminy.Where(termin => termin.Deleted == null).ToList();
 		_logger.LogInformation("Nalezeno {count} budoucích termínů.", budouciTerminy.Count);
 
-		if (budouciTerminy.Count >= PozadovanyPocetBudoucichTerminu)
+		if (budouciTerminy.Count < PozadovanyPocetBudoucichTerminu)
 		{
-			return (true, budouciTerminy);
-		}
-
-		DateTime? posledniDatum;
-		if (vsechnyBudouciTerminy.Count > 0)
-		{
-			posledniDatum = vsechnyBudouciTerminy.Max(termin => termin.Datum);
-		}
-		else
-		{
-			posledniDatum = await _terminRepository.GetPosledniDatumTerminuAsync(cancellationToken);
-			if ((posledniDatum != null) && (posledniDatum.Value >= today))
+			DateTime? posledniDatum;
+			if (vsechnyBudouciTerminy.Count > 0)
 			{
-				// Mezi oběma dotazy někdo budoucí termín založil - snímek už neplatí, zkusíme to znovu.
-				return (false, budouciTerminy);
+				posledniDatum = vsechnyBudouciTerminy.Max(termin => termin.Datum);
+			}
+			else
+			{
+				posledniDatum = await _terminRepository.GetPosledniDatumTerminuAsync(cancellationToken);
+				if ((posledniDatum != null) && (posledniDatum.Value >= today))
+				{
+					// Mezi oběma dotazy někdo budoucí termín založil - snímek už neplatí, zkusíme to znovu.
+					return null;
+				}
+			}
+
+			foreach (DateTime datum in _terminDatumGeneratorService.GetDatumyKZalozeni(today, posledniDatum, budouciTerminy.Count, PozadovanyPocetBudoucichTerminu))
+			{
+				_logger.LogInformation("Zakládám termín pro datum {datum}.", datum);
+				Termin termin = new Termin { Datum = datum };
+				if (!await _terminRepository.TryCreateTerminAsync(termin, cancellationToken))
+				{
+					return null;
+				}
+
+				budouciTerminy.Add(termin);
 			}
 		}
 
-		foreach (DateTime datum in _terminDatumGeneratorService.GetDatumyKZalozeni(today, posledniDatum, budouciTerminy.Count, PozadovanyPocetBudoucichTerminu))
-		{
-			_logger.LogInformation("Zakládám termín pro datum {datum}.", datum);
-			Termin termin = new Termin { Datum = datum };
-			if (!await _terminRepository.TryCreateTerminAsync(termin, cancellationToken))
-			{
-				return (false, budouciTerminy);
-			}
-
-			budouciTerminy.Add(termin);
-		}
-
-		return (true, budouciTerminy.OrderBy(termin => termin.Datum).ToList());
+		return budouciTerminy.OrderBy(termin => termin.Datum).ToList();
 	}
 }

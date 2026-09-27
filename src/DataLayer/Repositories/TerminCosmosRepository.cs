@@ -54,11 +54,13 @@ public class TerminCosmosRepository(VolejbalCosmosContainers _containers) : ITer
 
 	public async Task<DateTime?> GetPosledniDatumTerminuAsync(CancellationToken cancellationToken = default)
 	{
-		List<Termin> terminy = await QueryAsync(
-			new QueryDefinition("SELECT TOP 1 * FROM c ORDER BY c.datum DESC"),
+		// Jen datum, ne celý dokument s přihláškami - jde o jedinou hodnotu.
+		List<DateTime> data = await _containers.Terminy.QueryToListAsync<DateTime>(
+			new QueryDefinition("SELECT TOP 1 VALUE c.datum FROM c ORDER BY c.datum DESC"),
+			requestOptions: null,
 			cancellationToken);
 
-		return terminy.FirstOrDefault()?.Datum;
+		return (data.Count > 0) ? data[0] : null;
 	}
 
 	public Task<List<Termin>> GetTerminyVObdobiAsync(DateTime odInclusive, DateTime doExclusive, CancellationToken cancellationToken = default)

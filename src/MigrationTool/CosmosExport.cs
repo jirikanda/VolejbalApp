@@ -79,9 +79,11 @@ public class CosmosExport(VolejbalCosmosContainers _containers, ILogger<CosmosEx
 
 		foreach (Osoba osoba in osoby.OrderByPrijmeniJmeno())
 		{
-			command.Parameters["@Prijmeni"].Value = osoba.Prijmeni;
-			command.Parameters["@Jmeno"].Value = osoba.Jmeno;
-			command.Parameters["@Email"].Value = osoba.Email;
+			// Sloupce jsou NOT NULL, ale prázdná hodnota v dokumentu chybí (null se do Cosmosu nezapisuje);
+			// null v parametru by SqlClient odmítl jako nezadaný parametr a shodil celý export.
+			command.Parameters["@Prijmeni"].Value = osoba.Prijmeni ?? String.Empty;
+			command.Parameters["@Jmeno"].Value = osoba.Jmeno ?? String.Empty;
+			command.Parameters["@Email"].Value = osoba.Email ?? String.Empty;
 			command.Parameters["@Deleted"].Value = (object)osoba.Deleted ?? DBNull.Value;
 			command.Parameters["@Aktivni"].Value = osoba.Aktivni;
 
