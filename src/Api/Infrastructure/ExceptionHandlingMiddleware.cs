@@ -21,6 +21,13 @@ namespace KandaEu.Volejbal.Api.Infrastructure;
 /// </remarks>
 public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _logger) : IFunctionsWorkerMiddleware
 {
+	/// <summary>
+	/// Text odpovědi na neošetřenou výjimku. Její Message se klientovi neposílá: u cizích výjimek může nést
+	/// interní údaje - CosmosException vypisuje endpoint účtu a celou diagnostiku požadavku - a klient
+	/// obsah odpovědi zobrazuje uživateli (Error.razor). Podrobnosti patří do logu a Application Insights.
+	/// </summary>
+	private const string NeosetrenaVyjimkaMessage = "Na serveru došlo k neočekávané chybě.";
+
 	public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
 	{
 		try
@@ -30,18 +37,22 @@ public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _l
 		catch (Exception exception) when (!IsRequestAborted(exception, context))
 		{
 			(int statusCode, bool handled) = MapException(exception);
+			ValidationErrorModel errorModel;
 
 			if (handled)
 			{
+				// Ošetřené výjimky (OperationFailedException apod.) nesou text určený uživateli.
 				_logger.LogDebug(exception, "Výjimka namapovaná na status kód {StatusCode}.", statusCode);
+				errorModel = ValidationErrorModel.FromException(statusCode, exception);
 			}
 			else
 			{
 				_logger.LogError(exception, "Neošetřená výjimka při zpracování funkce {FunctionName}.", context.FunctionDefinition.Name);
 				ReportToExceptionMonitoring(context, exception);
+				errorModel = ValidationErrorModel.FromMessage(statusCode, NeosetrenaVyjimkaMessage);
 			}
 
-			SetErrorResult(context, statusCode, exception);
+			SetErrorResult(context, statusCode, errorModel);
 		}
 	}
 
@@ -80,10 +91,10 @@ public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _l
 	/// Odpověď se nastavuje přes InvocationResult, ne zápisem do HttpResponse po dokončení funkce -
 	/// ten je s ASP.NET Core integrací nespolehlivý (response stream už může být odeslaný).
 	/// </summary>
-	private static void SetErrorResult(FunctionContext context, int statusCode, Exception exception)
+	private static void SetErrorResult(FunctionContext context, int statusCode, ValidationErrorModel errorModel)
 	{
 		InvocationResult invocationResult = context.GetInvocationResult();
-		invocationResult.Value = new ObjectResult(ValidationErrorModel.FromException(statusCode, exception))
+		invocationResult.Value = new ObjectResult(errorModel)
 		{
 			StatusCode = statusCode
 		};

@@ -23,16 +23,17 @@ public class Program
 		IHostBuilder hostBuilder = Host.CreateDefaultBuilder()
 			.ConfigureAppConfiguration((hostContext, config) =>
 			{
-				config
-					.AddCommandLine(args, new Dictionary<string, string>
-					{
-						{ "--endpoint", "Cosmos:Endpoint" },
-						{ "--key", "Cosmos:Key" },
-						{ "--database", "Cosmos:DatabaseId" },
-						{ "--importfromsql", "ImportFromSql" },
-						{ "--exporttosql", "ExportToSql" },
-					})
-					.AddEnvironmentVariables();
+				// Proměnné prostředí už přidal CreateDefaultBuilder; command line jde až za ně, takže výslovně
+				// zadaný --endpoint/--database vyhraje nad Cosmos__* z prostředí. Obráceně by tool tiše běžel
+				// proti jinému účtu, než je na příkazové řádce.
+				config.AddCommandLine(args, new Dictionary<string, string>
+				{
+					{ "--endpoint", "Cosmos:Endpoint" },
+					{ "--key", "Cosmos:Key" },
+					{ "--database", "Cosmos:DatabaseId" },
+					{ "--importfromsql", "ImportFromSql" },
+					{ "--exporttosql", "ExportToSql" },
+				});
 			})
 			.ConfigureLogging(logging =>
 			{

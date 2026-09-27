@@ -54,6 +54,18 @@ public class ValidationErrorModel
 	}
 
 	/// <summary>
+	/// Vrací ValidationErrorModel s daným textem chyby - pro neošetřené výjimky, jejichž Message se klientovi
+	/// neposílá (viz ExceptionHandlingMiddleware).
+	/// </summary>
+	public static ValidationErrorModel FromMessage(int statusCode, string message)
+	{
+		return new ValidationErrorModel(statusCode)
+		{
+			Message = message
+		};
+	}
+
+	/// <summary>
 	/// Vrací ValidationErrorModel pro výsledky validace modelu.
 	/// </summary>
 	public static ValidationErrorModel FromValidationResults(int statusCode, IEnumerable<ValidationResult> validationResults)
