@@ -60,7 +60,18 @@ public static class Program
 
 		builder.Services.AddExceptionMonitoring(builder.Configuration);
 
-		builder.Services.AddApplicationInsightsTelemetryWorkerService(builder.Configuration);
+		builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
+		{
+			// Studený start: worker si nechává jen sběr requestů, závislostí (volání Cosmosu) a výjimek.
+			// Ostatní moduly startují vlákna a spojení, která se na krátce žijící instanci Flex Consumption
+			// (0,25 jádra) nikdy nevyplatí - Live Metrics otevírá streamovací spojení hned při startu,
+			// performance a event countery čtou v intervalu čítače procesu, diagnostický modul posílá
+			// heartbeat a dotazuje se na metadata instance (IMDS).
+			options.EnableQuickPulseMetricStream = false;
+			options.EnablePerformanceCounterCollectionModule = false;
+			options.EnableEventCounterCollectionModule = false;
+			options.EnableDiagnosticsTelemetryModule = false;
+		});
 		builder.Services.ConfigureFunctionsApplicationInsights();
 		builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreCancellationExceptionsTelemetryProcessor>();
 
