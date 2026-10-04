@@ -32,6 +32,7 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Mcp" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -39,6 +40,7 @@
 		<ProjectReference Include="..\DependencyInjection\DependencyInjection.csproj" />
 		<ProjectReference Include="..\DataLayer\DataLayer.csproj" />
 		<ProjectReference Include="..\Facades\Facades.csproj" />
+		<ProjectReference Include="..\Model\Model.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
 	</ItemGroup>
 

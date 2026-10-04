@@ -1,8 +1,13 @@
-{
+﻿{
 	"version": "2.0",
 	"extensions": {
 		"http": {
 			"routePrefix": ""
+		},
+		"mcp": {
+			"serverName": "VolejbalApp",
+			"serverVersion": "1.0.0",
+			"instructions": "Přihlašování na volejbal. Hráče najdi nástrojem seznam_hracu (podle jména), termíny i s tím, kdo přijde a kdo ne, nástrojem seznam_terminu. Termín se určuje datem (yyyy-MM-dd), hráč svým id. Přihlášení = prihlasit, odhlášení i omluvení předem (hráč nepřijde) = odhlasit. Než někoho přihlásíš nebo odhlásíš, ujisti se, že jde o správného hráče a termín."
 		}
 	}
 }

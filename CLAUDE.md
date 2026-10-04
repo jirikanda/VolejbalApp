@@ -129,6 +129,25 @@ Conventions that survived the move from SQL Server:
 - **There is no rate limiting.** The old `DefaultAPI` limiter (10 req / 5 s) was a blunt guard for a single replica and its database; its role is now played by `maximumInstanceCount` in the bicep template (and, past 1000 RU/s, by Cosmos returning 429).
 - **There is no OpenAPI document and no Scalar UI.** Azure Functions cannot export one at build time (`Microsoft.Extensions.ApiDescription.Server` is tied to the ASP.NET Core pipeline), and the official `Microsoft.Azure.Functions.Worker.Extensions.OpenApi` is in maintenance mode and broken on .NET 10. Clients don't need it — the contract is the interface.
 
+### MCP server (AI assistants)
+
+The same Function App is also a remote **MCP server** (Model Context Protocol), so players can sign up from an AI assistant. It is built on the Functions MCP extension (`Microsoft.Azure.Functions.Worker.Extensions.Mcp`, GA): the **host** serves the protocol at `/runtime/webhooks/mcp` (Streamable HTTP; `/runtime/webhooks/mcp/sse` is the legacy SSE transport), the worker only contributes `[McpToolTrigger]` functions in [Api/Functions/McpFunctions.cs](src/Api/Functions/McpFunctions.cs). Server name and the instructions sent to the model are in `host.json` (`extensions.mcp`).
+
+| Tool | Facade call |
+| --- | --- |
+| `seznam_hracu` | `IOsobaApi.GetOsobyAsync` (all non-deleted players incl. the `aktivni` flag) |
+| `seznam_terminu` | `ITerminApi.GetTerminyAsync` + `GetDetailTerminuAsync` per termín → přihlášení / omluvení / nerozhodnutí |
+| `prihlasit` (`datum`, `osobaId`) | `IPrihlaskaApi.PrihlasitAsync` |
+| `odhlasit` (`datum`, `osobaId`) | `IPrihlaskaApi.OdhlasitAsync` — also the way to say "I won't come" without having signed up (tombstone) |
+
+Things to know:
+
+- **The tools are thin wrappers over the facades**, exactly like the HTTP triggers, so every rule (inactive player, past termín, ETag retry) is shared with the web. They are **not** part of the REST contract — no `I*Api` method, no `ApiRoutes` constant, and `ApiContractTests` ignores them (they carry no `[HttpTrigger]`).
+- **Tool parameters are typed `DateTimeOffset datum` and `Guid osobaId`, never `string`.** The extension (1.6.0) parses every argument that looks like a date into `DateTimeOffset` (and a GUID into `Guid`) and hands it to a `string` parameter through `Convert.ToString` — `"2026-01-13"` arrives as `"01/13/2026 00:00:00 +00:00"` and the termín is "not found". The typed parameter receives the value untouched (`McpToolsTests` fails on a `string` tool parameter); the id is built with `Termin.GetId(datum.Date)` (the written date, not UTC — a `+01:00` midnight must stay the same day). The schema the model sees is `"string"` either way.
+- **Errors become the tool's text result, not an exception.** [ExceptionHandlingMiddleware](src/Api/Infrastructure/ExceptionHandlingMiddleware.cs) detects an MCP invocation (`mcpToolTrigger` input binding) and sets `"Chyba: <message>"` as the invocation result instead of an `ObjectResult` — same handled/unhandled split as for HTTP, so a 500-class failure still reports to exception monitoring and shows only the generic text. An argument that cannot be converted (`FunctionInputConverterException`, e.g. `"datum": "zítra"`) is a caller mistake: it is answered with a hint and **not** reported. Results of the list tools are JSON text with unescaped Czech (`UnicodeRanges.All`).
+- **Auth is the `mcp_extension` system key** (the extension's default, `webhookAuthorizationLevel: System`), sent as `x-functions-key` or `?code=`. It is the only protection — the tools can sign anyone in or out, as can the anonymous REST API. How to read the key and connect a client: infra/README.md, *MCP server*. Locally (Core Tools ≥ 4.0.7030) no key is required.
+- **Cost:** the host-side extension ships ~7 MB (~3 MB zipped; Flex downloads the zip on every cold start: 13.7 → 16.7 MB) into `.azurefunctions/` of the publish output, and the worker runs one metadata transformer at startup. No storage changes are needed for Streamable HTTP (session state is encrypted into the session id); the legacy SSE transport uses queues of `AzureWebJobsStorage`, which the app identity can already write to.
+
 ### MigrationTool (container setup + data transfer both ways)
 
 - Console app ([MigrationTool/Program.cs](src/MigrationTool/Program.cs)): creates the database and containers if they are missing, and optionally moves data between Cosmos and SQL Server. **CI/CD does not touch it**; it is a manual step from a local clone.
@@ -150,7 +169,7 @@ Conventions that survived the move from SQL Server:
 
 Two test projects, deliberately separated:
 
-- **`Tests/`** — CI tests (run in `dotnet test` step of `build.yml`): the API contract tests described above, the `TerminDatumGeneratorService` date-arithmetic tests, the document-shape tests in [Tests/DataLayer/CosmosSerializationTests.cs](src/Tests/DataLayer/CosmosSerializationTests.cs) (camelCase `id`, omitted nulls, fixed date format, ETag outside the document), and the composition-root test that resolves every facade from the production DI container. Pure MSTest, **no database of any kind** — nothing here needs one any more.
+- **`Tests/`** — CI tests (run in `dotnet test` step of `build.yml`): the API contract tests described above, the MCP tool-parameter guard in [Tests/Api/McpToolsTests.cs](src/Tests/Api/McpToolsTests.cs) (no `string` parameters, see *MCP server*), the `TerminDatumGeneratorService` date-arithmetic tests, the document-shape tests in [Tests/DataLayer/CosmosSerializationTests.cs](src/Tests/DataLayer/CosmosSerializationTests.cs) (camelCase `id`, omitted nulls, fixed date format, ETag outside the document), and the composition-root test that resolves every facade from the production DI container. Pure MSTest, **no database of any kind** — nothing here needs one any more.
 - **`TestsForLocalDebugging/`** — local-only tests against the **Cosmos DB Emulator** (`https://localhost:8081`, config in its `appsettings.json`). Base class [TestsForLocalDebugging/TestBase.cs](src/TestsForLocalDebugging/TestBase.cs) wires up the real DI container via `ConfigureForTests` and drops + recreates the `volejbal-test` database before each test. The one test there proves the 409-retry in `EnsureTerminyService` under real concurrency, which nothing can fake. Do not add these to CI.
 
 ## Configuration

@@ -110,6 +110,41 @@ Proměnná `bindCustomDomain` v šabloně je zatím `false`, protože při prvn�
 3. Teprve pak u registrátora domény přepsat `CNAME` `volejbal.kanda.eu` → `staticWebAppDefaultHostname` (jde o ostré přepnutí produkční domény, krátké okno možné nedostupnosti, dokud DNS nepropaguje). Smazat i starý TXT záznam `asuid.volejbal` (byl jen pro dřívější ACA managed certifikát, teď zbytečný).
 4. Počkat na propagaci DNS, v [main.bicep](main.bicep) přepnout `bindCustomDomain` na `true`, commitnout a nasadit znovu. Ověřit `az staticwebapp hostname list --name JkVolejbalSWA --resource-group JkVolejbalRG`, že je doména `Ready`.
 
+### MCP server
+
+Function App je zároveň vzdálený **MCP server** pro AI asistenty (Claude, Copilot…) — nástroje `seznam_hracu`, `seznam_terminu`, `prihlasit` a `odhlasit`, viz [CLAUDE.md](../CLAUDE.md). Šablona kvůli tomu nic nového nezakládá: endpoint vystavuje MCP extension hostu na (host podle výstupu `functionAppUrl`)
+
+```
+https://jk-volejbal-func.azurewebsites.net/runtime/webhooks/mcp
+```
+
+a chrání ho **systémový klíč `mcp_extension`**, který host založí sám při prvním startu s extension. Klíč se přečte takto:
+
+```bash
+az functionapp keys list --resource-group JkVolejbalRG --name JkVolejbalFunc --query systemKeys.mcp_extension --output tsv
+```
+
+Klient ho posílá v hlavičce `x-functions-key`, nebo — když hlavičky nastavit neumí, např. custom connector v claude.ai — jako query parametr `?code=<klíč>` přímo v URL. Bez klíče endpoint vrací 401. Klíč dává plný přístup k přihlašování za kohokoli, takže ho nikam necommitujte; při úniku ho přegenerujte (`az functionapp keys set --key-type systemKeys --key-name mcp_extension …`), staré URL tím přestanou fungovat.
+
+Příklad pro VS Code (`.vscode/mcp.json`):
+
+```json
+{
+	"inputs": [
+		{ "type": "promptString", "id": "volejbal-mcp-key", "description": "mcp_extension klíč", "password": true }
+	],
+	"servers": {
+		"volejbal": {
+			"type": "http",
+			"url": "https://jk-volejbal-func.azurewebsites.net/runtime/webhooks/mcp",
+			"headers": { "x-functions-key": "${input:volejbal-mcp-key}" }
+		}
+	}
+}
+```
+
+Lokálně (`dotnet run --project src/Api`, Core Tools ≥ 4.0.7030) běží na `http://localhost:7071/runtime/webhooks/mcp` bez klíče.
+
 ### Manuální úklid po migraci z Container Apps
 
 ARM v incremental módu **nemaže** resources, které ze šablony zmizely. Po prvním nasazení této šablony proto v resource group zůstanou osiřelé resources z ACA éry a je potřeba je smazat ručně:

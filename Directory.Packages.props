@@ -18,6 +18,7 @@
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.51.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.1" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Mcp" Version="1.6.0" />
     <!-- Jen MigrationTool: jednorázový převod dat ze SQL Serveru do Cosmosu. Po převodu ho lze
          i s tím projektem vyhodit, aplikace na SQL Server nesahá. -->
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.0" />
