@@ -73,10 +73,6 @@ public partial class Error
 			case HttpStatusCode.UnprocessableEntity:
 				return "Server požadavek odmítl - data se mezitím mohla změnit. Zkuste stránku načíst znovu.";
 
-			// Rate limiting na serveru (RateLimitingMiddleware).
-			case HttpStatusCode.TooManyRequests:
-				return "Server dočasně omezil počet požadavků. Počkejte chvíli a zkuste stránku načíst znovu.";
-
 			case HttpStatusCode.NotFound:
 				return "Server takovou adresu nezná - mohou se rozcházet verze aplikace a API.";
 

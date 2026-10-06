@@ -75,7 +75,7 @@ param azureFunctionsEnvironment string = 'Production'
 ])
 param instanceMemoryMB int = 512
 
-@description('Strop počtu on-demand instancí. Hlavně cenová pojistka: při zahlcení API (anonymní; rate limiter odmítá až ve workeru) se platí nejvýš jedna instance. Zároveň díky ní platí limit RateLimitingMiddleware globálně - čítače jsou v paměti instance. Jedna instance s 0,25 core pokryje provoz aplikace s velkou rezervou a aplikace na počtu instancí nezávisí (viz infra/README.md). Před databází chrání spíš strop propustnosti Cosmosu.')
+@description('Strop počtu on-demand instancí. Hlavně cenová pojistka: při zahlcení API (anonymní, bez rate limitingu) se platí nejvýš jedna instance. Jedna instance s 0,25 core pokryje provoz aplikace s velkou rezervou a aplikace na počtu instancí nezávisí (viz infra/README.md). Před databází chrání spíš strop propustnosti Cosmosu.')
 param maximumInstanceCount int = 1
 
 // Počet always-ready instancí. Nula = plná serverless ekonomika (vejde se do free grantu), ale platí se
