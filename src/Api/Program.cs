@@ -23,6 +23,7 @@ public static class Program
 		ConfigureConfigurationAndLogging(builder);
 		ConfigureServices(builder);
 
+		builder.UseMiddleware<RateLimitingMiddleware>();
 		builder.UseMiddleware<ExceptionHandlingMiddleware>();
 
 		builder.Build().Run();
