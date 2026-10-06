@@ -1,6 +1,6 @@
 # Nasazení na Azure Functions (Flex Consumption) + Azure Static Web Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App a (volitelně, viz níže) binding custom domény na Static Web App.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App, **hlídání nákladů** (action group, alert na počet spuštění funkcí, rozpočet) a (volitelně, viz níže) binding custom domény na Static Web App.
 
 | Resource | Typ | Název |
 | --- | --- | --- |
@@ -11,6 +11,9 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Fun
 | Flex Consumption plán | `Microsoft.Web/serverfarms` | `JkVolejbalFuncPlan` |
 | Function App (`Api`) | `Microsoft.Web/sites` | `JkVolejbalFunc` |
 | Static Web App (`Web.Client`, frontend) | `Microsoft.Web/staticSites` | `JkVolejbalSWA` |
+| Action group (e-mail) | `Microsoft.Insights/actionGroups` | `JkVolejbalAlerts` |
+| Alert na počet spuštění funkcí | `Microsoft.Insights/metricAlerts` | `JkVolejbalFuncExecutionCount` |
+| Rozpočet resource group | `Microsoft.Consumption/budgets` | `JkVolejbalBudget` |
 
 Application Insights je **workspace-based** nad Log Analytics workspace. Connection string se do Function App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
@@ -65,7 +68,7 @@ ASP.NET Core integrace ve Functions dává jen typy (`HttpRequest`, `IActionResu
 | `UseErrorToJson()` | [ExceptionHandlingMiddleware](../src/Api/Infrastructure/ExceptionHandlingMiddleware.cs) (worker middleware) |
 | `[ApiController]` + `ValidateModelAttribute` | [RequestBodyReader](../src/Api/Infrastructure/RequestBodyReader.cs) (DataAnnotations → 422) |
 | `UseRequestLocalization()` | `CultureInfo.DefaultThreadCurrentCulture` v `Program.cs` |
-| `AddRateLimiter` (`DefaultAPI`, 10 req/5 s) | **zrušeno**; roli pojistky přebral `maximumInstanceCount` |
+| `AddRateLimiter` (`DefaultAPI`, 10 req/5 s) | **zrušeno**; roli pojistky přebral `maximumInstanceCount: 1` (cenový strop) a strop propustnosti Cosmosu |
 | `RecurringJobsBackgroundService` | **zrušeno**; termíny se doplňují líně při čtení jejich seznamu ([TerminFacade](../src/Facades/Terminy/TerminFacade.cs)) |
 | OpenAPI dokument + Scalar UI | **zrušeno** (klienti ho nepotřebují, viz níže) |
 | `TZ=Europe/Prague` | zóna v kódu ([PragueTimeProvider](../src/Services/Infrastructure/Time/PragueTimeProvider.cs)) |
@@ -95,6 +98,15 @@ _LogOperation | where Category =~ "Ingestion" | where Detail contains "OverQuota
 ```
 
 V bicepu je parametr typu `string` a prochází přes `json()`, protože **bicep nemá typ pro desetinná čísla**.
+
+### Hlídání nákladů
+
+API je anonymní a bez rate limitingu, takže zahlcení se platí — za **každé spuštění funkce** a za čas instance. `maximumInstanceCount: 1` omezuje jen to druhé. Tvrdý strop útraty na Pay-As-You-Go subscription neexistuje (spending limit mají jen předplatná s kreditem, např. Visual Studio), proto šablona aspoň upozorňuje:
+
+- **Alert na počet spuštění** (`JkVolejbalFuncExecutionCount`): metrika `OnDemandFunctionExecutionCount` — ta, ze které se počítá faktura — nad **3000 za 5 minut** (průměrně 10 req/s, parametr `executionCountAlertThreshold`), vyhodnocení každých 5 minut, e-mail přes action group `JkVolejbalAlerts`. Běžný provoz je v jednotkách requestů za minutu. Metrika může chodit se zpožděním; alert jednou ověřit ručně (smyčka `curl` na `/api/health`).
+- **Rozpočet** (`JkVolejbalBudget`): **5 USD/měsíc** na celou resource group (parametr `budgetAmount`), e-mail při dosažení **100 %** skutečných nákladů. Pomalá pojistka — data o nákladech chodí se zpožděním hodin —, ale chytí i to, na co alert nemyslí. E-mail posílá přímo (`contactEmails` je u rozpočtu povinné), ne přes action group, aby nechodil dvakrát.
+
+**Nic z toho aplikaci nevypne**, jen upozorní. Adresa je v parametru `alertEmail`. Začátek rozpočtu (`budgetStartDate`) je pevné datum, ne `utcNow()` — šablona se nasazuje celá při každém deployi a posouvání začátku by rozpočet pokaždé měnilo.
 
 ### Custom doména (`volejbal.kanda.eu`)
 
@@ -270,7 +282,7 @@ az deployment group what-if --resource-group JkVolejbalRG --name jk-volejbal \
 - **CORS a `ApiBaseUrl` jdou ruku v ruce.** `Api` a `Web.Client` běží na různých originech (Function App vs. SWA), takže Function App potřebuje CORS allow-list (nastavený v `main.bicep` na hostname Static Web App i na custom doménu) a `Web.Client` potřebuje vědět, kam volat — to je commitnutá hodnota `ApiBaseUrl` v `src/Web.Client/wwwroot/appsettings.json`. **Obě hodnoty jsou napsané ručně a nic je nepropojuje automaticky**; při změně názvu Function App je nutné upravit obojí.
 - **HTTPS řeší platforma** (`httpsOnly: true`), ne aplikace. Ve Functions není `UseHttpsRedirection` ani `UseHsts` — a není kam je dát, ASP.NET Core middleware pipeline tu neexistuje.
 - **`/api/health` nemá registrované žádné checky** — vrací 200, jakmile stojí aplikace. Flex Consumption health probes nemá (na rozdíl od ACA), takže endpoint slouží ručnímu ověření a měření studeného startu, ne platformě.
-- **Aplikace nemá vazbu na počet instancí.** Žádný plánovač už neexistuje (termíny se doplňují líně při čtení, souběh řeší unikátnost id dokumentu termínu), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 5` je pojistka proti vyčerpání propustnosti databáze (nad 1000 RU/s začne Cosmos vracet 429), ne funkční nutnost.
+- **Aplikace nemá vazbu na počet instancí.** Žádný plánovač už neexistuje (termíny se doplňují líně při čtení, souběh řeší unikátnost id dokumentu termínu), takže dřívější závazné `maxReplicas: 1` neplatí. `maximumInstanceCount: 1` proto není funkční nutnost, ale **cenová pojistka**: API je anonymní a bez rate limitingu, takže při zahlcení se platí nejvýš jedna instance (dřívější hodnota 5 dávala pětinásobný strop a žádnou odolnost navíc — jednu i pět instancí zahltí útočník stejně snadno). Jedna instance s 0,25 core provoz aplikace pokryje s velkou rezervou; `perInstanceConcurrency` je u Flex cíl škálování, ne tvrdý limit, requesty nad něj se zpracují na téže instanci. Databázi chrání hlavně její vlastní strop (400 RU/s sdílené propustnosti, nad ním Cosmos vrací 429).
 - **App init timeout je 30 s.** Když se aplikace nerozběhne dřív, host to logne jako gRPC `System.TimeoutException` a hodnota se nedá konfigurovat. Sledovat při přidávání práce do startu.
 - **Schéma nasazuje šablona, ne aplikace ani workflow.** Kontejnery vznikají spolu s účtem Cosmos DB, takže při běžném deployi není co pouštět (výjimka je první přepnutí ze SQL, viz *Postup nasazení*). Konzolový **`MigrationTool`** zbývá pro dvě věci:
   ```powershell
