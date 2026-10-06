@@ -626,7 +626,9 @@ resource executionCountAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
     scopes: [
       functionApp.id
     ]
-    evaluationFrequency: 'PT5M'
+    // Klouzavé okno 5 minut vyhodnocované každou minutu: práh zůstává "za 5 minut", ale pojistka
+    // zareaguje až o 4 minuty dřív než při vyhodnocení po 5 minutách.
+    evaluationFrequency: 'PT1M'
     windowSize: 'PT5M'
     autoMitigate: true
     criteria: {
