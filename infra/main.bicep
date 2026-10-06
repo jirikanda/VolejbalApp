@@ -85,6 +85,23 @@ param maximumInstanceCount int = 1
 @description('Počet always-ready instancí (0 = vypnuto).')
 param alwaysReadyInstanceCount int = 0
 
+// Hlídání nákladů: API je anonymní a bez rate limitingu, takže zahlcení se platí za každé spuštění funkce
+// (maximumInstanceCount omezuje jen čas instance, ne počet spuštění). Alerty nic nevypínají, jen upozorní.
+@description('E-mail pro alerty (action group) a upozornění rozpočtu.')
+param alertEmail string = 'kanda@havit.cz'
+
+// Běžný provoz je v jednotkách requestů za minutu; 3000 za 5 minut je průměrně 10 req/s.
+@description('Práh alertu na počet spuštění funkcí za 5 minut.')
+param executionCountAlertThreshold int = 3000
+
+@description('Měsíční rozpočet resource group v USD; upozornění chodí při dosažení 100 %.')
+param budgetAmount int = 5
+
+// Začátek rozpočtu musí být první den měsíce. Pevná hodnota, ne utcNow(): šablona se nasazuje celá při
+// každém deployi a posouvání začátku by rozpočet pokaždé měnilo.
+@description('Začátek období rozpočtu (první den měsíce, formát yyyy-MM-dd).')
+param budgetStartDate string = '2026-10-01'
+
 // Název Static Web App (frontend Web.Client, nasazovaný samostatně přes deploy.yml job deploy-frontend).
 var staticWebAppName = 'JkVolejbalSWA'
 
@@ -446,6 +463,88 @@ resource cosmosDataContributorAssignment 'Microsoft.DocumentDB/databaseAccounts/
     roleDefinitionId: '${cosmosAccount.id}/sqlRoleDefinitions/${cosmosDataContributorRoleId}'
     principalId: functionApp.identity.principalId
     scope: cosmosAccount.id
+  }
+}
+
+// Action group je globální resource (location 'global'). Používá ji alert; rozpočet posílá e-mail přímo (viz níže).
+resource alertActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
+  name: 'JkVolejbalAlerts'
+  location: 'global'
+  properties: {
+    groupShortName: 'Volejbal' // max. 12 znaků, objevuje se v SMS/e-mailu
+    enabled: true
+    emailReceivers: [
+      {
+        name: 'email'
+        emailAddress: alertEmail
+        useCommonAlertSchema: true
+      }
+    ]
+  }
+}
+
+// Alert na počet spuštění funkcí - OnDemandFunctionExecutionCount je přesně ta metrika, ze které se
+// počítá faktura za spuštění (jen Flex Consumption). Vyhodnocení po 5 minutách stačí: alert nic
+// nevypíná, jen upozorní, a rychleji by to stejně nikdo neřešil. Metrika může chodit se zpožděním.
+resource executionCountAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'JkVolejbalFuncExecutionCount'
+  location: 'global'
+  properties: {
+    description: 'Neobvykle mnoho spuštění funkcí - možné zahlcení API (každé spuštění se platí).'
+    severity: 2
+    enabled: true
+    scopes: [
+      functionApp.id
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT5M'
+    autoMitigate: true
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          criterionType: 'StaticThresholdCriterion'
+          name: 'ExecutionCount'
+          metricNamespace: 'Microsoft.Web/sites'
+          metricName: 'OnDemandFunctionExecutionCount'
+          operator: 'GreaterThan'
+          threshold: executionCountAlertThreshold
+          timeAggregation: 'Total'
+        }
+      ]
+    }
+    actions: [
+      {
+        actionGroupId: alertActionGroup.id
+      }
+    ]
+  }
+}
+
+// Rozpočet resource group - pomalá pojistka nad skutečnými náklady (data o nákladech chodí se
+// zpožděním hodin). Jen upozorní, nic nezastaví; tvrdý strop na Pay-As-You-Go neexistuje.
+resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
+  name: 'JkVolejbalBudget'
+  properties: {
+    category: 'Cost'
+    amount: budgetAmount
+    timeGrain: 'Monthly'
+    timePeriod: {
+      startDate: budgetStartDate
+    }
+    notifications: {
+      actual100: {
+        enabled: true
+        operator: 'GreaterThanOrEqualTo'
+        threshold: 100
+        thresholdType: 'Actual'
+        // contactEmails je povinné (contactGroups ne), proto přímo e-mail, ne action group - obojí
+        // zároveň by poslalo upozornění dvakrát.
+        contactEmails: [
+          alertEmail
+        ]
+      }
+    }
   }
 }
 

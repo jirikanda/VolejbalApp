@@ -1,6 +1,6 @@
 # Nasazení na Azure Functions (Flex Consumption) + Azure Static Web Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App a (volitelně, viz níže) binding custom domény na Static Web App.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App, **hlídání nákladů** (action group, alert na počet spuštění funkcí, rozpočet) a (volitelně, viz níže) binding custom domény na Static Web App.
 
 | Resource | Typ | Název |
 | --- | --- | --- |
@@ -11,6 +11,9 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Fun
 | Flex Consumption plán | `Microsoft.Web/serverfarms` | `JkVolejbalFuncPlan` |
 | Function App (`Api`) | `Microsoft.Web/sites` | `JkVolejbalFunc` |
 | Static Web App (`Web.Client`, frontend) | `Microsoft.Web/staticSites` | `JkVolejbalSWA` |
+| Action group (e-mail) | `Microsoft.Insights/actionGroups` | `JkVolejbalAlerts` |
+| Alert na počet spuštění funkcí | `Microsoft.Insights/metricAlerts` | `JkVolejbalFuncExecutionCount` |
+| Rozpočet resource group | `Microsoft.Consumption/budgets` | `JkVolejbalBudget` |
 
 Application Insights je **workspace-based** nad Log Analytics workspace. Connection string se do Function App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
@@ -95,6 +98,15 @@ _LogOperation | where Category =~ "Ingestion" | where Detail contains "OverQuota
 ```
 
 V bicepu je parametr typu `string` a prochází přes `json()`, protože **bicep nemá typ pro desetinná čísla**.
+
+### Hlídání nákladů
+
+API je anonymní a bez rate limitingu, takže zahlcení se platí — za **každé spuštění funkce** a za čas instance. `maximumInstanceCount: 1` omezuje jen to druhé. Tvrdý strop útraty na Pay-As-You-Go subscription neexistuje (spending limit mají jen předplatná s kreditem, např. Visual Studio), proto šablona aspoň upozorňuje:
+
+- **Alert na počet spuštění** (`JkVolejbalFuncExecutionCount`): metrika `OnDemandFunctionExecutionCount` — ta, ze které se počítá faktura — nad **3000 za 5 minut** (průměrně 10 req/s, parametr `executionCountAlertThreshold`), vyhodnocení každých 5 minut, e-mail přes action group `JkVolejbalAlerts`. Běžný provoz je v jednotkách requestů za minutu. Metrika může chodit se zpožděním; alert jednou ověřit ručně (smyčka `curl` na `/api/health`).
+- **Rozpočet** (`JkVolejbalBudget`): **5 USD/měsíc** na celou resource group (parametr `budgetAmount`), e-mail při dosažení **100 %** skutečných nákladů. Pomalá pojistka — data o nákladech chodí se zpožděním hodin —, ale chytí i to, na co alert nemyslí. E-mail posílá přímo (`contactEmails` je u rozpočtu povinné), ne přes action group, aby nechodil dvakrát.
+
+**Nic z toho aplikaci nevypne**, jen upozorní. Adresa je v parametru `alertEmail`. Začátek rozpočtu (`budgetStartDate`) je pevné datum, ne `utcNow()` — šablona se nasazuje celá při každém deployi a posouvání začátku by rozpočet pokaždé měnilo.
 
 ### Custom doména (`volejbal.kanda.eu`)
 
