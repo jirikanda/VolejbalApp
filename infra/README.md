@@ -1,6 +1,6 @@
 # Nasazení na Azure Functions (Flex Consumption) + Azure Static Web Apps
 
-Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App, **hlídání nákladů** (action group, alert na počet spuštění funkcí, rozpočet) a (volitelně, viz níže) binding custom domény na Static Web App.
+Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Functions) a `Web.Client` (Blazor WASM frontend, Static Web App — obsah nasazuje samostatný GitHub Actions job, ne nativní SWA↔GitHub integrace). Vytváří Log Analytics workspace, Application Insights, storage account s deployment containerem, Flex Consumption plán, Function App včetně role assignmentů ke storage, **účet Cosmos DB s databází a kontejnery**, Static Web App, **hlídání nákladů** (action group, alert na počet spuštění funkcí s pojistkou, která aplikaci dočasně zastaví, rozpočet) a (volitelně, viz níže) binding custom domény na Static Web App.
 
 | Resource | Typ | Název |
 | --- | --- | --- |
@@ -14,6 +14,7 @@ Bicep šablona ([main.bicep](main.bicep)) pro hosting `Api` (REST API, Azure Fun
 | Action group (e-mail) | `Microsoft.Insights/actionGroups` | `JkVolejbalAlerts` |
 | Alert na počet spuštění funkcí | `Microsoft.Insights/metricAlerts` | `JkVolejbalFuncExecutionCount` |
 | Rozpočet resource group | `Microsoft.Consumption/budgets` | `JkVolejbalBudget` |
+| Pojistka (stop → 30 min → start) | `Microsoft.Logic/workflows` | `JkVolejbalCircuitBreaker` |
 
 Application Insights je **workspace-based** nad Log Analytics workspace. Connection string se do Function App předává referencí (`appInsights.properties.ConnectionString`), takže žádný GitHub secret pro něj není potřeba.
 
@@ -101,12 +102,21 @@ V bicepu je parametr typu `string` a prochází přes `json()`, protože **bicep
 
 ### Hlídání nákladů
 
-API je anonymní a bez rate limitingu, takže zahlcení se platí — za **každé spuštění funkce** a za čas instance. `maximumInstanceCount: 1` omezuje jen to druhé. Tvrdý strop útraty na Pay-As-You-Go subscription neexistuje (spending limit mají jen předplatná s kreditem, např. Visual Studio), proto šablona aspoň upozorňuje:
+API je anonymní a bez rate limitingu, takže zahlcení se platí — za **každé spuštění funkce** a za čas instance. `maximumInstanceCount: 1` omezuje jen to druhé. Tvrdý strop útraty na Pay-As-You-Go subscription neexistuje (spending limit mají jen předplatná s kreditem, např. Visual Studio), proto šablona hlídá sama:
 
-- **Alert na počet spuštění** (`JkVolejbalFuncExecutionCount`): metrika `OnDemandFunctionExecutionCount` — ta, ze které se počítá faktura — nad **3000 za 5 minut** (průměrně 10 req/s, parametr `executionCountAlertThreshold`), vyhodnocení každých 5 minut, e-mail přes action group `JkVolejbalAlerts`. Běžný provoz je v jednotkách requestů za minutu. Metrika může chodit se zpožděním; alert jednou ověřit ručně (smyčka `curl` na `/api/health`).
-- **Rozpočet** (`JkVolejbalBudget`): **5 USD/měsíc** na celou resource group (parametr `budgetAmount`), e-mail při dosažení **100 %** skutečných nákladů. Pomalá pojistka — data o nákladech chodí se zpožděním hodin —, ale chytí i to, na co alert nemyslí. E-mail posílá přímo (`contactEmails` je u rozpočtu povinné), ne přes action group, aby nechodil dvakrát.
+- **Alert na počet spuštění** (`JkVolejbalFuncExecutionCount`): metrika `OnDemandFunctionExecutionCount` — ta, ze které se počítá faktura — nad **3000 za 5 minut** (průměrně 10 req/s, parametr `executionCountAlertThreshold`), klouzavé okno vyhodnocované **každou minutu**. Action group `JkVolejbalAlerts` pošle e-mail a zavolá pojistku. Běžný provoz je v jednotkách requestů za minutu. Metrika může chodit se zpožděním.
+- **Pojistka** (`JkVolejbalCircuitBreaker`, Logic App): Function App **zastaví** (`POST …/stop`), počká **30 minut** (parametr `circuitBreakerRestartMinutes`) a **spustí** ji (`POST …/start`). Zastavenou aplikaci odmítá platforma dřív, než request dojde k instanci, takže se nic neplatí. Trvá-li útok, alert po startu vystřelí znovu a cyklus se opakuje — každé kolo stojí jen minuty floodu. Logic App volá ARM svou managed identitou s rolí *Website Contributor* na Function App, nic jiného v resource group měnit nemůže.
+- **Rozpočet** (`JkVolejbalBudget`): **5 USD/měsíc** na celou resource group (parametr `budgetAmount`), e-mail při dosažení **100 %** skutečných nákladů. Pomalá pojistka — data o nákladech chodí se zpožděním hodin —, ale chytí i to, na co alert nemyslí. Jen upozorní, nic nezastaví. E-mail posílá přímo (`contactEmails` je u rozpočtu povinné), ne přes action group, aby nechodil dvakrát.
 
-**Nic z toho aplikaci nevypne**, jen upozorní. Adresa je v parametru `alertEmail`. Začátek rozpočtu (`budgetStartDate`) je pevné datum, ne `utcNow()` — šablona se nasazuje celá při každém deployi a posouvání začátku by rozpočet pokaždé měnilo.
+Co je dobré vědět:
+
+- **Po zastavení přijdou dva e-maily**: *Fired* a hned po něm *Resolved* — aplikace stojí, metrika spadne a alert se vyřeší. *Resolved* tedy neznamená konec útoku.
+- **Pojistka reaguje jen na `Fired`.** Action group volá Logic App i při vyřešení alertu; bez podmínky by druhý běh aplikaci zastavil znovu. Ze stejného důvodu se start nedá navázat na vyřešení alertu (aplikace by naběhla hned po zastavení), proto pevné čekání. Běhy jdou za sebou (`concurrency.runs = 1`), stop a start dvou běhů se nepropletou.
+- **Během zastavení frontend hlásí „Nepodařilo se spojit se serverem“** — zastavená aplikace odpovídá bez CORS hlaviček.
+- **Ruční zásah**: `az functionapp start -g JkVolejbalRG -n JkVolejbalFunc` aplikaci spustí hned; běžící čekání v Logic App ji pak jen spustí znovu (no-op). Pojistku lze vypnout v portálu (*Disable* na Logic App) nebo vyjmout z action group.
+- **Stop na Flex se projeví se zpožděním** (ověřeno ručně na produkční aplikaci): ARM `stop` hned uspěje a portál ukazuje *Stopped*, ale běžící instance chvíli dál odpovídá — teprve pak platforma requesty odmítá. Při testu to proto vypadá, že stop „nefunguje“; je potřeba chvíli počkat. Pro pojistku to nevadí, alert sám reaguje s několikaminutovým zpožděním. Kdyby stop na Flex přestal fungovat úplně, náhradou je access restriction „deny all“ (`ipSecurityRestrictionsDefaultAction: Deny`).
+- **Ověření po nasazení**: smyčka `curl` na `/api/health` nad práh, pak v Logic App *Runs history* zkontrolovat běh *Fired* (stop → čekání → start) a samostatný běh *Resolved*, který skončí ve větvi *else*. Během čekání (se zpožděním, viz výše) `/api/health` nemá odpovídat 200, po startu zase ano.
+- Začátek rozpočtu (`budgetStartDate`) je pevné datum, ne `utcNow()` — šablona se nasazuje celá při každém deployi a posouvání začátku by rozpočet pokaždé měnilo. Adresa pro e-maily je v parametru `alertEmail`.
 
 ### Custom doména (`volejbal.kanda.eu`)
 
@@ -235,6 +245,11 @@ Nasazuje se **celá šablona**, ne jen aplikace. ARM v incremental módu projde 
 
    > Kdyby se některá z hodnot přesunula mezi záložkami, je potřeba změnit i prefix v [deploy.yml](../.github/workflows/deploy.yml). `secrets.X` u proměnné uložené jako variable se vyhodnotí na **prázdný řetězec** — workflow nespadne na chybějící hodnotu, ale `azure/login` selže na nesrozumitelnou chybu.
 4. Environment `Production` v *Settings → Environments* (už existuje). **Velikost písmen musí sedět** — GitHub názvy environmentů nerozlišuje a `environment: production` by se napároval i na `Production`, jenže Entra ID porovnává subject přesně a při neshodě výměnu tokenu odmítne **bez chybové hlášky**. Volitelně sem přidejte *required reviewers*.
+5. **Resource providery pro hlídání nákladů** — `Microsoft.Logic` (pojistka) a `Microsoft.Consumption` (rozpočet) musí být v subscription zaregistrované. Service principal má Owner jen na resource group, registraci providera (akce na úrovni subscription) sám neudělá a deployment by skončil na `MissingSubscriptionRegistration`. Jednou, účtem s právy na subscription:
+   ```bash
+   az provider register --namespace Microsoft.Logic
+   az provider register --namespace Microsoft.Consumption
+   ```
 
 Výstup workflow `functionAppUrl` je adresa `https://<app>.azurewebsites.net` API — žádná custom doména se na ni neváže. Výstup `staticWebAppDefaultHostname` je defaultní adresa frontendu, dokud nemá navázanou `volejbal.kanda.eu`.
 

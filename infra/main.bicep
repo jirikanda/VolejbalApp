@@ -86,7 +86,8 @@ param maximumInstanceCount int = 1
 param alwaysReadyInstanceCount int = 0
 
 // Hlídání nákladů: API je anonymní a bez rate limitingu, takže zahlcení se platí za každé spuštění funkce
-// (maximumInstanceCount omezuje jen čas instance, ne počet spuštění). Alerty nic nevypínají, jen upozorní.
+// (maximumInstanceCount omezuje jen čas instance, ne počet spuštění). Alert na počet spuštění aplikaci
+// dočasně zastaví (circuitBreaker), rozpočet jen upozorní.
 @description('E-mail pro alerty (action group) a upozornění rozpočtu.')
 param alertEmail string = 'kanda@havit.cz'
 
@@ -101,6 +102,10 @@ param budgetAmount int = 5
 // každém deployi a posouvání začátku by rozpočet pokaždé měnilo.
 @description('Začátek období rozpočtu (první den měsíce, formát yyyy-MM-dd).')
 param budgetStartDate string = '2026-10-01'
+
+@description('Za kolik minut pojistka (circuitBreaker) Function App po zastavení znovu spustí.')
+@minValue(1)
+param circuitBreakerRestartMinutes int = 30
 
 // Název Static Web App (frontend Web.Client, nasazovaný samostatně přes deploy.yml job deploy-frontend).
 var staticWebAppName = 'JkVolejbalSWA'
@@ -134,6 +139,10 @@ var storageTableDataContributorRoleId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 // účtu). Pozor, tohle je DATOVÉ RBAC Cosmosu, ne Azure RBAC - přiřazuje se resourcem
 // Microsoft.DocumentDB/.../sqlRoleAssignments a z portálu se nastavit nedá, jen šablonou nebo CLI.
 var cosmosDataContributorRoleId = '00000000-0000-0000-0000-000000000002'
+
+// Vestavěná role "Website Contributor" - dovoluje Logic App pojistky (viz circuitBreaker) zastavit a
+// spustit Function App, ale ne měnit nic jiného v resource group.
+var websiteContributorRoleId = 'de139f84-1756-47ae-9be6-808fbbe84772'
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2025-07-01' = {
   name: logAnalyticsName
@@ -466,7 +475,120 @@ resource cosmosDataContributorAssignment 'Microsoft.DocumentDB/databaseAccounts/
   }
 }
 
-// Action group je globální resource (location 'global'). Používá ji alert; rozpočet posílá e-mail přímo (viz níže).
+// Pojistka proti zahlcení: alert na počet spuštění (executionCountAlert) ji přes action group zavolá,
+// ona Function App zastaví (POST .../stop), počká circuitBreakerRestartMinutes a zase ji spustí
+// (POST .../start). Zastavenou aplikaci odmítá platforma dřív, než request dojde k instanci, takže se
+// nic neplatí. Trvá-li útok, alert po startu vystřelí znovu a cyklus se opakuje - každé kolo stojí
+// jen minuty floodu, než se alert vyhodnotí.
+//
+// Reaguje jen na monitorCondition 'Fired': alert má autoMitigate, takže po zastavení aplikace metrika
+// spadne, alert se vyřeší a action group zavolá Logic App znovu se stavem 'Resolved' - bez podmínky by
+// druhý běh aplikaci zastavil podruhé. Z téhož důvodu se start nedá navázat na vyřešení alertu
+// (aplikace by naběhla hned po zastavení), proto pevné čekání.
+//
+// concurrency.runs = 1: běhy jdou za sebou, takže se stop a start dvou běhů nemohou proplést.
+resource circuitBreaker 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: 'JkVolejbalCircuitBreaker'
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    state: 'Enabled'
+    definition: {
+      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
+      contentVersion: '1.0.0.0'
+      triggers: {
+        manual: {
+          type: 'Request'
+          kind: 'Http'
+          runtimeConfiguration: {
+            concurrency: {
+              runs: 1
+            }
+          }
+        }
+      }
+      actions: {
+        JenPriSpusteniAlertu: {
+          type: 'If'
+          runAfter: {}
+          expression: {
+            and: [
+              {
+                equals: [
+                  '@triggerBody()?[\'data\']?[\'essentials\']?[\'monitorCondition\']'
+                  'Fired'
+                ]
+              }
+            ]
+          }
+          actions: {
+            Zastavit: {
+              type: 'Http'
+              runAfter: {}
+              inputs: {
+                method: 'POST'
+                uri: '${environment().resourceManager}${skip(functionApp.id, 1)}/stop?api-version=2024-04-01'
+                authentication: {
+                  type: 'ManagedServiceIdentity'
+                  audience: environment().resourceManager
+                }
+              }
+            }
+            Pockat: {
+              type: 'Wait'
+              runAfter: {
+                Zastavit: [
+                  'Succeeded'
+                ]
+              }
+              inputs: {
+                interval: {
+                  count: circuitBreakerRestartMinutes
+                  unit: 'Minute'
+                }
+              }
+            }
+            Spustit: {
+              type: 'Http'
+              runAfter: {
+                Pockat: [
+                  'Succeeded'
+                ]
+              }
+              inputs: {
+                method: 'POST'
+                uri: '${environment().resourceManager}${skip(functionApp.id, 1)}/start?api-version=2024-04-01'
+                authentication: {
+                  type: 'ManagedServiceIdentity'
+                  audience: environment().resourceManager
+                }
+              }
+            }
+          }
+          else: {
+            actions: {}
+          }
+        }
+      }
+      outputs: {}
+    }
+  }
+}
+
+resource circuitBreakerWebsiteContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: functionApp
+  name: guid(functionApp.id, circuitBreaker.id, websiteContributorRoleId)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', websiteContributorRoleId)
+    principalId: circuitBreaker.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Action group je globální resource (location 'global'). Používá ji alert (e-mail + pojistka);
+// rozpočet posílá e-mail přímo (viz níže).
 resource alertActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
   name: 'JkVolejbalAlerts'
   location: 'global'
@@ -480,12 +602,21 @@ resource alertActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
         useCommonAlertSchema: true
       }
     ]
+    // Common alert schema je nutné - podmínka v circuitBreaker čte data.essentials.monitorCondition.
+    logicAppReceivers: [
+      {
+        name: 'circuitBreaker'
+        resourceId: circuitBreaker.id
+        callbackUrl: listCallbackUrl('${circuitBreaker.id}/triggers/manual', '2019-05-01').value
+        useCommonAlertSchema: true
+      }
+    ]
   }
 }
 
 // Alert na počet spuštění funkcí - OnDemandFunctionExecutionCount je přesně ta metrika, ze které se
-// počítá faktura za spuštění (jen Flex Consumption). Vyhodnocení po 5 minutách stačí: alert nic
-// nevypíná, jen upozorní, a rychleji by to stejně nikdo neřešil. Metrika může chodit se zpožděním.
+// počítá faktura za spuštění (jen Flex Consumption). Pošle e-mail a spustí pojistku (circuitBreaker),
+// která Function App na circuitBreakerRestartMinutes zastaví. Metrika může chodit se zpožděním.
 resource executionCountAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   name: 'JkVolejbalFuncExecutionCount'
   location: 'global'
@@ -496,7 +627,9 @@ resource executionCountAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
     scopes: [
       functionApp.id
     ]
-    evaluationFrequency: 'PT5M'
+    // Klouzavé okno 5 minut vyhodnocované každou minutu: práh zůstává "za 5 minut", ale pojistka
+    // zareaguje až o 4 minuty dřív než při vyhodnocení po 5 minutách.
+    evaluationFrequency: 'PT1M'
     windowSize: 'PT5M'
     autoMitigate: true
     criteria: {
