@@ -104,6 +104,7 @@ param budgetAmount int = 5
 param budgetStartDate string = '2026-10-01'
 
 @description('Za kolik minut pojistka (circuitBreaker) Function App po zastavení znovu spustí.')
+@minValue(1)
 param circuitBreakerRestartMinutes int = 30
 
 // Název Static Web App (frontend Web.Client, nasazovaný samostatně přes deploy.yml job deploy-frontend).
