@@ -677,6 +677,17 @@ resource budget 'Microsoft.Consumption/budgets@2024-08-01' = {
           alertEmail
         ]
       }
+      // Prognóza: ozve se, jakmile Azure odhadne, že měsíc skončí nad rozpočtem - u útoku pod prahem
+      // alertu tedy už během měsíce, ne až po skutečném utracení.
+      forecasted100: {
+        enabled: true
+        operator: 'GreaterThanOrEqualTo'
+        threshold: 100
+        thresholdType: 'Forecasted'
+        contactEmails: [
+          alertEmail
+        ]
+      }
     }
   }
 }
