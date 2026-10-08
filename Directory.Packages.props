@@ -18,7 +18,6 @@
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.51.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.1" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Mcp" Version="1.6.0" />
     <!-- Jen MigrationTool: jednorázový převod dat ze SQL Serveru do Cosmosu. Po převodu ho lze
          i s tím projektem vyhodit, aplikace na SQL Server nesahá. -->
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.0" />
@@ -28,6 +27,9 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.12" />
+    <!-- MCP server (Api, trigger /mcp): oficiální C# SDK, z něj se používá HTTP handler za MapMcp(),
+         viz Api/Mcp/McpRequestHandler.cs. -->
+    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageVersion Include="MSTest" Version="4.4.1" />
     <!-- Nutná závislost Cosmos SDK, i když ji náš kód nepoužívá - podrobnosti u reference
          v src/DataLayer/DataLayer.csproj. SDK se váže na 10.0.0.0, novější verze vezme zavděk. -->

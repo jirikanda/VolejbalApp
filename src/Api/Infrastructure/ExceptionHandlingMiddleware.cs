@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace KandaEu.Volejbal.Api.Infrastructure;
 
 /// <summary>
-/// Převádí výjimky na JSON odpověď se status kódem, u MCP nástrojů na textový výsledek nástroje.
+/// Převádí výjimky na JSON odpověď se status kódem.
 /// </summary>
 /// <remarks>
 /// Nahrazuje Havit.AspNetCore.Mvc ErrorToJson middleware, který ve Functions použít nelze - ASP.NET Core
@@ -28,16 +28,6 @@ public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _l
 	/// </summary>
 	private const string NeosetrenaVyjimkaMessage = "Na serveru došlo k neočekávané chybě.";
 
-	/// <summary>
-	/// Typ triggeru MCP nástroje (McpToolTriggerAttribute) v metadatech funkce.
-	/// </summary>
-	private const string McpToolTriggerBindingType = "mcpToolTrigger";
-
-	/// <summary>
-	/// Text výsledku MCP nástroje, jehož argument nešel převést na typ parametru.
-	/// </summary>
-	private const string NeplatneArgumentyMcpMessage = "Neplatné argumenty nástroje, zkontroluj jejich formát podle popisu nástroje.";
-
 	public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
 	{
 		try
@@ -46,15 +36,6 @@ public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _l
 		}
 		catch (Exception exception) when (!IsRequestAborted(exception, context))
 		{
-			if ((exception is FunctionInputConverterException) && IsMcpToolInvocation(context))
-			{
-				// Model poslal argument, který nejde převést na typ parametru (datum, GUID). Je to chyba
-				// volajícího, ne aplikace - nehlásí se, model dostane text a volání může opravit.
-				_logger.LogDebug(exception, "Neplatné argumenty MCP nástroje.");
-				SetErrorResult(context, StatusCodes.Status422UnprocessableEntity, ValidationErrorModel.FromMessage(StatusCodes.Status422UnprocessableEntity, NeplatneArgumentyMcpMessage));
-				return;
-			}
-
 			(int statusCode, bool handled) = MapException(exception);
 			ValidationErrorModel errorModel;
 
@@ -110,32 +91,12 @@ public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> _l
 	/// Odpověď se nastavuje přes InvocationResult, ne zápisem do HttpResponse po dokončení funkce -
 	/// ten je s ASP.NET Core integrací nespolehlivý (response stream už může být odeslaný).
 	/// </summary>
-	/// <remarks>
-	/// MCP nástroj žádnou HTTP odpověď nemá: návratovou hodnotu funkce MCP extension hostu předá modelu
-	/// jako text výsledku nástroje. IActionResult by se tam serializoval i se všemi svými vlastnostmi,
-	/// proto nástroj dostane jen text chyby - model si z něj přečte, proč akce neprošla (termín v minulosti,
-	/// neaktivní hráč...), a může to sdělit uživateli. Výjimku do hostu nepouštíme: worker ji hostu předá
-	/// jen jako selhání funkce a MCP klient by dostal obecnou chybu bez našeho textu.
-	/// </remarks>
 	private static void SetErrorResult(FunctionContext context, int statusCode, ValidationErrorModel errorModel)
 	{
 		InvocationResult invocationResult = context.GetInvocationResult();
-
-		if (IsMcpToolInvocation(context))
-		{
-			invocationResult.Value = "Chyba: " + errorModel.Message;
-			return;
-		}
-
 		invocationResult.Value = new ObjectResult(errorModel)
 		{
 			StatusCode = statusCode
 		};
-	}
-
-	private static bool IsMcpToolInvocation(FunctionContext context)
-	{
-		return context.FunctionDefinition.InputBindings.Values
-			.Any(binding => String.Equals(binding.Type, McpToolTriggerBindingType, StringComparison.OrdinalIgnoreCase));
 	}
 }

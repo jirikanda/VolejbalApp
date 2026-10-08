@@ -112,38 +112,38 @@ Proměnná `bindCustomDomain` v šabloně je zatím `false`, protože při prvn�
 
 ### MCP server
 
-Function App je zároveň vzdálený **MCP server** pro AI asistenty (Claude, Copilot…) — nástroje `seznam_hracu`, `seznam_terminu`, `prihlasit` a `odhlasit`, viz [CLAUDE.md](../CLAUDE.md). Šablona kvůli tomu nic nového nezakládá: endpoint vystavuje MCP extension hostu na (host podle výstupu `functionAppUrl`)
+Function App je zároveň vzdálený **MCP server** pro AI asistenty (Claude, Copilot…) — nástroje `seznam_hracu`, `seznam_terminu`, `prihlasit` a `odhlasit`, viz [CLAUDE.md](../CLAUDE.md). Šablona kvůli tomu nic nového nezakládá: server je běžný HTTP trigger (`McpAsync`) na adrese (host podle výstupu `functionAppUrl`)
 
 ```
-https://jk-volejbal-func.azurewebsites.net/runtime/webhooks/mcp
+https://jk-volejbal-func.azurewebsites.net/mcp
 ```
 
-a chrání ho **systémový klíč `mcp_extension`**, který host založí sám při prvním startu s extension. Klíč se přečte takto:
+Trigger má `AuthorizationLevel.Function`, takže **vyžaduje klíč** (bez něj 401). Stačí výchozí klíč funkce, který platforma zakládá sama:
 
 ```bash
-az functionapp keys list --resource-group JkVolejbalRG --name JkVolejbalFunc --query systemKeys.mcp_extension --output tsv
+az functionapp function keys list --resource-group JkVolejbalRG --name JkVolejbalFunc --function-name McpAsync --query default --output tsv
 ```
 
-Klient ho posílá v hlavičce `x-functions-key`, nebo — když hlavičky nastavit neumí, např. custom connector v claude.ai — jako query parametr `?code=<klíč>` přímo v URL. Bez klíče endpoint vrací 401. Klíč dává plný přístup k přihlašování za kohokoli, takže ho nikam necommitujte; při úniku ho přegenerujte (`az functionapp keys set --key-type systemKeys --key-name mcp_extension …`), staré URL tím přestanou fungovat.
+Klient ho posílá v hlavičce `x-functions-key`, nebo — když hlavičky nastavit neumí, např. custom connector v claude.ai — jako query parametr přímo v URL: `https://jk-volejbal-func.azurewebsites.net/mcp?code=<klíč>`. Klíč dává plný přístup k přihlašování za kohokoli, takže ho nikam necommitujte; při úniku ho přegenerujte (`az functionapp function keys set … --function-name McpAsync --key-name default`), staré URL tím přestanou fungovat. Fungoval by i host klíč, ale klíč funkce se dá vyměnit, aniž by se dotkl čehokoli jiného.
 
 Příklad pro VS Code (`.vscode/mcp.json`):
 
 ```json
 {
 	"inputs": [
-		{ "type": "promptString", "id": "volejbal-mcp-key", "description": "mcp_extension klíč", "password": true }
+		{ "type": "promptString", "id": "volejbal-mcp-key", "description": "Klíč funkce McpAsync", "password": true }
 	],
 	"servers": {
 		"volejbal": {
 			"type": "http",
-			"url": "https://jk-volejbal-func.azurewebsites.net/runtime/webhooks/mcp",
+			"url": "https://jk-volejbal-func.azurewebsites.net/mcp",
 			"headers": { "x-functions-key": "${input:volejbal-mcp-key}" }
 		}
 	}
 }
 ```
 
-Lokálně (`dotnet run --project src/Api`, Core Tools ≥ 4.0.7030) běží na `http://localhost:7071/runtime/webhooks/mcp` bez klíče.
+Lokálně (`dotnet run --project src/Api`) běží na `http://localhost:7071/mcp`, Core Tools klíč nevyžadují.
 
 ### Manuální úklid po migraci z Container Apps
 
