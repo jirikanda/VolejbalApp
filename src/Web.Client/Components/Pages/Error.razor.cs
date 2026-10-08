@@ -40,10 +40,8 @@ public partial class Error
 			case null:
 				return ("V aplikaci došlo k chybě.", null);
 
-			case ApiRequestException apiRequestException:
-				return (
-					"Nepodařilo se spojit se serverem" + FormatServer(apiRequestException.Uri) + ".",
-					"Server pravděpodobně neběží, není dostupný ze sítě, nebo prohlížeč zablokoval odpověď kvůli CORS. Zkuste to za chvíli znovu.");
+			case ApiRequestException:
+				return ("Nepodařilo se spojit se serverem.", "Server pravděpodobně neběží, zkuste to za chvíli znovu.");
 
 			case ApiException apiException:
 				return (
@@ -81,12 +79,5 @@ public partial class Error
 					? "Chyba nastala na straně serveru; podrobnosti jsou v jeho záznamech."
 					: null;
 		}
-	}
-
-	private static string FormatServer(Uri uri)
-	{
-		return (uri != null) && uri.IsAbsoluteUri
-			? $" ({uri.Scheme}://{uri.Authority})"
-			: String.Empty;
 	}
 }

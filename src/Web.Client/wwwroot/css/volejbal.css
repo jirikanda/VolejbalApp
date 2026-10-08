@@ -775,6 +775,10 @@ body::before {
     border-radius: var(--radius);
     box-shadow: var(--shadow-md);
 }
+.error-page .error-illustration {
+    display: block; width: 240px; max-width: 100%; height: auto;
+    margin: 0 auto 8px;
+}
 .error-page h2 { font-size: 24px; letter-spacing: -0.02em; }
 .error-page .error-lead { font-size: 17px; font-weight: 600; color: var(--ink); }
 .error-page .error-hint { color: var(--ink-2); }
