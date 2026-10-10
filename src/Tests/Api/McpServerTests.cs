@@ -36,6 +36,20 @@ public class McpServerTests
 	}
 
 	[TestMethod]
+	public async Task McpServer_SeznamTerminu_RozdeliOsobyADoplniDenVTydnu()
+	{
+		JsonElement result = await CallToolAsync(new FakePrihlaskaApi(), "seznam_terminu", "{}");
+
+		Assert.IsFalse(IsError(result));
+		JsonElement termin = Assert.ContainsSingle(JsonDocument.Parse(GetText(result)).RootElement.GetProperty("terminy").EnumerateArray());
+		Assert.AreEqual("2026-01-13", termin.GetProperty("datum").GetString());
+		Assert.AreEqual("úterý", termin.GetProperty("denVTydnu").GetString());
+		Assert.AreSequenceEqual(new[] { "Novák Jan" }, GetJmena(termin, "prihlaseni"));
+		Assert.AreSequenceEqual(new[] { "Čapek Petr" }, GetJmena(termin, "omluveni"));
+		Assert.AreSequenceEqual(new[] { "Zelená Eva" }, GetJmena(termin, "nerozhodnuti"));
+	}
+
+	[TestMethod]
 	public async Task McpServer_Prihlasit_PredaArgumentyFasadeBezeZmeny()
 	{
 		FakePrihlaskaApi prihlaskaApi = new FakePrihlaskaApi();
@@ -99,6 +113,13 @@ public class McpServerTests
 	{
 		JsonElement response = await PostAsync(prihlaskaApi, $$$"""{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"{{{toolName}}}","arguments":{{{arguments}}}}}""");
 		return response.GetProperty("result");
+	}
+
+	private static List<string> GetJmena(JsonElement termin, string seznam)
+	{
+		return termin.GetProperty(seznam).EnumerateArray()
+			.Select(osoba => osoba.GetProperty("prijmeniJmeno").GetString())
+			.ToList();
 	}
 
 	private static bool IsError(JsonElement result)
@@ -175,16 +196,31 @@ public class McpServerTests
 		}
 	}
 
+	/// <summary>
+	/// Jeden termín (úterý 13. 1. 2026): přihlášený Novák, omluvený Čapek, nerozhodnutá Zelená.
+	/// </summary>
 	private sealed class FakeTerminApi : ITerminApi
 	{
 		public Task<TerminListDto> GetTerminyAsync(CancellationToken cancellationToken = default)
 		{
-			return Task.FromResult(new TerminListDto { Terminy = new List<TerminDto>() });
+			return Task.FromResult(new TerminListDto
+			{
+				Terminy = [new TerminDto { Id = "2026-01-13", Datum = new DateTime(2026, 1, 13) }]
+			});
 		}
 
 		public Task<TerminDetailDto> GetDetailTerminuAsync(string terminId, CancellationToken cancellationToken = default)
 		{
-			throw new NotSupportedException();
+			Assert.AreEqual("2026-01-13", terminId);
+			return Task.FromResult(new TerminDetailDto
+			{
+				Prihlaseni = [new PrihlasenaOsobaDto { Osoba = new OsobaDto { Id = "1", PrijmeniJmeno = "Novák Jan" } }],
+				Neprihlaseni =
+				[
+					new NeprihlasenaOsobaDto { Osoba = new OsobaDto { Id = "2", PrijmeniJmeno = "Čapek Petr" }, IsOdhlaseny = true },
+					new NeprihlasenaOsobaDto { Osoba = new OsobaDto { Id = "3", PrijmeniJmeno = "Zelená Eva" }, IsOdhlaseny = false }
+				]
+			});
 		}
 	}
 

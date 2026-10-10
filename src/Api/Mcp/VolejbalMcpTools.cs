@@ -49,7 +49,9 @@ public class VolejbalMcpTools(
 		return JsonSerializer.Serialize(osoby, s_jsonSerializerOptions);
 	}
 
-	[McpServerTool(Name = "seznam_terminu", ReadOnly = true, OpenWorld = false)]
+	// Není ReadOnly: GetTerminyAsync dozakládá chybějící budoucí termíny (EnsureTerminyService). Zápis je ale
+	// jen doplnění, nic existujícího nemění a opakované volání nic dalšího nezaloží.
+	[McpServerTool(Name = "seznam_terminu", Destructive = false, Idempotent = true, OpenWorld = false)]
 	[Description("Vrátí nadcházející termíny hraní a ke každému, kdo je přihlášený, kdo se omluvil (odhlásil) a kdo se dosud nevyjádřil.")]
 	public async Task<string> SeznamTerminuAsync(CancellationToken cancellationToken)
 	{
@@ -74,6 +76,8 @@ public class VolejbalMcpTools(
 		return JsonSerializer.Serialize(new McpTerminListDto { Terminy = result }, s_jsonSerializerOptions);
 	}
 
+	// Destructive = false záměrně, i když podle specifikace MCP "non-destructive" znamená jen přidávající změny:
+	// přihlášení a odhlášení jen přepínají stav, který jde kdykoli vrátit, a o potvrzení každé změny nestojíme.
 	[McpServerTool(Name = "prihlasit", Destructive = false, Idempotent = true, OpenWorld = false)]
 	[Description("Přihlásí hráče na termín (hráč přijde). Opakované přihlášení nic nezmění. Přihlásit lze jen aktivního hráče a jen na termín, který ještě neproběhl.")]
 	public async Task<string> PrihlasitAsync(
@@ -87,6 +91,7 @@ public class VolejbalMcpTools(
 		return $"Hráč {osobaId} je přihlášený na termín {datum}.";
 	}
 
+	// Destructive = false záměrně, viz prihlasit.
 	[McpServerTool(Name = "odhlasit", Destructive = false, Idempotent = true, OpenWorld = false)]
 	[Description("Odhlásí hráče z termínu (hráč nepřijde). Slouží i k omluvení předem - k vyjádření neúčasti hráče, který přihlášený nebyl. Opakované odhlášení nic nezmění.")]
 	public async Task<string> OdhlasitAsync(
