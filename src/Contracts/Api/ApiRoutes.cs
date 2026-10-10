@@ -28,4 +28,10 @@ public static class ApiRoutes
 	public const string ReportyOsoby = "api/reporty/osoby";
 
 	public const string Health = "api/health";
+
+	/// <summary>
+	/// MCP server pro AI asistenty (Api/Functions/McpFunctions.cs). Záměrně bez "api/" - adresu zadává
+	/// uživatel do klienta ručně. Stejně jako Health není součástí Refit kontraktu.
+	/// </summary>
+	public const string Mcp = "mcp";
 }
