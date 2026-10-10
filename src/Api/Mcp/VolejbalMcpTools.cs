@@ -49,9 +49,9 @@ public class VolejbalMcpTools(
 		return JsonSerializer.Serialize(osoby, s_jsonSerializerOptions);
 	}
 
-	// Není ReadOnly: GetTerminyAsync dozakládá chybějící budoucí termíny (EnsureTerminyService). Zápis je ale
-	// jen doplnění, nic existujícího nemění a opakované volání nic dalšího nezaloží.
-	[McpServerTool(Name = "seznam_terminu", Destructive = false, Idempotent = true, OpenWorld = false)]
+	// ReadOnly záměrně, i když GetTerminyAsync umí dozaložit chybějící budoucí termíny (EnsureTerminyService):
+	// je to implementační náhrada časového triggeru, z pohledu volajícího se čtením nic nemění.
+	[McpServerTool(Name = "seznam_terminu", ReadOnly = true, OpenWorld = false)]
 	[Description("Vrátí nadcházející termíny hraní a ke každému, kdo je přihlášený, kdo se omluvil (odhlásil) a kdo se dosud nevyjádřil.")]
 	public async Task<string> SeznamTerminuAsync(CancellationToken cancellationToken)
 	{
