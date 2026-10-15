@@ -19,6 +19,7 @@
   <Project Path="src/Facades/Facades.csproj" />
   <Project Path="src/MigrationTool/MigrationTool.csproj" />
   <Project Path="src/Model/Model.csproj" />
+  <Project Path="src/OpenApiGenerator/OpenApiGenerator.csproj" />
   <Project Path="src/Services/Services.csproj" />
   <Project Path="src/Tests/Tests.csproj" />
   <Project Path="src/TestsForLocalDebugging/TestsForLocalDebugging.csproj" />

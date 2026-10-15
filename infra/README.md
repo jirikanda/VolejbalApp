@@ -71,12 +71,12 @@ ASP.NET Core integrace ve Functions dává jen typy (`HttpRequest`, `IActionResu
 | `UseRequestLocalization()` | `CultureInfo.DefaultThreadCurrentCulture` v `Program.cs` |
 | `AddRateLimiter` (`DefaultAPI`, 10 req/5 s) | **zrušeno**; roli pojistky přebral `maximumInstanceCount: 1` (cenový strop) a strop propustnosti Cosmosu |
 | `RecurringJobsBackgroundService` | **zrušeno**; termíny se doplňují líně při čtení jejich seznamu ([TerminFacade](../src/Facades/Terminy/TerminFacade.cs)) |
-| OpenAPI dokument + Scalar UI | **zrušeno** (klienti ho nepotřebují, viz níže) |
+| OpenAPI dokument + Scalar UI | dokument generuje při kompilaci zdrojový generátor [OpenApiGenerator](../src/OpenApiGenerator/) z Refit rozhraní, servíruje ho `api/openapi.json`; Scalar UI **zrušeno** (viz níže) |
 | `TZ=Europe/Prague` | zóna v kódu ([PragueTimeProvider](../src/Services/Infrastructure/Time/PragueTimeProvider.cs)) |
 
 > **`TZ` ani `WEBSITE_TIME_ZONE` na Flex Consumption nefungují** — platforma je tiše ignoruje a proces běží v UTC. Do šablony je nepřidávejte; vypadalo by to, že něco nastavují.
 
-Typové klienty pro `Web.Client` generuje **Refit** ze sdílených rozhraní `I*Api` v `Contracts`, ne NSwag z OpenAPI dokumentu. Azure Functions totiž build-time export OpenAPI neumí (`Microsoft.Extensions.ApiDescription.Server` je vázaný na ASP.NET Core pipeline) a oficiální `Microsoft.Azure.Functions.Worker.Extensions.OpenApi` je v maintenance mode a na .NET 10 rozbitý. Detaily jsou v [CLAUDE.md](../CLAUDE.md).
+Typové klienty pro `Web.Client` generuje **Refit** ze sdílených rozhraní `I*Api` v `Contracts`, ne NSwag z OpenAPI dokumentu. Azure Functions totiž build-time export OpenAPI neumí (`Microsoft.Extensions.ApiDescription.Server` je vázaný na ASP.NET Core pipeline) a oficiální `Microsoft.Azure.Functions.Worker.Extensions.OpenApi` je v maintenance mode a na .NET 10 rozbitý. OpenAPI dokument pro cizí klienty a nástroje proto vzniká **při kompilaci** vlastním zdrojovým generátorem nad týmiž rozhraními a Api ho vrací jako hotový text na `GET /api/openapi.json`. Detaily jsou v [CLAUDE.md](../CLAUDE.md).
 
 ### Přístup ke storage přes managed identity
 

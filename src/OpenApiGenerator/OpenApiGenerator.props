@@ -1,0 +1,24 @@
+﻿<Project>
+
+	<!-- MSBuild vlastnosti, které generátor čte přes AnalyzerConfigOptions (build_property.*).
+	     Importuje se z projektu, který generátor referencuje (Api.csproj). -->
+	<ItemGroup>
+		<CompilerVisibleProperty Include="OpenApiTitle" />
+		<CompilerVisibleProperty Include="OpenApiVersion" />
+		<CompilerVisibleProperty Include="OpenApiErrorResponseType" />
+		<CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="OpenApiDocumentation" />
+	</ItemGroup>
+
+	<!-- XML dokumentace referencovaných projektů (Contracts) pro description v dokumentu. Kompilátor
+	     referencuje ref assembly v obj, u které xml neleží, takže by se k summary DTO jinak nedostal;
+	     soubory se proto předají generátoru jako AdditionalFiles. Balíčky NuGet se záměrně vynechávají. -->
+	<!-- Musí proběhnout i před generováním .GeneratedMSBuildEditorConfig.editorconfig, jinak se metadata
+	     OpenApiDocumentation ke generátoru nedostanou. -->
+	<Target Name="OpenApiCollectReferenceDocumentation" BeforeTargets="GenerateMSBuildEditorConfigFileCore;CoreCompile" DependsOnTargets="ResolveAssemblyReferences">
+		<ItemGroup>
+			<_OpenApiReferenceDocumentation Include="@(ReferencePath->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferencePath.ReferenceSourceTarget)' == 'ProjectReference'" />
+			<AdditionalFiles Include="@(_OpenApiReferenceDocumentation)" Condition="Exists('%(FullPath)')" OpenApiDocumentation="true" />
+		</ItemGroup>
+	</Target>
+
+</Project>

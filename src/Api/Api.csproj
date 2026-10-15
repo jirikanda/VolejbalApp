@@ -22,7 +22,15 @@
 		<ServerGarbageCollection>false</ServerGarbageCollection>
 		<ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+		<!-- OpenAPI dokument generuje při kompilaci zdrojový generátor OpenApiGenerator (viz ProjectReference níže)
+		     z Refit rozhraní v Contracts; servíruje ho OpenApiFunctions na api/openapi.json. -->
+		<OpenApiTitle>VolejbalApp API</OpenApiTitle>
+		<OpenApiVersion>$(AssemblyVersion)</OpenApiVersion>
+		<OpenApiErrorResponseType>KandaEu.Volejbal.Api.Infrastructure.ValidationErrorModel</OpenApiErrorResponseType>
 	</PropertyGroup>
+
+	<Import Project="..\OpenApiGenerator\OpenApiGenerator.props" />
 
 	<ItemGroup>
 		<PackageReference Include="Havit.ApplicationInsights.DependencyCollector" />
@@ -40,6 +48,8 @@
 		<ProjectReference Include="..\DataLayer\DataLayer.csproj" />
 		<ProjectReference Include="..\Facades\Facades.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
+		<!-- Analyzátor, ne runtime závislost: do výstupu se nekopíruje a nepotřebuje IsRidAgnostic. -->
+		<ProjectReference Include="..\OpenApiGenerator\OpenApiGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 	<ItemGroup>

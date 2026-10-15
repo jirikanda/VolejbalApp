@@ -28,4 +28,6 @@ public static class ApiRoutes
 	public const string ReportyOsoby = "api/reporty/osoby";
 
 	public const string Health = "api/health";
+
+	public const string OpenApi = "api/openapi.json";
 }
