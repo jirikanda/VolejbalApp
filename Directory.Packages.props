@@ -21,17 +21,17 @@
     <!-- Jen MigrationTool: jednorázový převod dat ze SQL Serveru do Cosmosu. Po převodu ho lze
          i s tím projektem vyhodit, aplikace na SQL Server nesahá. -->
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.1" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.12" />
-    <PackageVersion Include="MSTest" Version="4.4.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.13" />
+    <PackageVersion Include="MSTest" Version="4.5.1" />
     <!-- Nutná závislost Cosmos SDK, i když ji náš kód nepoužívá - podrobnosti u reference
          v src/DataLayer/DataLayer.csproj. SDK se váže na 10.0.0.0, novější verze vezme zavděk. -->
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageVersion Include="Refit" Version="16.3.0" />
-    <PackageVersion Include="Refit.HttpClientFactory" Version="16.3.0" />
+    <PackageVersion Include="Refit" Version="16.4.0" />
+    <PackageVersion Include="Refit.HttpClientFactory" Version="16.4.0" />
   </ItemGroup>
 </Project>
