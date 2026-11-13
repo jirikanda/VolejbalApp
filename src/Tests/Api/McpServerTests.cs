@@ -36,14 +36,13 @@ public class McpServerTests
 	}
 
 	[TestMethod]
-	public async Task McpServer_SeznamTerminu_RozdeliOsobyADoplniDenVTydnu()
+	public async Task McpServer_SeznamTerminu_RozdeliOsoby()
 	{
 		JsonElement result = await CallToolAsync(new FakePrihlaskaApi(), "seznam_terminu", "{}");
 
 		Assert.IsFalse(IsError(result));
 		JsonElement termin = Assert.ContainsSingle(JsonDocument.Parse(GetText(result)).RootElement.GetProperty("terminy").EnumerateArray());
 		Assert.AreEqual("2026-01-13", termin.GetProperty("datum").GetString());
-		Assert.AreEqual("úterý", termin.GetProperty("denVTydnu").GetString());
 		Assert.AreSequenceEqual(new[] { "Novák Jan" }, GetJmena(termin, "prihlaseni"));
 		Assert.AreSequenceEqual(new[] { "Čapek Petr" }, GetJmena(termin, "odhlaseni"));
 		Assert.AreSequenceEqual(new[] { "Zelená Eva" }, GetJmena(termin, "neprihlaseni"));

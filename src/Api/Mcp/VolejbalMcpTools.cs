@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -39,8 +38,6 @@ public class VolejbalMcpTools(
 		Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
 	};
 
-	private static readonly CultureInfo s_czechCulture = CultureInfo.GetCultureInfo("cs-CZ");
-
 	[McpServerTool(Name = "seznam_hracu", ReadOnly = true, OpenWorld = false)]
 	[Description("Vrátí seznam hráčů (id, příjmení a jméno, příznak aktivní) seřazený podle příjmení. Jména jsou ve tvaru „Příjmení Jméno“. Když uživatel mluví o sobě („přihlaš mě“), najdi ho podle jména, které o něm víš; když ho nevíš, zeptej se. Na termín lze přihlásit jen aktivního hráče. Id hráče je potřeba pro nástroje prihlasit a odhlasit.")]
 	public async Task<string> SeznamHracuAsync(CancellationToken cancellationToken)
@@ -66,7 +63,6 @@ public class VolejbalMcpTools(
 			result.Add(new McpTerminDto
 			{
 				Datum = DateOnly.FromDateTime(termin.Datum),
-				DenVTydnu = termin.Datum.ToString("dddd", s_czechCulture),
 				Prihlaseni = detail.Prihlaseni.Select(prihlaseny => ToMcpOsobaDto(prihlaseny.Osoba)).ToList(),
 				Odhlaseni = detail.Neprihlaseni.Where(neprihlaseny => neprihlaseny.IsOdhlaseny).Select(neprihlaseny => ToMcpOsobaDto(neprihlaseny.Osoba)).ToList(),
 				Neprihlaseni = detail.Neprihlaseni.Where(neprihlaseny => !neprihlaseny.IsOdhlaseny).Select(neprihlaseny => ToMcpOsobaDto(neprihlaseny.Osoba)).ToList()

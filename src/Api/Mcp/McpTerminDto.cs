@@ -5,8 +5,7 @@
 /// </summary>
 /// <remarks>
 /// Oproti TerminDetailDto jsou osoby bez přihlášky rozdělené na dva seznamy (odhlášení a nepřihlášení) místo
-/// příznaku IsOdhlaseny u každé osoby - model tak rozdíl nepřehlédne. Den v týdnu se posílá hotový,
-/// aby ho model nemusel z data dopočítávat (a plést se v tom).
+/// příznaku IsOdhlaseny u každé osoby - model tak rozdíl nepřehlédne.
 /// </remarks>
 public class McpTerminDto
 {
@@ -15,12 +14,6 @@ public class McpTerminDto
 	/// přijímají nástroje prihlasit a odhlasit.
 	/// </summary>
 	public DateOnly Datum { get; set; }
-
-	/// <summary>
-	/// Den v týdnu česky ("úterý"), aby model při potvrzení ("přihlášen na úterý 17. 11.") nemusel den
-	/// dopočítávat z data - v tom se jazykové modely pletou.
-	/// </summary>
-	public string DenVTydnu { get; set; }
 
 	public List<McpOsobaDto> Prihlaseni { get; set; }
 
