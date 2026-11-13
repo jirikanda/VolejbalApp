@@ -42,7 +42,7 @@ public class VolejbalMcpTools(
 	private static readonly CultureInfo s_czechCulture = CultureInfo.GetCultureInfo("cs-CZ");
 
 	[McpServerTool(Name = "seznam_hracu", ReadOnly = true, OpenWorld = false)]
-	[Description("Vrátí seznam hráčů (id, příjmení a jméno, příznak aktivní) seřazený podle příjmení. Na termín lze přihlásit jen aktivního hráče. Id hráče je potřeba pro nástroje prihlasit a odhlasit.")]
+	[Description("Vrátí seznam hráčů (id, příjmení a jméno, příznak aktivní) seřazený podle příjmení. Jména jsou ve tvaru „Příjmení Jméno“. Když uživatel mluví o sobě („přihlaš mě“), najdi ho podle jména, které o něm víš; když ho nevíš, zeptej se. Na termín lze přihlásit jen aktivního hráče. Id hráče je potřeba pro nástroje prihlasit a odhlasit.")]
 	public async Task<string> SeznamHracuAsync(CancellationToken cancellationToken)
 	{
 		OsobaListDto osoby = await _osobaFacade.GetOsobyAsync(cancellationToken);
@@ -52,7 +52,7 @@ public class VolejbalMcpTools(
 	// ReadOnly záměrně, i když GetTerminyAsync umí dozaložit chybějící budoucí termíny (EnsureTerminyService):
 	// je to implementační náhrada časového triggeru, z pohledu volajícího se čtením nic nemění.
 	[McpServerTool(Name = "seznam_terminu", ReadOnly = true, OpenWorld = false)]
-	[Description("Vrátí nadcházející termíny hraní a ke každému, kdo je přihlášený, kdo se omluvil (odhlásil) a kdo se dosud nevyjádřil.")]
+	[Description("Vrátí nadcházející termíny hraní seřazené od nejbližšího a ke každému, kdo je přihlášený, kdo se omluvil (odhlásil) a kdo se dosud nevyjádřil. Když uživatel termín neupřesní (např. „přihlaš mě na volejbal“), myslí se nejbližší termín.")]
 	public async Task<string> SeznamTerminuAsync(CancellationToken cancellationToken)
 	{
 		TerminListDto terminy = await _terminFacade.GetTerminyAsync(cancellationToken);

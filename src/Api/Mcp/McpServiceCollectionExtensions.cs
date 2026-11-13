@@ -8,7 +8,7 @@ public static class McpServiceCollectionExtensions
 	/// <summary>
 	/// Instrukce, které MCP klient předá modelu spolu se seznamem nástrojů.
 	/// </summary>
-	private const string ServerInstructions = "Přihlašování na volejbal. Hráče najdi nástrojem seznam_hracu (podle jména), termíny i s tím, kdo přijde a kdo ne, nástrojem seznam_terminu. Termín se určuje datem (yyyy-MM-dd), hráč svým id. Přihlášení = prihlasit, odhlášení i omluvení předem (hráč nepřijde) = odhlasit. Než někoho přihlásíš nebo odhlásíš, ujisti se, že jde o správného hráče a termín.";
+	private const string ServerInstructions = "Přihlašování na volejbal. Hráče najdi nástrojem seznam_hracu (podle jména), termíny i s tím, kdo přijde a kdo ne, nástrojem seznam_terminu. Termín se určuje datem (yyyy-MM-dd), hráč svým id. Přihlášení = prihlasit, odhlášení i omluvení předem (hráč nepřijde) = odhlasit. Termín neupřesněný uživatelem je nejbližší termín. Je-li hráč i termín jednoznačný, rovnou jednej a oznam výsledek (kdo, který den); ptej se jen při nejednoznačnosti (víc hráčů stejného jména, nejasný termín).";
 
 	/// <summary>
 	/// Registruje MCP server obsluhovaný triggerem /mcp (Api/Functions/McpFunctions.cs).
