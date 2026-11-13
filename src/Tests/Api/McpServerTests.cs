@@ -45,8 +45,8 @@ public class McpServerTests
 		Assert.AreEqual("2026-01-13", termin.GetProperty("datum").GetString());
 		Assert.AreEqual("úterý", termin.GetProperty("denVTydnu").GetString());
 		Assert.AreSequenceEqual(new[] { "Novák Jan" }, GetJmena(termin, "prihlaseni"));
-		Assert.AreSequenceEqual(new[] { "Čapek Petr" }, GetJmena(termin, "omluveni"));
-		Assert.AreSequenceEqual(new[] { "Zelená Eva" }, GetJmena(termin, "nerozhodnuti"));
+		Assert.AreSequenceEqual(new[] { "Čapek Petr" }, GetJmena(termin, "odhlaseni"));
+		Assert.AreSequenceEqual(new[] { "Zelená Eva" }, GetJmena(termin, "neprihlaseni"));
 	}
 
 	[TestMethod]
@@ -197,7 +197,7 @@ public class McpServerTests
 	}
 
 	/// <summary>
-	/// Jeden termín (úterý 13. 1. 2026): přihlášený Novák, omluvený Čapek, nerozhodnutá Zelená.
+	/// Jeden termín (úterý 13. 1. 2026): přihlášený Novák, odhlášený Čapek, nepřihlášená Zelená.
 	/// </summary>
 	private sealed class FakeTerminApi : ITerminApi
 	{

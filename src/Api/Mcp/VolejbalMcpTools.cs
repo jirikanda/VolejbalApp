@@ -52,7 +52,7 @@ public class VolejbalMcpTools(
 	// ReadOnly záměrně, i když GetTerminyAsync umí dozaložit chybějící budoucí termíny (EnsureTerminyService):
 	// je to implementační náhrada časového triggeru, z pohledu volajícího se čtením nic nemění.
 	[McpServerTool(Name = "seznam_terminu", ReadOnly = true, OpenWorld = false)]
-	[Description("Vrátí nadcházející termíny hraní seřazené od nejbližšího a ke každému, kdo je přihlášený, kdo se omluvil (odhlásil) a kdo se dosud nevyjádřil. Když uživatel termín neupřesní (např. „přihlaš mě na volejbal“), myslí se nejbližší termín.")]
+	[Description("Vrátí nadcházející termíny hraní seřazené od nejbližšího a ke každému, kdo je přihlášený, kdo odhlášený (omluvil se) a kdo nepřihlášený (dosud se nevyjádřil). Když uživatel termín neupřesní (např. „přihlaš mě na volejbal“), myslí se nejbližší termín.")]
 	public async Task<string> SeznamTerminuAsync(CancellationToken cancellationToken)
 	{
 		TerminListDto terminy = await _terminFacade.GetTerminyAsync(cancellationToken);
@@ -65,11 +65,11 @@ public class VolejbalMcpTools(
 			TerminDetailDto detail = await _terminFacade.GetDetailTerminuAsync(termin.Id, cancellationToken);
 			result.Add(new McpTerminDto
 			{
-				Datum = termin.Id,
+				Datum = DateOnly.FromDateTime(termin.Datum),
 				DenVTydnu = termin.Datum.ToString("dddd", s_czechCulture),
 				Prihlaseni = detail.Prihlaseni.Select(prihlaseny => ToMcpOsobaDto(prihlaseny.Osoba)).ToList(),
-				Omluveni = detail.Neprihlaseni.Where(neprihlaseny => neprihlaseny.IsOdhlaseny).Select(neprihlaseny => ToMcpOsobaDto(neprihlaseny.Osoba)).ToList(),
-				Nerozhodnuti = detail.Neprihlaseni.Where(neprihlaseny => !neprihlaseny.IsOdhlaseny).Select(neprihlaseny => ToMcpOsobaDto(neprihlaseny.Osoba)).ToList()
+				Odhlaseni = detail.Neprihlaseni.Where(neprihlaseny => neprihlaseny.IsOdhlaseny).Select(neprihlaseny => ToMcpOsobaDto(neprihlaseny.Osoba)).ToList(),
+				Neprihlaseni = detail.Neprihlaseni.Where(neprihlaseny => !neprihlaseny.IsOdhlaseny).Select(neprihlaseny => ToMcpOsobaDto(neprihlaseny.Osoba)).ToList()
 			});
 		}
 

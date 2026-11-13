@@ -140,7 +140,7 @@ The same Function App is also a remote **MCP server** (Model Context Protocol) a
 | Tool | Facade call |
 | --- | --- |
 | `seznam_hracu` | `IOsobaApi.GetOsobyAsync` (all non-deleted players incl. the `aktivni` flag) |
-| `seznam_terminu` | `ITerminApi.GetTerminyAsync` + `GetDetailTerminuAsync` per termín → přihlášení / omluvení / nerozhodnutí |
+| `seznam_terminu` | `ITerminApi.GetTerminyAsync` + `GetDetailTerminuAsync` per termín → přihlášení / odhlášení / nepřihlášení |
 | `prihlasit` (`datum`, `osobaId`) | `IPrihlaskaApi.PrihlasitAsync` — `datum` (`yyyy-MM-dd`) is the termín id as is |
 | `odhlasit` (`datum`, `osobaId`) | `IPrihlaskaApi.OdhlasitAsync` — also the way to say "I won't come" without having signed up (tombstone) |
 
