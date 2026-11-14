@@ -1,0 +1,6 @@
+[*.cs]
+
+# BL0016 (od .NET 11) chce každé JS interop volání obalit try/catch kvůli JSDisconnectedException.
+# Ta vzniká jen v Blazor Serveru při odpojeném circuitu; ve WebAssembly žádný circuit není a
+# výjimka z JS je skutečná chyba, která má dojít na chybovou stránku, ne se spolknout.
+dotnet_diagnostic.BL0016.severity = none

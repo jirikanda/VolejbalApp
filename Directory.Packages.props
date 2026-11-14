@@ -13,7 +13,7 @@
     <PackageVersion Include="Havit.Extensions.DependencyInjection.Abstractions" Version="2.0.23" />
     <PackageVersion Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.23.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.64.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.51.0" />
@@ -21,15 +21,14 @@
     <!-- Jen MigrationTool: jednorázový převod dat ze SQL Serveru do Cosmosu. Po převodu ho lze
          i s tím projektem vyhodit, aplikace na SQL Server nesahá. -->
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.2" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="11.0.0" />
     <!-- Jen tranzitivní (přímo ho nic nereferencuje), ale přes transitive pinning zvedá celou rodinu
-         Microsoft.Extensions.*.Abstractions na aktuální patch; bez něj spadne na 10.0.3. Držet na verzi
+         Microsoft.Extensions.*.Abstractions na aktuální patch; bez něj spadne na nižší patch. Držet na verzi
          Microsoft.Extensions.Hosting. -->
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.15" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="11.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="11.0.0" />
     <!-- MCP server (Api, trigger /mcp): oficiální C# SDK, z něj se používá HTTP handler za MapMcp(),
          viz Api/Mcp/McpRequestHandler.cs. -->
     <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="2.4.0" />
