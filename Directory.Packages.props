@@ -35,6 +35,7 @@
     <PackageVersion Include="MSTest" Version="4.5.3" />
     <!-- Nutná závislost Cosmos SDK, i když ji náš kód nepoužívá - podrobnosti u reference
          v src/DataLayer/DataLayer.csproj. SDK se váže na 10.0.0.0, novější verze vezme zavděk. -->
+    <PackageVersion Include="Net.Codecrete.QrCodeGenerator" Version="3.2.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Refit" Version="16.4.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="16.4.0" />

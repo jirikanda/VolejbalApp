@@ -483,6 +483,20 @@ body::before {
 /* Odeslání vzkazu je jediná akce celého boxu, proto přes celou šířku. */
 .msg-sidebar .compose .btn { width: 100%; justify-content: center; }
 
+/* QR platba pod nástěnkou. QR kód má vlastní bílé pozadí (tmavé moduly na světlém jsou podmínkou čtečky), i v tmavém režimu. */
+.pay { margin-top: 28px; }
+.pay-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.pay-qr { width: 100%; max-width: 220px; border-radius: var(--radius-sm); overflow: hidden; line-height: 0; border: 1px solid var(--line); }
+.pay-qr svg { width: 100%; height: auto; display: block; }
+.pay-note { margin: 14px 0 0; font-size: 13px; color: var(--ink-2); }
+
 .msg {
     background: var(--surface);
     border: 1px solid var(--line);

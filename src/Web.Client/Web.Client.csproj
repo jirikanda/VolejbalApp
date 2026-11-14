@@ -12,6 +12,7 @@
 		<PackageReference Include="Havit.Blazor.Storage" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
 		<PackageReference Include="Microsoft.Extensions.Http" />
+		<PackageReference Include="Net.Codecrete.QrCodeGenerator" />
 		<PackageReference Include="Refit.HttpClientFactory" />
 	</ItemGroup>
 
@@ -24,6 +25,7 @@
 	
 	<ItemGroup>
 		<ProjectReference Include="..\Contracts\Contracts.csproj" />
+		<ProjectReference Include="..\Services.Client\Services.Client.csproj" />
 	</ItemGroup>
 
 </Project>

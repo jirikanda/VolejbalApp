@@ -1,0 +1,12 @@
+﻿﻿@if (_qrSvg != null)
+{
+    <section class="pay">
+        <div class="msg-head">
+            <h2>QR platba</h2>
+        </div>
+        <div class="pay-card">
+            <div class="pay-qr">@((MarkupString)_qrSvg)</div>
+            <p class="pay-note">@_message</p>
+        </div>
+    </section>
+}

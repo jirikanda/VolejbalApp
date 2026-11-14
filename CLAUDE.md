@@ -62,7 +62,7 @@ Web.Client (Blazor WASM on Static Web Apps)  ──HTTP──►  Api (Azure Fun
                                                 Model   (documents as plain POCOs)
 ```
 
-`Web.Client` does **not** reference Facades or below — it only references `Contracts`. The two apps are deployed independently and to different hosts, so the client learns the API address from `wwwroot/appsettings.json` (`ApiBaseUrl`) and the API allows its origin through **platform CORS** configured in `infra/main.bicep`.
+`Web.Client` does **not** reference Facades or below — it only references `Contracts` and `Services.Client`. `Services.Client` (`src/Services.Client`) is a plain class library for client-side logic that has no business in the Blazor project itself and is unit-tested in `Tests` without referencing the WASM project (today: `SpaydBuilder`, the QR Platba payload). The two apps are deployed independently and to different hosts, so the client learns the API address from `wwwroot/appsettings.json` (`ApiBaseUrl`) and the API allows its origin through **platform CORS** configured in `infra/main.bicep`.
 
 ### The shared API contract (this is the least obvious thing in the repo)
 

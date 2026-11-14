@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>KandaEu.Volejbal.Services.Client</AssemblyName>
+		<RootNamespace>KandaEu.Volejbal.Services.Client</RootNamespace>
+	</PropertyGroup>
+
+</Project>
