@@ -6,7 +6,7 @@
         </div>
         <div class="pay-card">
             <div class="pay-qr">@((MarkupString)_qrSvg)</div>
-            <p class="pay-note">@_message</p>
+            <p class="pay-note">@_ucet@if (_castkaText != null){<text>, @_castkaText</text>}</p>
         </div>
     </section>
 }
