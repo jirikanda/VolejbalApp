@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using KandaEu.Volejbal.Contracts.Api;
 using KandaEu.Volejbal.Contracts.Nastenka;
 using KandaEu.Volejbal.Contracts.Osoby;
 using KandaEu.Volejbal.Contracts.Prihlasky;
@@ -56,15 +57,15 @@ public class ApiContractTests
 	[TestMethod]
 	public void ApiContract_KazdyHttpTriggerMaOdpovidajiciMetoduKontraktu()
 	{
-		// Health endpoint záměrně není součástí klientského kontraktu - slouží monitoringu.
-		const string healthRoute = "api/health";
+		// Health endpoint (monitoring) a MCP server (AI asistenti) záměrně nejsou součástí klientského kontraktu.
+		string[] mimoKontrakt = [ApiRoutes.Health, ApiRoutes.Mcp];
 
 		List<(string HttpMethod, string Route)> kontrakt = s_apiInterfaces
 			.SelectMany(apiInterface => apiInterface.GetMethods().Select(GetRefitRoute))
 			.ToList();
 
 		List<string> navic = GetHttpTriggers()
-			.Where(trigger => !String.Equals(trigger.Route, healthRoute, StringComparison.OrdinalIgnoreCase))
+			.Where(trigger => !mimoKontrakt.Contains(trigger.Route, StringComparer.OrdinalIgnoreCase))
 			.Where(trigger => !kontrakt.Any(k => String.Equals(k.Route, trigger.Route, StringComparison.OrdinalIgnoreCase)
 				&& String.Equals(k.HttpMethod, trigger.Method, StringComparison.OrdinalIgnoreCase)))
 			.Select(trigger => $"{trigger.Method} {trigger.Route}")

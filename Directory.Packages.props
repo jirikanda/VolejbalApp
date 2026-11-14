@@ -27,6 +27,9 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.12" />
+    <!-- MCP server (Api, trigger /mcp): oficiální C# SDK, z něj se používá HTTP handler za MapMcp(),
+         viz Api/Mcp/McpRequestHandler.cs. -->
+    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageVersion Include="MSTest" Version="4.4.1" />
     <!-- Nutná závislost Cosmos SDK, i když ji náš kód nepoužívá - podrobnosti u reference
          v src/DataLayer/DataLayer.csproj. SDK se váže na 10.0.0.0, novější verze vezme zavděk. -->

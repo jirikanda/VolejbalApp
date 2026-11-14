@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Havit.ApplicationInsights.DependencyCollector;
 using KandaEu.Volejbal.Api.Infrastructure;
+using KandaEu.Volejbal.Api.Mcp;
 using KandaEu.Volejbal.DependencyInjection;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -76,5 +77,6 @@ public static class Program
 		builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreCancellationExceptionsTelemetryProcessor>();
 
 		builder.Services.ConfigureForWebAPI(builder.Configuration);
+		builder.Services.AddVolejbalMcpServer();
 	}
 }
