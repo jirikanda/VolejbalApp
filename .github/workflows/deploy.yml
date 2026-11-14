@@ -16,6 +16,11 @@ name: Deploy to Azure
 # nasadí. Ruční spuštění je samo o sobě to rozhodnutí, co jde do produkce.
 on:
   workflow_dispatch:
+    inputs:
+      forceInfra:
+        description: Nasadit infrastrukturu (Bicep) i bez změny souborů v infra/
+        type: boolean
+        default: false
 
 # Dvě souběžná nasazení by si šlapala po infrastruktuře i po balíčku. Druhé se zařadí do fronty
 # (cancel-in-progress: false), protože přerušený deployment uprostřed Bicepu je horší než čekání.
@@ -27,6 +32,8 @@ env:
   # Název deploymentu v ARM historii; infrastructure ho zapisuje, deploy joby z něj čtou outputy.
   DEPLOYMENT_NAME: jk-volejbal
   RESOURCE_GROUP: JkVolejbalRG
+  # Tag na resource group s hashem infra/ naposledy úspěšně nasazené šablony (viz job infrastructure).
+  INFRA_HASH_TAG: infra-hash
 
 jobs:
   # Tři nezávislé joby běží paralelně (každý má vlastní runner, checkout a setup .NET - to je cena
@@ -181,20 +188,78 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      # Infrastruktura se nasazuje jen když se změnil obsah složky infra/ (nebo na vyžádání vstupem
+      # forceInfra). Rozhoduje hash, který poslední úspěšné nasazení zapsalo jako tag na resource group
+      # (INFRA_HASH_TAG) - ne git: workflow je ruční, nemá žádný "předchozí push" ke srovnání.
+      # Cena: infrastruktura už není při každém běhu srovnána se šablonou, takže ruční změna v portálu
+      # se neopraví, dokud se šablona nezmění nebo se nespustí s forceInfra.
+      # README.md se do hashe nezahrnuje, dokumentace nemá spouštět nasazení.
+      - name: Decide whether to deploy infrastructure
+        id: decide
+        env:
+          FORCE_INFRA: ${{ inputs.forceInfra }}
+        run: |
+          CURRENT=$(find infra -type f ! -name '*.md' -print0 | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)
+          DEPLOYED=$(az group show --name "$RESOURCE_GROUP" --query "tags.\"$INFRA_HASH_TAG\"" -o tsv 2>/dev/null || true)
+
+          if [ "$FORCE_INFRA" = "true" ]; then
+            DEPLOY=true; REASON="vynuceno vstupem forceInfra"
+          elif [ -z "$DEPLOYED" ]; then
+            DEPLOY=true; REASON="na resource group není tag $INFRA_HASH_TAG (první nasazení s touto logikou)"
+          elif [ "$CURRENT" != "$DEPLOYED" ]; then
+            DEPLOY=true; REASON="obsah infra/ se změnil od posledního nasazení"
+          else
+            DEPLOY=false; REASON="obsah infra/ je shodný s posledním nasazením"
+          fi
+
+          {
+            echo "deploy=$DEPLOY"
+            echo "hash=$CURRENT"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Infrastruktura (Bicep)"
+            echo
+            if [ "$DEPLOY" = "true" ]; then
+              echo "**Nasazuje se** - $REASON."
+            else
+              echo "**Nenasazuje se** (přeskočeno) - $REASON."
+            fi
+            echo
+            echo "| | Hash infra/ |"
+            echo "| --- | --- |"
+            echo "| Aktuální | \`$CURRENT\` |"
+            echo "| Nasazený | \`${DEPLOYED:-(žádný)}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # Nasazuje se celá šablona, ne jen změněná část: ARM v incremental módu projde nezměněné
-      # resources (Log Analytics, App Insights, storage) jako no-op, takže to stojí minutu navíc, ale
-      # infrastruktura nemůže začít odpovídat něčemu jinému než šabloně.
+      # resources (Log Analytics, App Insights, storage) jako no-op.
       # Šablona nebere žádné parametry: od přechodu na Cosmos DB se aplikace k databázi hlásí managed
       # identitou (datové RBAC přiřazuje tatáž šablona), takže do nasazení nevstupuje žádný secret.
       - name: Deploy Bicep template
+        if: steps.decide.outputs.deploy == 'true'
         run: |
           az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/main.bicep \
             --name "$DEPLOYMENT_NAME"
 
+      # Tag se zapisuje až po úspěšném nasazení, takže neúspěch nechá starý hash a příští běh to zkusí
+      # znovu. 'az tag update --operations Merge' nesahá na ostatní tagy (na rozdíl od 'az group update').
+      - name: Record deployed infrastructure hash
+        if: steps.decide.outputs.deploy == 'true'
+        env:
+          HASH: ${{ steps.decide.outputs.hash }}
+        run: |
+          az tag update \
+            --resource-id "$(az group show --name "$RESOURCE_GROUP" --query id -o tsv)" \
+            --operations Merge \
+            --tags "$INFRA_HASH_TAG=$HASH" > /dev/null
+          echo "Nasazení infrastruktury dokončeno, tag \`$INFRA_HASH_TAG\` zapsán." >> "$GITHUB_STEP_SUMMARY"
+
       # Outputy se čtou jednou tady a předávají se dál jako job outputs, aby deploy joby nemusely
-      # sahat do ARM historie a nebyly na ní závislé.
+      # sahat do ARM historie a nebyly na ní závislé. Čtou se z posledního deploymentu v ARM historii,
+      # takže fungují i tehdy, když se infrastruktura v tomto běhu přeskočila.
       - name: Read template outputs
         id: outputs
         run: |
