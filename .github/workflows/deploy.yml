@@ -1,19 +1,27 @@
 name: Deploy to Azure
 
 # Záměrně jen ruční spuštění, očekává se nad master. Jeden workflow dělá celou cestu do produkce,
-# rozdělenou na čtyři joby podle toho, co nasazují:
+# rozdělenou na joby podle toho, co dělají:
 #
-#   build ──► infrastructure ──┬──► deploy-api
-#                              └──► deploy-frontend
+#   run-tests ─┐
+#   build-api ─┼──► infrastructure ──┬──► deploy-api
+#   build-web ─┘                     └──► deploy-frontend
 #
+# Testy a oba publishe jsou nezávislé a běží paralelně; infrastruktura se mění až po všech třech.
 # Nasazení API a frontendu jsou dvě nezávislé věci nad hotovou infrastrukturou, takže běží paralelně;
 # selhání jednoho tím pádem nezastaví druhé a v logu je hned vidět, která část se rozbila.
-# Oba stavějí jen to, co už build job zabalil - nic se nekompiluje dvakrát.
+# Oba jen nasazují to, co už zabalily build joby - žádný z nich nic nekompiluje.
 #
 # Nasazuje se vždy právě odbavený commit - proto tu není žádný input s verzí: co je v branchi, to se
 # nasadí. Ruční spuštění je samo o sobě to rozhodnutí, co jde do produkce.
 on:
   workflow_dispatch:
+
+# Dvě souběžná nasazení by si šlapala po infrastruktuře i po balíčku. Druhé se zařadí do fronty
+# (cancel-in-progress: false), protože přerušený deployment uprostřed Bicepu je horší než čekání.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
 
 env:
   # Název deploymentu v ARM historii; infrastructure ho zapisuje, deploy joby z něj čtou outputy.
@@ -21,42 +29,69 @@ env:
   RESOURCE_GROUP: JkVolejbalRG
 
 jobs:
-  build:
+  # Tři nezávislé joby běží paralelně (každý má vlastní runner, checkout a setup .NET - to je cena
+  # za paralelismus, pár sekund navíc na job). Infrastruktura čeká na všechny tři, takže se prostředí
+  # nezačne měnit, dokud neprojdou testy a oba publishe.
+
+  # Testy. Restore jen to, co potřebuje test (Tests -> Api, Contracts, DataLayer, Services...);
+  # MigrationTool a TestsForLocalDebugging se tu nepoužívají vůbec - ty pokrývá build.yml.
+  run-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           dotnet-version: 11.0.x
 
-      - name: Cache NuGet packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
+      # Experiment: NuGet cache vypnutá. Cache má ~503 MB a její obnovení stojí ~6 s (+ ~4 s uložení při
+      # změně balíčků), restore s ní přesto trvá ~15 s. Pokud restore bez cache nebude výrazně pomalejší
+      # než ~25 s, smazat natrvalo; jinak odkomentovat (a doplnit i do build-api a build-web).
+      # - name: Cache NuGet packages
+      #   uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      #   with:
+      #     path: ~/.nuget/packages
+      #     key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-nuget-
 
       - name: Restore
-        run: dotnet restore VolejbalApp.slnx
+        run: dotnet restore src/Tests/Tests.csproj
 
-      # Restore na úrovni solution nespustí restore hook Azure.Functions.Sdk, který generuje a obnovuje
-      # pomocný projekt s Functions extensions. Bez tohoto kroku build hlásí AZFW0108 a dělá
-      # restore-during-build ("may cause issues in some build environments").
+      # Restore jiného projektu (ani solution) nespustí restore hook Azure.Functions.Sdk, který generuje
+      # a obnovuje pomocný projekt s Functions extensions. Bez tohoto kroku build hlásí AZFW0108 a dělá
+      # restore-during-build ("may cause issues in some build environments"). Ověřeno na čistém klonu:
+      # varování vzniká i při samotném `dotnet test` bez --no-restore, takže krok je nutný.
       - name: Restore Functions extensions
         run: dotnet restore src/Api/Api.csproj
 
-      - name: Build
-        run: dotnet build VolejbalApp.slnx --no-restore --configuration Release
-
+      # Celé solution se tu nestaví: test si přeloží jen to, co potřebuje. --no-restore kvůli AZFW0108 -
+      # viz komentář výše.
       - name: Test
-        run: dotnet test src/Tests/Tests.csproj --no-build --configuration Release --verbosity normal
+        run: dotnet test src/Tests/Tests.csproj --no-restore --configuration Release --verbosity normal
 
+  # Publish Api pro linux-x64 + zip. Nic neupravuje v prostředí, jen vyrábí artefakt.
+  build-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: 11.0.x
+
+      # Samostatný restore tu netřeba: publish si dělá vlastní RID-specific restore a na čistém klonu
+      # u něj AZFW0108 nevzniká (na rozdíl od `dotnet test` v jobu run-tests, viz tam).
       # Bez --no-restore: tenhle krok si dělá vlastní RID-specific restore kvůli ReadyToRun, který se
       # v csproj aktivuje podle RID. Restore celé solution s --runtime nejde - u Web.Client
       # (browser-wasm) by vyžadoval neexistující Mono runtime pack pro linux-x64. Globální
@@ -75,19 +110,34 @@ jobs:
           zip -r ../../api.zip . > /dev/null
 
       - name: Upload Api package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: api-package
           path: api.zip
           retention-days: 7
 
-      # Frontend se staví tady, ne v deploy-frontend jobu: chyba v buildu klienta se pak pozná dřív,
-      # než se začne měnit infrastruktura, a oba deploy joby zůstanou symetrické - jen nasazují.
+  # Frontend se staví tady, ne v deploy-frontend jobu: chyba v buildu klienta se pak pozná dřív,
+  # než se začne měnit infrastruktura, a oba deploy joby zůstanou symetrické - jen nasazují.
+  # Web.Client si restore dělá sám (publish bez --no-restore).
+  build-web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: 11.0.x
+
       - name: Publish Web.Client
         run: dotnet publish src/Web.Client/Web.Client.csproj --configuration Release --output ./publish/Web.Client
 
       - name: Upload Web.Client
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: web-client
           path: ./publish/Web.Client/wwwroot
@@ -97,10 +147,11 @@ jobs:
   # aplikací na ní závisejí: Function App musí existovat (a mít role ke storage) dřív, než do ní
   # půjde balíček, a název SWA se čte z outputů téhle šablony.
   infrastructure:
-    needs: build
+    needs: [run-tests, build-api, build-web]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # environment: Production drží pohromadě dvě věci: umožňuje přidat required reviewers
-    # (Settings -> Environments), takže se pipeline zastaví až TĚSNĚ PŘED nasazením (build i testy
+    # (Settings -> Environments), takže se pipeline zastaví až TĚSNĚ PŘED nasazením (testy i oba publishe
     # už jsou v tu chvíli hotové), a určuje subject federated credentialu v Entra ID
     # ("repo:jirikanda@5111719/VolejbalApp@169379851:environment:Production" - repozitář má zapnuté
     # immutable subject claims, proto ta ID). Odebrání tohoto řádku rozbije Azure login.
@@ -119,12 +170,12 @@ jobs:
       staticWebAppHostname: ${{ steps.outputs.outputs.staticWebAppHostname }}
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Federated credentials (OIDC) - GitHub vydá krátkodobý token, Entra ID ho vymění za Azure token.
       # Žádné heslo/certifikát v secrets, není co rotovat.
       - name: Azure login
-        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -163,6 +214,7 @@ jobs:
   deploy-api:
     needs: infrastructure
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: Production
     permissions:
       contents: read
@@ -170,12 +222,12 @@ jobs:
 
     steps:
       - name: Download Api package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: api-package
 
       - name: Azure login
-        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -196,6 +248,7 @@ jobs:
   deploy-frontend:
     needs: infrastructure
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: Production
     permissions:
       contents: read
@@ -203,13 +256,13 @@ jobs:
 
     steps:
       - name: Download Web.Client
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: web-client
           path: web-client
 
       - name: Azure login
-        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -229,17 +282,18 @@ jobs:
           echo "::add-mask::$TOKEN"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
-      # skip_app_build, protože artefakt je už hotový z build jobu - žádný Oryx build uvnitř akce.
-      # Nezávislé na tom, jak rychle Oryx buildimage doběhne .NET 10 a jak se popere s central
+      # Nahrává se hotový artefakt z jobu build-web (resp. build-api) - žádný build ani Oryx při nasazení (CLI nic nestaví).
+      # Nezávislé na tom, jak rychle Oryx buildimage doběhne aktuální .NET a jak se popere s central
       # package managementem (Directory.Packages.props).
+      #
+      # SWA CLI místo akce Azure/static-web-apps-deploy: ta je docker akce a image se staví při každém
+      # běhu (~16 s v kroku "Build Azure/static-web-apps-deploy"). Node je na runneru předinstalovaný,
+      # CLI se stáhne přes npx (verze zafixovaná). Jde o experiment - pokud by to nebylo rychlejší,
+      # vrátit původní akci (git history). Token jde přes env, ne přes argument, aby nebyl v příkazové řádce.
       - name: Deploy to Azure Static Web Apps
-        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
-        with:
-          azure_static_web_apps_api_token: ${{ steps.swa-token.outputs.token }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: upload
-          app_location: web-client
-          skip_app_build: true
+        env:
+          SWA_CLI_DEPLOYMENT_TOKEN: ${{ steps.swa-token.outputs.token }}
+        run: npx --yes @azure/static-web-apps-cli@2.1.0 deploy ./web-client --env production
 
       - name: Show deployed URL
         run: echo "https://${{ needs.infrastructure.outputs.staticWebAppHostname }}"

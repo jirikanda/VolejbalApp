@@ -188,18 +188,19 @@ Ruční spuštění deploye je samo o sobě rozhodnutí, co jde do produkce — 
 
 ### Co Deploy dělá
 
-Workflow je rozdělený na čtyři joby podle toho, **co** nasazují:
+Workflow je rozdělený na šest jobů podle toho, **co** dělají:
 
 ```
-build ──► infrastructure ──┬──► deploy-api
-                           └──► deploy-frontend
+run-tests ─┐
+build-api ─┼──► infrastructure ──┬──► deploy-api
+build-web ─┘                     └──► deploy-frontend
 ```
 
-Job **`build`**: restore → build → test → `dotnet publish` projektu `Api` pro `linux-x64` → zip, a `dotnet publish` na `Web.Client`; oba výstupy jdou nahoru jako artifacty. Publish API je RID-specifický kvůli ReadyToRun (aktivuje se v csproj podle RID) — to je největší jednotlivá páka na studený start. Frontend se staví tady, a ne až v `deploy-frontend`, aby se chyba v jeho buildu poznala **dřív, než se začne měnit infrastruktura**, a aby oba deploy joby zůstaly symetrické — jen nasazují hotový artefakt.
+Joby **`run-tests`**, **`build-api`** a **`build-web`** běží **paralelně** (každý na vlastním runneru) a `infrastructure` čeká na všechny tři, takže se prostředí nezačne měnit, dokud neprojdou testy a oba publishe. `run-tests`: restore (jen `Tests` a `Api`) → `dotnet test` (celé solution se nestaví, MigrationTool a TestsForLocalDebugging pokrývá `Build`). `build-api`: `dotnet publish` projektu `Api` pro `linux-x64` → zip. `build-web`: `dotnet publish` na `Web.Client`. Oba výstupy jdou nahoru jako artifacty. Publish API je RID-specifický kvůli ReadyToRun (aktivuje se v csproj podle RID) — to je největší jednotlivá páka na studený start. Frontend se staví tady, a ne až v `deploy-frontend`, aby se chyba v jeho buildu poznala **dřív, než se začne měnit infrastruktura**, a aby oba deploy joby zůstaly symetrické — jen nasazují hotový artefakt.
 
-Job **`infrastructure`** (`needs: build`): Azure login přes OIDC → `az deployment group create` s bicep šablonou → přečtení outputů šablony a jejich vystavení jako **job outputs** (název a URL Function App, název a hostname SWA). Deploy joby díky tomu nemusejí sahat do ARM historie.
+Job **`infrastructure`** (`needs: [run-tests, build-api, build-web]`): Azure login přes OIDC → `az deployment group create` s bicep šablonou → přečtení outputů šablony a jejich vystavení jako **job outputs** (název a URL Function App, název a hostname SWA). Deploy joby díky tomu nemusejí sahat do ARM historie.
 
-Joby **`deploy-api`** a **`deploy-frontend`** (oba `needs: infrastructure`) běží **paralelně**: první nahraje balíček přes `Azure/functions-action` s `sku: flexconsumption`, druhý statický výstup přes `Azure/static-web-apps-deploy`. Jsou to dvě nezávislé věci nad hotovou infrastrukturou, takže selhání jednoho nezastaví druhé a v logu je hned vidět, která část se rozbila.
+Joby **`deploy-api`** a **`deploy-frontend`** (oba `needs: infrastructure`) běží **paralelně**: první nahraje balíček přes `Azure/functions-action` s `sku: flexconsumption`, druhý statický výstup přes SWA CLI (`npx @azure/static-web-apps-cli deploy`, zafixovaná verze; dřív docker akce `Azure/static-web-apps-deploy`). Jsou to dvě nezávislé věci nad hotovou infrastrukturou, takže selhání jednoho nezastaví druhé a v logu je hned vidět, která část se rozbila.
 
 > **Proč je infrastruktura zvlášť**: je to jediná část, která mění tvar prostředí, a obě nasazení aplikací na ní závisejí — Function App musí existovat a mít přiřazené role ke storage **dřív**, než se do ní balíček nahraje, a název SWA se čte z outputů šablony.
 

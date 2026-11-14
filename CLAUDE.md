@@ -201,14 +201,15 @@ Two test projects, deliberately separated:
 ## CI / deployment
 
 - [.github/workflows/build.yml](.github/workflows/build.yml) — CI for `master` and PRs into `master`: restore → build (Release) → test. Nothing is published from here.
-- [.github/workflows/deploy.yml](.github/workflows/deploy.yml) — **manual only** (`workflow_dispatch`, run against `master`); the whole path to production in four jobs, split by *what* they deploy:
+- [.github/workflows/deploy.yml](.github/workflows/deploy.yml) — **manual only** (`workflow_dispatch`, run against `master`); the whole path to production in six jobs, split by what they do:
 
   ```
-  build ──► infrastructure ──┬──► deploy-api
-                             └──► deploy-frontend
+  run-tests ─┐
+  build-api ─┼──► infrastructure ──┬──► deploy-api
+  build-web ─┘                     └──► deploy-frontend
   ```
 
-  `build`: restore → build → test → publish the Api for `linux-x64` → zip, and publish `Web.Client`; both go up as artifacts, so nothing is compiled twice. `infrastructure`: OIDC login → `az deployment group create` against [infra/main.bicep](infra/main.bicep) → reads the template outputs once and re-exposes them as **job outputs**. `deploy-api` and `deploy-frontend` then run **in parallel** over the finished infrastructure — the API package via `Azure/functions-action` (`sku: flexconsumption`), the client via `Azure/static-web-apps-deploy` with a deployment token read at run time through the same OIDC session. There is **no version input** — triggering the workflow manually *is* the decision of what goes to production.
+  `run-tests`, `build-api` and `build-web` run **in parallel** (each on its own runner) and `infrastructure` waits for all three, so the environment is not touched until tests and both publishes pass. `run-tests`: restore (Tests + Api only) → `dotnet test` (no full-solution build; `build.yml` covers MigrationTool and TestsForLocalDebugging). `build-api`: publish the Api for `linux-x64` → zip. `build-web`: publish `Web.Client`. Both publishes go up as artifacts, which the deploy jobs only download. `infrastructure`: OIDC login → `az deployment group create` against [infra/main.bicep](infra/main.bicep) → reads the template outputs once and re-exposes them as **job outputs**. `deploy-api` and `deploy-frontend` then run **in parallel** over the finished infrastructure — the API package via `Azure/functions-action` (`sku: flexconsumption`), the client via the SWA CLI (`npx @azure/static-web-apps-cli deploy`, pinned version; replaced the docker action `Azure/static-web-apps-deploy`) with a deployment token read at run time through the same OIDC session. There is **no version input** — triggering the workflow manually *is* the decision of what goes to production.
 - **Why infrastructure is its own job**: it is the only part that changes the shape of the environment, and both app deployments depend on it — the Function App must exist (and its identity must hold the storage roles) before a package is pushed to it, and the SWA name comes from the template outputs. Splitting the two app deployments off means a failure in one does not block the other, and the log says which half broke.
 - **`environment: Production` must be on every job that logs into Azure** — the federated credential's subject is bound to the environment, not to the job name. Consequence of the split: if required reviewers are ever configured on `Production`, all three deploy jobs will be approved separately (today the environment has no protection rules).
 - The deploy job applies the **whole template**, not just the app — ARM's incremental mode no-ops the unchanged resources, and in exchange the infrastructure cannot drift from `main.bicep`.
