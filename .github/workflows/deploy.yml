@@ -245,7 +245,7 @@ jobs:
             --name "$DEPLOYMENT_NAME"
 
       # Tag se zapisuje až po úspěšném nasazení, takže neúspěch nechá starý hash a příští běh to zkusí
-      # znovu. 'az tag update --operations Merge' nesahá na ostatní tagy (na rozdíl od 'az group update').
+      # znovu. 'az tag update --operation Merge' nesahá na ostatní tagy (na rozdíl od 'az group update').
       - name: Record deployed infrastructure hash
         if: steps.decide.outputs.deploy == 'true'
         env:
@@ -253,7 +253,7 @@ jobs:
         run: |
           az tag update \
             --resource-id "$(az group show --name "$RESOURCE_GROUP" --query id -o tsv)" \
-            --operations Merge \
+            --operation Merge \
             --tags "$INFRA_HASH_TAG=$HASH" > /dev/null
           echo "Nasazení infrastruktury dokončeno, tag \`$INFRA_HASH_TAG\` zapsán." >> "$GITHUB_STEP_SUMMARY"
 
