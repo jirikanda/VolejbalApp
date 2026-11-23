@@ -59,7 +59,105 @@
     </div>
 
     <script src="js/theme.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <!-- Start Blazoru s obsluhou selhání. Když runtime nenaběhne (typicky starší prohlížeč: .NET 11
+         vyžaduje WASM výjimky s exnref, tj. Safari 18.4 / Chrome 137 / Firefox 131, viz
+         dotnet/runtime#137477), zůstalo by navždy "Načítání…". Místo toho ukážeme chybu a verzi
+         prohlížeče, aby ze screenshotu bylo poznat, o co jde. Schopnosti prohlížeče se předem
+         nezjišťují - rozhoduje až skutečné selhání. Skript je schválně inline: kdyby se nenačetl
+         ze samostatného souboru, neměl by chybu kdo ohlásit. -->
+    <script>
+        (function () {
+            var started = false;
+
+            function describe(reason) {
+                if (!reason) {
+                    return 'Neznámá chyba.';
+                }
+                if (reason.stack) {
+                    // některé prohlížeče (Safari) ve stacku zprávu neopakují
+                    return (reason.message && (reason.stack.indexOf(reason.message) < 0))
+                        ? (reason.message + '\n' + reason.stack)
+                        : reason.stack;
+                }
+                return String(reason.message || reason);
+            }
+
+            function element(tag, className, text) {
+                var el = document.createElement(tag);
+                if (className) {
+                    el.className = className;
+                }
+                if (text) {
+                    el.textContent = text;
+                }
+                return el;
+            }
+
+            function showBootError(reason) {
+                // .boot existuje jen do prvního renderu Blazoru; jakmile aplikace běží, chyby řeší ona
+                var boot = document.querySelector('#app .boot');
+                if (started || !boot) {
+                    return;
+                }
+                started = true;
+
+                var page = element('div', 'error-page');
+                page.setAttribute('role', 'alert');
+                page.appendChild(element('h2', null, 'Ups...'));
+                page.appendChild(element('p', 'error-lead', 'Aplikaci se nepodařilo spustit.'));
+                page.appendChild(element('p', 'error-hint', 'Nejčastěji pomůže aktualizace prohlížeče nebo systému v zařízení.'));
+
+                var restart = element('p');
+                var link = element('a', null, 'Zkusit znovu');
+                link.href = '/';
+                restart.appendChild(link);
+                page.appendChild(restart);
+
+                var detail = element('div', 'error-detail');
+                // prohlížeč první: výpis chyby bývá dlouhý a na snímku z telefonu by ho odsunul mimo obrazovku
+                detail.appendChild(element('p', 'error-detail-label', 'Prohlížeč'));
+                detail.appendChild(element('pre', null, navigator.userAgent));
+                detail.appendChild(element('p', 'error-detail-label', 'Chyba'));
+                detail.appendChild(element('pre', null, describe(reason)));
+                page.appendChild(detail);
+
+                boot.parentNode.replaceChild(page, boot);
+
+                var mark = document.querySelector('#app .mark.loading');
+                if (mark) {
+                    mark.classList.remove('loading');
+                }
+            }
+
+            function handleError(e) {
+                // chyba skriptu, nebo skript, který se nepodařilo stáhnout (ne font či obrázek)
+                if (e.error || e.message) {
+                    showBootError(e.error || e.message);
+                } else if (e.target && (e.target.tagName === 'SCRIPT')) {
+                    showBootError('Nepodařilo se načíst ' + e.target.src);
+                }
+            }
+
+            function handleRejection(e) {
+                showBootError(e.reason);
+            }
+
+            window.addEventListener('error', handleError, true);
+            window.addEventListener('unhandledrejection', handleRejection);
+
+            try {
+                Blazor.start().then(function () {
+                    started = true;
+                    window.removeEventListener('error', handleError, true);
+                    window.removeEventListener('unhandledrejection', handleRejection);
+                }, showBootError);
+            } catch (e) {
+                // Blazor není definován = blazor.webassembly.js se nenačetl nebo ho prohlížeč nezparsoval
+                showBootError(e);
+            }
+        })();
+    </script>
 </body>
 
 </html>
